@@ -1,0 +1,29 @@
+{
+  "name": "@saypulse/react",
+  "version": "0.1.0",
+  "private": false,
+  "description": "SayPulse — React widget components: FloatingTriggerButton, BottomMicPill, StarRatingPopover, SummaryReviewModal",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "build": "tsup src/index.ts --format cjs,esm --dts --clean --external react --external react-dom",
+    "dev": "tsup src/index.ts --format cjs,esm --dts --watch --external react --external react-dom",
+    "lint": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
+  },
+  "dependencies": {
+    "@saypulse/core": "*"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.0",
+    "@types/react-dom": "^18.3.0",
+    "tsup": "^8.3.0",
+    "typescript": "^5.5.0"
+  }
+}

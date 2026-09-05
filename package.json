@@ -1,0 +1,15 @@
+{
+  "name": "saypulse-monorepo",
+  "private": true,
+  "workspaces": ["packages/*", "apps/*"],
+  "scripts": {
+    "dev": "turbo dev",
+    "build": "turbo build",
+    "dev:api": "npm run dev --workspace=apps/api",
+    "dev:demo": "npm run dev --workspace=apps/demo"
+  },
+  "devDependencies": {
+    "turbo": "^2.5.0",
+    "typescript": "^5.5.0"
+  }
+}
