@@ -12,6 +12,7 @@ import toneRouter from './routes/tone';
 import submitRouter from './routes/submit';
 import adminRouter from './routes/admin';
 import authRouter from './routes/auth';
+import cdnRouter from './routes/cdn';
 
 const app = express();
 const PORT = Number(process.env.PORT ?? 8000);
@@ -51,6 +52,10 @@ app.use('/saypulse/v1/auth', authRouter);
 app.use('/saypulse/v1/feedback/summarize', sdkLimiter, apiKeyAuth, summarizeRouter);
 app.use('/saypulse/v1/feedback/tone',      sdkLimiter, apiKeyAuth, toneRouter);
 app.use('/saypulse/v1/feedback/submit',    sdkLimiter, apiKeyAuth, submitRouter);
+
+// ── Universal 1-Line CDN Script Bundle ───────────────────────────────────────
+app.use('/saypulse/v1/cdn', cdnRouter);
+app.use('/cdn', cdnRouter);
 
 // ── SayPulse Business Admin Portal routes ─────────────────────────────────────
 app.use('/saypulse/v1/admin', adminRouter);
