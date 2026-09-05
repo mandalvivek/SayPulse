@@ -27,7 +27,7 @@ export class MHCWhatsAppGatewayService {
     this.baseURL = (
       config.baseURL ||
       process.env.MHC_WHATSAPP_BASE_URL ||
-      'https://communication-dev.myhealthchapter.com'
+      'https://dev-wa.nextgenmultiverse.com'
     ).replace(/\/+$/, '');
 
     this.apiKey = config.apiKey || process.env.MHC_WHATSAPP_API_KEY || 'mhc_sec_saypulse_62u8zcjo7o5e2bye';
