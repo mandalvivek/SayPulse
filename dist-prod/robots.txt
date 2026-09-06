@@ -1,0 +1,32 @@
+# ──────────────────────────────────────────────────────────
+# SayPulse Production robots.txt (AI Crawlers & SEO)
+# ──────────────────────────────────────────────────────────
+
+# Generative AI & Discovery Engines
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+# General Search Engines
+User-agent: *
+Allow: /
+Disallow: /api/private/
+
+Sitemap: https://saypulse.nextgenmultiverse.com/sitemap.xml

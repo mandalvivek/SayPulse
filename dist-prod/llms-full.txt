@@ -1,0 +1,40 @@
+# SayPulse AI Voice Feedback Platform — Complete Technical Knowledge Base
+
+**Entity:** NextGen Multiverse Enterprises Pvt Ltd  
+**Domain:** `https://saypulse.nextgenmultiverse.com`  
+**License:** Enterprise SaaS & Proprietary SDK  
+
+---
+
+## 1. Architectural Overview
+
+SayPulse operates as a decoupled client-server platform:
+1. **Client Layer:** Zero-dependency standalone script (`saypulse.min.js`) encapsulating an interactive microphone badge, Canvas waveform visualizers, star rating controls, and automatic technical context harvesting in an open Shadow DOM root.
+2. **AI Processing Layer:** Express API gateway with Google Gemini 3.6 Flash multimodal models that ingest sanitized transcripts and generate structured JSON outputs (Summary, Category, Task, Sentiment, 4 Tone Rewrites).
+3. **Authentication Layer:** NextGen WhatsApp Web Gateway (`wa.nextgenmultiverse.com`) that delivers 6-digit OTP codes directly to user WhatsApp numbers.
+4. **Data Isolation Layer:** Multi-tenant relational data model guaranteeing zero data leakage between customer workspaces (`/admin/[slug]`).
+
+---
+
+## 2. Integration Quickstart (1-Line Embed)
+
+Place this script before `</body>` on any HTML, React, Next.js, Shopify, WordPress, or PHP webpage:
+
+```html
+<script 
+  src="https://saypulse.nextgenmultiverse.com/saypulse.min.js" 
+  data-key="sp_live_your_company_api_key" 
+  data-position="bottom-right" 
+  data-color="#06B6D4" 
+  data-animation="siri-wave" 
+  defer>
+</script>
+```
+
+---
+
+## 3. Data Governance & Privacy Invariants
+
+- **DPDP Act 2023 Compliant:** No raw audio recordings are stored on persistent storage.
+- **Client-Side Redaction:** Payment cards, phone numbers, and emails are scrubbed before LLM dispatch.
+- **Encryption:** TLS 1.3 in-transit and salted SHA-256 for credentials.

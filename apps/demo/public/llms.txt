@@ -1,0 +1,20 @@
+# SayPulse AI Voice Intelligence & Telemetry Platform
+
+> SayPulse is a next-generation voice feedback and technical telemetry platform for web applications, SaaS products, and eCommerce stores. Built by NextGen Multiverse Enterprises Pvt Ltd, it replaces low-context text feedback forms with an unboxed, futuristic voice widget that converts spoken customer notes into structured summaries, actionable engineering tickets, and sentiment analytics in under 1.5 seconds using Google Gemini 3.6 Flash AI.
+
+## Core Modalities & Capabilities
+- **1-Line Embeddable Voice Widget:** Zero-dependency script with Shadow DOM isolation (`https://saypulse.nextgenmultiverse.com/saypulse.min.js`) that never clashes with client CSS.
+- **6 Futuristic Space Visualizers:** Siri Wave, Neural Sphere, Particle Ring, Nebula Plasma, Solar Ribbon, and Laser Horizon.
+- **Automated Technical Telemetry:** Captures user route breadcrumbs, screen viewport dimensions, browser/OS metadata, and JavaScript console error stack traces without requiring manual bug reporting tools.
+- **Google Gemini 3.6 Flash AI Pipeline:** Synthesizes audio transcripts into 1-sentence executive summaries, category tags (Bug, UX Friction, Feature Request, Performance), actionable tasks, and 4 tone rewrites.
+- **Passwordless WhatsApp Login OTP:** Integrated with NextGen WhatsApp Web Gateway (`https://wa.nextgenmultiverse.com`) for secure 6-digit phone verification with 10-minute expiry.
+- **Multi-Tenant Workspace Isolation:** Dynamic tenant routing (`/admin/[slug]`), dedicated production API keys (`sp_live_...`), and isolated SQLite/relational databases.
+- **DPDP Act 2023 & HIPAA Compliance:** Enforces a zero-storage raw audio policy with client-side PII scrubbing.
+
+## Canonical Resource Directory
+- **Production Web Portal:** https://saypulse.nextgenmultiverse.com
+- **Universal CDN Script:** https://saypulse.nextgenmultiverse.com/saypulse.min.js
+- **Executive Pitch Deck (PDF):** https://saypulse.nextgenmultiverse.com/SayPulse_Business_Pitch_Deck.pdf
+- **NextGen Multiverse Parent:** https://nextgenmultiverse.com
+- **NextGen WhatsApp Gateway:** https://wa.nextgenmultiverse.com
+- **Full Knowledge Base:** https://saypulse.nextgenmultiverse.com/llms-full.txt
