@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>SayPulse — AI Voice Feedback Platform Pitch Deck</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap');
+
+    @page {
+      size: A4 portrait;
+      margin: 0;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background: #0B1120;
+      color: #F8FAFC;
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .page {
+      width: 210mm;
+      height: 297mm;
+      padding: 24mm 20mm;
+      position: relative;
+      background: #0B1120;
+      page-break-after: always;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justifyContent: space-between;
+    }
+
+    /* Background Glow Effects */
+    .glow-cyan {
+      position: absolute;
+      top: -100px;
+      right: -100px;
+      width: 350px;
+      height: 350px;
+      background: radial-gradient(circle, rgba(6,182,212,0.18) 0%, rgba(6,182,212,0) 70%);
+      pointer-events: none;
+    }
+    .glow-indigo {
+      position: absolute;
+      bottom: -100px;
+      left: -100px;
+      width: 350px;
+      height: 350px;
+      background: radial-gradient(circle, rgba(99,102,241,0.18) 0%, rgba(99,102,241,0) 70%);
+      pointer-events: none;
+    }
+
+    /* Headers & Branding */
+    .header-bar {
+      display: flex;
+      justifyContent: space-between;
+      align-items: center;
+      padding-bottom: 14px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      margin-bottom: 20px;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .brand-logo {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #06B6D4, #6366F1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      box-shadow: 0 0 12px rgba(6,182,212,0.4);
+    }
+    .brand-name {
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      color: #FFFFFF;
+    }
+    .brand-tag {
+      font-size: 9px;
+      font-weight: 800;
+      color: #06B6D4;
+      background: rgba(6,182,212,0.15);
+      border: 1px solid rgba(6,182,212,0.3);
+      padding: 2px 6px;
+      border-radius: 4px;
+      letter-spacing: 0.5px;
+      margin-left: 6px;
+    }
+    .doc-type {
+      font-size: 11px;
+      font-weight: 700;
+      color: #94A3B8;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    /* Footer */
+    .footer-bar {
+      display: flex;
+      justifyContent: space-between;
+      align-items: center;
+      padding-top: 14px;
+      border-top: 1px solid rgba(255,255,255,0.08);
+      font-size: 11px;
+      color: #64748B;
+    }
+
+    /* Typography */
+    h1.hero-title {
+      font-size: 34px;
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -1px;
+      margin: 0 0 12px;
+      background: linear-gradient(135deg, #FFFFFF 30%, #94A3B8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .hero-subtitle {
+      font-size: 15px;
+      color: #94A3B8;
+      line-height: 1.5;
+      margin: 0 0 24px;
+    }
+    .section-title {
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: -0.3px;
+      margin: 0 0 8px;
+      color: #F8FAFC;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .section-sub {
+      color: #94A3B8;
+      font-size: 12px;
+      margin: 0 0 16px;
+    }
+
+    /* Cards & Grids */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .grid-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 14px;
+    }
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+
+    .card {
+      background: #0F172A;
+      border: 1px solid #1E293B;
+      border-radius: 14px;
+      padding: 16px;
+      position: relative;
+    }
+    .card-highlight {
+      border-color: rgba(6,182,212,0.4);
+      background: linear-gradient(180deg, rgba(6,182,212,0.06) 0%, rgba(15,23,42,0.8) 100%);
+    }
+
+    .badge-pill {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: 6px;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+    }
+    .badge-cyan {
+      background: rgba(6,182,212,0.15);
+      color: #06B6D4;
+      border: 1px solid rgba(6,182,212,0.3);
+    }
+    .badge-purple {
+      background: rgba(168,85,247,0.15);
+      color: #C084FC;
+      border: 1px solid rgba(168,85,247,0.3);
+    }
+    .badge-amber {
+      background: rgba(245,158,11,0.15);
+      color: #FBBF24;
+      border: 1px solid rgba(245,158,11,0.3);
+    }
+    .badge-green {
+      background: rgba(16,185,129,0.15);
+      color: #34D399;
+      border: 1px solid rgba(16,185,129,0.3);
+    }
+
+    /* Comparison Box */
+    .comp-box {
+      border-radius: 12px;
+      padding: 14px;
+      margin-bottom: 12px;
+    }
+    .comp-bad {
+      background: rgba(239,68,68,0.08);
+      border: 1px solid rgba(239,68,68,0.25);
+    }
+    .comp-good {
+      background: rgba(16,185,129,0.08);
+      border: 1px solid rgba(16,185,129,0.3);
+    }
+
+    /* Stat Highlight */
+    .stat-val {
+      font-size: 26px;
+      font-weight: 800;
+      color: #FFFFFF;
+      letter-spacing: -0.5px;
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+    .stat-label {
+      font-size: 11px;
+      color: #94A3B8;
+      font-weight: 600;
+    }
+
+    /* Code Block */
+    .code-box {
+      background: #060913;
+      border: 1px solid #1E293B;
+      border-radius: 10px;
+      padding: 12px 14px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: #38BDF8;
+      line-height: 1.4;
+      margin: 10px 0;
+    }
+
+    /* Flow Step */
+    .step-num {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #06B6D4, #6366F1);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 11px;
+      color: #fff;
+      margin-right: 6px;
+    }
+
+    /* Table */
+    table.data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+      margin-top: 10px;
+    }
+    table.data-table th {
+      text-align: left;
+      color: #64748B;
+      font-weight: 700;
+      font-size: 10px;
+      letter-spacing: 0.5px;
+      padding: 8px 10px;
+      border-bottom: 1px solid #1E293B;
+    }
+    table.data-table td {
+      padding: 10px;
+      border-bottom: 1px solid rgba(30,41,59,0.5);
+      color: #E2E8F0;
+    }
+
+    ul.bullet-list {
+      margin: 6px 0 0;
+      padding-left: 18px;
+      color: #CBD5E1;
+      font-size: 12px;
+    }
+    ul.bullet-list li {
+      margin-bottom: 6px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ══════════════════════════════════════════════════════════════════════════
+       PAGE 1: COVER & EXECUTIVE SUMMARY
+       ══════════════════════════════════════════════════════════════════════════ -->
+  <div class="page">
+    <div class="glow-cyan"></div>
+    <div class="glow-indigo"></div>
+
+    <div class="header-bar">
+      <div class="brand">
+        <div class="brand-logo">🎙️</div>
+        <span class="brand-name">SayPulse</span>
+        <span class="brand-tag">AI VOICE INTELLIGENCE</span>
+      </div>
+      <div class="doc-type">Executive Product Pitch Deck</div>
+    </div>
+
+    <div>
+      <div class="badge-pill badge-cyan">ENTERPRISE VOICE TELEMETRY & PRODUCT GROWTH</div>
+      <h1 class="hero-title">Turn 15 Seconds of Spoken Customer Frustration into Instant Product Growth</h1>
+      <p class="hero-subtitle">
+        SayPulse replaces outdated text forms with an unboxed, futuristic voice widget. Using Google Gemini 3.6 Flash AI, it synthesizes spoken feedback, extracts actionable engineering tickets, and captures full technical diagnostics in real time.
+      </p>
+
+      <!-- Problem vs Solution Matrix -->
+      <div class="grid-2" style="margin-bottom: 24px;">
+        <div class="comp-box comp-bad">
+          <div style="font-weight: 800; color: #F87171; font-size: 14px; margin-bottom: 8px;">
+            ❌ The Problem with Traditional Text Feedback
+          </div>
+          <ul class="bullet-list" style="color: #FCA5A5;">
+            <li><strong>98% Form Abandonment:</strong> Typing long feedback on mobile is painful and tedious.</li>
+            <li><strong>Vague & Low Context:</strong> Users write 2 words (<em>"checkout broken"</em>) with zero repro steps.</li>
+            <li><strong>No Technical Diagnostic:</strong> Missing browser errors, route path history, or viewport specs.</li>
+            <li><strong>Ignored in Cluttered Inboxes:</strong> Takes days for PMs to triage and convert into Jira tickets.</li>
+          </ul>
+        </div>
+
+        <div class="comp-box comp-good">
+          <div style="font-weight: 800; color: #34D399; font-size: 14px; margin-bottom: 8px;">
+            ✨ The SayPulse AI Voice Breakthrough
+          </div>
+          <ul class="bullet-list" style="color: #6EE7B7;">
+            <li><strong>7x Faster Than Typing:</strong> Users tap, speak for 10 seconds naturally, and submit instantly.</li>
+            <li><strong>Gemini 3.6 AI Synthesis:</strong> Auto-generates executive summaries and concrete bug tasks.</li>
+            <li><strong>Automatic Technical Harvest:</strong> Auto-attaches console errors, route history & device metadata.</li>
+            <li><strong>Instant Engineering Alerts:</strong> Dispatches high-fidelity HTML email alerts for 1-2★ critical bugs.</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Key Business Metric Highlights -->
+      <div class="grid-4">
+        <div class="card card-highlight">
+          <div class="stat-val" style="color: #38BDF8;">4.2x</div>
+          <div class="stat-label">Feedback Volume Increase</div>
+        </div>
+        <div class="card card-highlight">
+          <div class="stat-val" style="color: #34D399;">68%</div>
+          <div class="stat-label">Faster Bug Resolution</div>
+        </div>
+        <div class="card card-highlight">
+          <div class="stat-val" style="color: #C084FC;">&lt;1 sec</div>
+          <div class="stat-label">Gemini AI Synthesis Latency</div>
+        </div>
+        <div class="card card-highlight">
+          <div class="stat-val" style="color: #FBBF24;">1-Line</div>
+          <div class="stat-label">Universal Script Integration</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bar">
+      <span>SayPulse AI Voice Intelligence • Confidential B2B Pitch Deck</span>
+      <span>Page 01 / 04</span>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════════════════
+       PAGE 2: THE AI PIPELINE & TECHNICAL TELEMETRY
+       ══════════════════════════════════════════════════════════════════════════ -->
+  <div class="page">
+    <div class="header-bar">
+      <div class="brand">
+        <div class="brand-logo">🎙️</div>
+        <span class="brand-name">SayPulse</span>
+      </div>
+      <div class="doc-type">AI Architecture & Telemetry</div>
+    </div>
+
+    <div>
+      <div class="badge-pill badge-purple">PROPRIETARY END-TO-END PIPELINE</div>
+      <h2 class="section-title">How SayPulse Converts Voice into Engineering Velocity</h2>
+      <p class="section-sub">From the moment a customer taps the microphone to the dispatch of an executive alert.</p>
+
+      <!-- 3-Step Visual Flow -->
+      <div class="grid-3" style="margin-bottom: 20px;">
+        <div class="card">
+          <div style="font-weight: 700; color: #38BDF8; margin-bottom: 6px;">
+            <span class="step-num">1</span> Spoken Voice Capture
+          </div>
+          <p style="color: #94A3B8; font-size: 12px; margin: 0 0 8px;">
+            Customer speaks freely into the floating widget. Choose from <strong>6 unboxed visualizer animations</strong> (Siri Wave, Neural Sphere, Particle Ring, etc.).
+          </p>
+          <div style="font-size: 11px; color: #64748B; background: #060913; padding: 6px 10px; border-radius: 6px;">
+            🔒 Client-side audio processing with PII redaction
+          </div>
+        </div>
+
+        <div class="card">
+          <div style="font-weight: 700; color: #C084FC; margin-bottom: 6px;">
+            <span class="step-num">2</span> Gemini 3.6 Flash AI Engine
+          </div>
+          <p style="color: #94A3B8; font-size: 12px; margin: 0 0 8px;">
+            Our server-side LLM pipeline instantly parses the transcript, detects sentiment, classifies the issue category, and formulates an actionable engineering task.
+          </p>
+          <div style="font-size: 11px; color: #64748B; background: #060913; padding: 6px 10px; border-radius: 6px;">
+            ⚡ Sub-second response with tone rewriting
+          </div>
+        </div>
+
+        <div class="card">
+          <div style="font-weight: 700; color: #34D399; margin-bottom: 6px;">
+            <span class="step-num">3</span> Telemetry & Alert Dispatch
+          </div>
+          <p style="color: #94A3B8; font-size: 12px; margin: 0 0 8px;">
+            Auto-harvests route history, browser errors, viewport specs, and dispatches rich HTML alerts to engineering and product teams.
+          </p>
+          <div style="font-size: 11px; color: #64748B; background: #060913; padding: 6px 10px; border-radius: 6px;">
+            📧 Instant Email Cards + MHC WhatsApp Gateway
+          </div>
+        </div>
+      </div>
+
+      <!-- Real Example Transformation Card -->
+      <div class="card card-highlight" style="margin-bottom: 20px;">
+        <div style="font-size: 11px; font-weight: 800; color: #06B6D4; letter-spacing: 0.5px; margin-bottom: 8px;">
+          LIVE DATA TRANSFORMATION SHOWCASE
+        </div>
+        
+        <div class="grid-2">
+          <div>
+            <div style="font-size: 11px; font-weight: 700; color: #94A3B8; margin-bottom: 4px;">🎙️ Raw Spoken Audio (What the customer said):</div>
+            <div style="background: #060913; border: 1px solid #1E293B; border-radius: 8px; padding: 10px; font-style: italic; color: #CBD5E1; font-size: 12px;">
+              &ldquo;Hey, the checkout button is totally unresponsive on mobile Safari and I can't apply my discount coupon code.&rdquo;
+            </div>
+          </div>
+
+          <div>
+            <div style="font-size: 11px; font-weight: 700; color: #34D399; margin-bottom: 4px;">✨ Gemini AI Structured Output (What your team receives):</div>
+            <div style="background: #060913; border: 1px solid rgba(16,185,129,0.3); border-radius: 8px; padding: 10px; font-size: 11px;">
+              <div><strong>Summary:</strong> Checkout button fails on iOS Safari; coupon validation blocked.</div>
+              <div><strong>Category:</strong> <span style="color:#EF4444;">Bug (Critical)</span> | <strong>CSAT:</strong> 1/5 ⭐</div>
+              <div><strong>Actionable Task:</strong> Fix touch listener on Checkout submit trigger and resolve coupon API timeout.</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top: 10px; padding-top: 8px; border-top: 1px solid #1E293B; display: flex; gap: 16px; font-size: 11px; color: #64748B;">
+          <span>📍 <strong>Route Journey:</strong> /products ➔ /cart ➔ /checkout</span>
+          <span>💻 <strong>Client:</strong> Mobile Safari • iOS 17.5 • 393×852</span>
+          <span>⚠️ <strong>Console Error:</strong> TypeError: Cannot read properties of undefined</span>
+        </div>
+      </div>
+
+      <!-- 6 Visualizer Animations -->
+      <div class="section-title" style="font-size: 15px;">🎨 6 Unboxed Futuristic Visualizers</div>
+      <div class="grid-3" style="gap: 10px;">
+        <div style="background:#0F172A; border:1px solid #1E293B; border-radius:8px; padding:8px 12px; font-size:11px;">
+          🌊 <strong>Siri Wave:</strong> Fluid holographic sine waves
+        </div>
+        <div style="background:#0F172A; border:1px solid #1E293B; border-radius:8px; padding:8px 12px; font-size:11px;">
+          🔮 <strong>Neural Sphere:</strong> 3D breathing particle cluster
+        </div>
+        <div style="background:#0F172A; border:1px solid #1E293B; border-radius:8px; padding:8px 12px; font-size:11px;">
+          🪐 <strong>Particle Ring:</strong> Orbiting quantum dust halo
+        </div>
+        <div style="background:#0F172A; border:1px solid #1E293B; border-radius:8px; padding:8px 12px; font-size:11px;">
+          🌌 <strong>Nebula Plasma:</strong> Ethereal cosmic gas cloud
+        </div>
+        <div style="background:#0F172A; border:1px solid #1E293B; border-radius:8px; padding:8px 12px; font-size:11px;">
+          🎗️ <strong>Solar Ribbon:</strong> Golden helical energy coil
+        </div>
+        <div style="background:#0F172A; border:1px solid #1E293B; border-radius:8px; padding:8px 12px; font-size:11px;">
+          ⚡ <strong>Laser Horizon:</strong> Dual neon equalizer beams
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bar">
+      <span>SayPulse AI Voice Intelligence • Confidential B2B Pitch Deck</span>
+      <span>Page 02 / 04</span>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════════════════
+       PAGE 3: ADMIN PORTAL, MULTI-TENANCY & ALERTS
+       ══════════════════════════════════════════════════════════════════════════ -->
+  <div class="page">
+    <div class="header-bar">
+      <div class="brand">
+        <div class="brand-logo">🎙️</div>
+        <span class="brand-name">SayPulse</span>
+      </div>
+      <div class="doc-type">Executive Dashboard & Multi-Tenancy</div>
+    </div>
+
+    <div>
+      <div class="badge-pill badge-amber">BUSINESS INTELLIGENCE & GOVERNANCE</div>
+      <h2 class="section-title">Isolated Workspaces, Master Superadmin & Real-Time Alerts</h2>
+      <p class="section-sub">Empowering product leaders, engineering heads, and executives with instant intelligence.</p>
+
+      <div class="grid-2" style="margin-bottom: 20px;">
+        <!-- Executive Dashboard Highlights -->
+        <div class="card">
+          <div style="font-weight: 700; color: #38BDF8; font-size: 14px; margin-bottom: 8px;">
+            📊 Executive Intelligence Portal
+          </div>
+          <ul class="bullet-list">
+            <li><strong>Live CSAT & Sentiment Trends:</strong> Track positive, frustrated, and critical customer pulses in real time.</li>
+            <li><strong>Top Friction Leaderboard:</strong> Automatically surfaces the exact URL routes where users struggle most.</li>
+            <li><strong>Category Distribution:</strong> Instant AI breakdown across Bugs, UX Friction, Feature Requests, and Performance.</li>
+            <li><strong>Interactive Slide-Over Drilldown:</strong> Inspect audio transcripts, console logs, and 4 AI tone rewrites.</li>
+          </ul>
+        </div>
+
+        <!-- Multi-Tenant Architecture -->
+        <div class="card">
+          <div style="font-weight: 700; color: #C084FC; font-size: 14px; margin-bottom: 8px;">
+            🏢 Enterprise Multi-Tenancy & Slugs
+          </div>
+          <ul class="bullet-list">
+            <li><strong>Dedicated Tenant URLs:</strong> Each client gets their own isolated workspace (<code>/admin/swiggy</code>, <code>/admin/stripe</code>).</li>
+            <li><strong>100% Data Isolation:</strong> Zero data leakage between accounts with scoped API keys.</li>
+            <li><strong>👑 Superadmin Master Center:</strong> Platform owners get a holistic cockpit to monitor all registered companies.</li>
+            <li><strong>Zero-Friction Onboarding:</strong> 10-second setup popup to provision fresh workspaces for new signups.</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Smart Alerts & WhatsApp Web Gateway -->
+      <div class="card card-highlight" style="margin-bottom: 20px;">
+        <div style="font-size: 11px; font-weight: 800; color: #FBBF24; letter-spacing: 0.5px; margin-bottom: 8px;">
+          TRANSACTIONAL ALERTS & PASSWORDLESS WHATSAPP OTP
+        </div>
+
+        <div class="grid-2">
+          <div>
+            <div style="font-weight: 700; color: #F8FAFC; margin-bottom: 4px;">📧 High-Fidelity Email Alert Engine</div>
+            <p style="color: #94A3B8; font-size: 11px; margin: 0 0 6px;">
+              Dispatches instant HTML cards to <code>alerts@yourcompany.com</code> when a 1-Star rating or critical bug occurs, complete with Gemini summaries and 1-click dashboard resolution links.
+            </p>
+          </div>
+
+          <div>
+            <div style="font-weight: 700; color: #F8FAFC; margin-bottom: 4px;">🔐 MHC WhatsApp Gateway (Login OTP)</div>
+            <p style="color: #94A3B8; font-size: 11px; margin: 0 0 6px;">
+              Passwordless, frictionless sign-in via WhatsApp 6-digit OTP codes with 10-minute expiry and anti-brute force security.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 1-Line Universal CDN Embed -->
+      <div class="section-title" style="font-size: 15px;">⚡ Zero-Build 1-Line Script Integration</div>
+      <p class="section-sub" style="margin-bottom: 8px;">Embed on any plain HTML, React, Next.js, Shopify, WordPress, or Webflow site in 30 seconds.</p>
+
+      <div class="code-box">
+        &lt;!-- Embed SayPulse Voice Widget with Shadow DOM isolation --&gt;<br>
+        &lt;script src="https://cdn.saypulse.ai/v1/saypulse.min.js"<br>
+        &nbsp;&nbsp;data-key="sp_live_acme_corp_8942"<br>
+        &nbsp;&nbsp;data-animation="siri-wave"<br>
+        &nbsp;&nbsp;data-position="bottom-right"<br>
+        &nbsp;&nbsp;defer&gt;&lt;/script&gt;
+      </div>
+    </div>
+
+    <div class="footer-bar">
+      <span>SayPulse AI Voice Intelligence • Confidential B2B Pitch Deck</span>
+      <span>Page 03 / 04</span>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════════════════
+       PAGE 4: PRICING, ROI & CALL TO ACTION
+       ══════════════════════════════════════════════════════════════════════════ -->
+  <div class="page">
+    <div class="header-bar">
+      <div class="brand">
+        <div class="brand-logo">🎙️</div>
+        <span class="brand-name">SayPulse</span>
+      </div>
+      <div class="doc-type">Commercial Tiers & ROI</div>
+    </div>
+
+    <div>
+      <div class="badge-pill badge-green">HIGH-IMPACT ROI & ENTERPRISE TIERS</div>
+      <h2 class="section-title">Measurable Business Impact & Commercial Plans</h2>
+      <p class="section-sub">Simple, transparent pricing designed to scale with your user volume.</p>
+
+      <!-- 3 Pricing Tiers -->
+      <div class="grid-3" style="margin-bottom: 24px;">
+        <!-- Starter -->
+        <div class="card">
+          <div style="font-size: 12px; font-weight: 700; color: #94A3B8;">STARTER</div>
+          <div style="font-size: 28px; font-weight: 800; color: #fff; margin: 4px 0 10px;">
+            $49 <span style="font-size: 12px; color: #64748B;">/ month</span>
+          </div>
+          <ul class="bullet-list" style="font-size: 11px;">
+            <li>Up to 500 Voice Notes / mo</li>
+            <li>Gemini 3.6 Flash AI Summaries</li>
+            <li>1 Workspace & 1 Live API Key</li>
+            <li>Standard Email Alerts</li>
+            <li>All 6 Wave Visualizers</li>
+          </ul>
+        </div>
+
+        <!-- Pro / Growth -->
+        <div class="card card-highlight">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div style="font-size: 12px; font-weight: 800; color: #06B6D4;">GROWTH (POPULAR)</div>
+            <span class="badge-pill badge-cyan" style="margin: 0;">RECOMMENDED</span>
+          </div>
+          <div style="font-size: 28px; font-weight: 800; color: #38BDF8; margin: 4px 0 10px;">
+            $149 <span style="font-size: 12px; color: #64748B;">/ month</span>
+          </div>
+          <ul class="bullet-list" style="font-size: 11px;">
+            <li>Up to 3,000 Voice Notes / mo</li>
+            <li>Advanced Telemetry & Console Logs</li>
+            <li>WhatsApp Login OTP Integration</li>
+            <li>Unlimited Team Admin Seats</li>
+            <li>Custom Brand Colors & Styling</li>
+            <li>Priority Email & Webhook Support</li>
+          </ul>
+        </div>
+
+        <!-- Enterprise -->
+        <div class="card">
+          <div style="font-size: 12px; font-weight: 700; color: #C084FC;">ENTERPRISE</div>
+          <div style="font-size: 28px; font-weight: 800; color: #fff; margin: 4px 0 10px;">
+            Custom <span style="font-size: 12px; color: #64748B;">/ annual</span>
+          </div>
+          <ul class="bullet-list" style="font-size: 11px;">
+            <li>Unlimited Voice Note Ingestion</li>
+            <li>Custom LLM Fine-Tuning & Prompts</li>
+            <li>Dedicated Database & Regional SLA</li>
+            <li>Jira / Slack / Linear Direct Sync</li>
+            <li>Custom Domain White-Labeling</li>
+            <li>24/7 Dedicated Account Manager</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Proven ROI Callout -->
+      <div class="card" style="background: linear-gradient(135deg, rgba(6,182,212,0.1) 0%, rgba(99,102,241,0.1) 100%); border-color: rgba(6,182,212,0.3); margin-bottom: 24px;">
+        <h3 style="font-size: 15px; font-weight: 800; color: #F8FAFC; margin: 0 0 8px;">
+          📈 The Business Return on Investment (ROI)
+        </h3>
+        <p style="color: #CBD5E1; font-size: 12px; line-height: 1.6; margin: 0;">
+          A typical digital product captures only <strong>0.5%</strong> of unhappy user experiences before they churn silently. With SayPulse, feedback capture rates jump to <strong>4.2%</strong>. Fixing a single high-friction checkout bug detected by voice telemetry can save tens of thousands of dollars in lost monthly ARR.
+        </p>
+      </div>
+
+      <!-- Call to Action Box -->
+      <div style="text-align: center; padding: 20px; background: #0F172A; border: 1px solid #1E293B; border-radius: 16px;">
+        <h3 style="font-size: 18px; font-weight: 800; color: #FFFFFF; margin: 0 0 6px;">
+          Ready to Hear What Your Customers Are Truly Saying?
+        </h3>
+        <p style="color: #94A3B8; font-size: 13px; margin: 0 0 14px;">
+          Schedule a 15-minute live platform demonstration or integrate our 1-line script today.
+        </p>
+        <div style="display: inline-flex; gap: 24px; font-size: 12px; color: #E2E8F0;">
+          <span>🌐 <strong>Live Platform:</strong> http://localhost:7100</span>
+          <span>📧 <strong>Partnerships:</strong> contact@saypulse.ai</span>
+          <span>📱 <strong>WhatsApp Support:</strong> +91 9013793020</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bar">
+      <span>SayPulse AI Voice Intelligence • Confidential B2B Pitch Deck</span>
+      <span>Page 04 / 04</span>
+    </div>
+  </div>
+
+</body>
+</html>

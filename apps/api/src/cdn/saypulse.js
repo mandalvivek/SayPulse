@@ -26,7 +26,7 @@
     if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
       apiBase = 'http://localhost:8000';
     } else {
-      apiBase = 'https://communication-dev.myhealthchapter.com';
+      apiBase = 'https://wa.nextgenmultiverse.com';
     }
   }
   apiBase = apiBase.replace(/\/+$/, '');
