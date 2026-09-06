@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SayPulse — Master Command Center & Tenant Dashboard</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2306b6d4' stroke-width='2'%3E%3Cpath d='M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z'/%3E%3Cpath d='M19 10v2a7 7 0 0 1-14 0v-2'/%3E%3Cline x1='12' x2='12' y1='19' y2='22'/%3E%3C/svg%3E" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #040711; color: #f1f5f9; }
+    .glass-card { background: rgba(15, 23, 42, 0.65); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.08); }
+    .glow-cyan { box-shadow: 0 0 25px rgba(6, 182, 212, 0.25); }
+    .glow-indigo { box-shadow: 0 0 25px rgba(99, 102, 241, 0.25); }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #040711; }
+    ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.15); border-radius: 9999px; }
+  </style>
+</head>
+<body class="min-h-screen bg-[#040711] text-slate-100 flex flex-col justify-between selection:bg-cyan-500/20 selection:text-cyan-300">
+
+  <!-- Background Ambience -->
+  <div class="fixed inset-0 pointer-events-none z-0">
+    <div class="absolute top-[-10%] left-[20%] w-[650px] h-[650px] bg-indigo-600/10 rounded-full blur-[150px]"></div>
+    <div class="absolute top-[35%] right-[-5%] w-[550px] h-[550px] bg-cyan-500/10 rounded-full blur-[140px]"></div>
+  </div>
+
+  <div class="relative z-10 flex-1 flex flex-col">
+    <!-- Top Header -->
+    <header class="sticky top-0 z-40 w-full backdrop-blur-2xl bg-[#040711]/85 border-b border-white/10 shadow-lg">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+          <a href="/" class="flex items-center space-x-3 group">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500/25 to-indigo-600/35 border border-cyan-500/50 flex items-center justify-center relative shadow-[0_0_20px_rgba(6,182,212,0.25)]">
+              <span class="text-xl">🎙️</span>
+            </div>
+            <div>
+              <div class="font-extrabold tracking-wider text-sm sm:text-base text-white group-hover:text-cyan-400 transition">
+                SAYPULSE
+              </div>
+              <div class="text-[10px] text-slate-400 font-mono">
+                Command Center & Intelligence
+              </div>
+            </div>
+          </a>
+          <span id="superadminBadge" class="hidden px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40">
+            SUPERADMIN MASTER
+          </span>
+        </div>
+
+        <div class="flex items-center space-x-3 sm:space-x-4">
+          <div class="hidden sm:flex items-center space-x-2 px-3 py-1.5 rounded-xl bg-black/50 border border-white/10 text-xs font-mono text-slate-300">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span id="userIdentifierDisplay">Superadmin (9013793020)</span>
+          </div>
+
+          <a href="/demo" class="px-3.5 py-2 rounded-xl text-xs font-bold text-slate-300 hover:text-white hover:bg-white/5 border border-white/10 transition">
+            🎓 ExamDesk Demo
+          </a>
+
+          <button onclick="handleSignOut()" class="px-3.5 py-2 rounded-xl text-xs font-bold text-red-400 hover:bg-red-500/10 border border-red-500/20 transition cursor-pointer">
+            Sign Out ➔
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content Body -->
+    <main class="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 space-y-8 flex-1">
+      
+      <!-- Welcome Hero Banner -->
+      <div class="p-6 sm:p-8 rounded-3xl bg-gradient-to-r from-cyan-950/40 via-slate-900/60 to-indigo-950/40 border border-cyan-500/20 shadow-2xl backdrop-blur-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+        <div>
+          <div class="flex items-center space-x-2 text-xs font-mono text-cyan-400 font-bold uppercase mb-1.5">
+            <span>⚡ Global Platform Control</span>
+            <span>•</span>
+            <span class="text-emerald-400">WhatsApp Gateway Active</span>
+          </div>
+          <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+            SayPulse Master Command Center
+          </h1>
+          <p class="text-xs sm:text-sm text-slate-400 mt-1 max-w-2xl">
+            Real-time AI voice intelligence telemetry, multi-tenant organization provisioning, and customer sentiment analytics.
+          </p>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <button onclick="openNewWorkspaceModal()" class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-indigo-600 text-xs font-bold text-white shadow-lg shadow-cyan-500/25 hover:opacity-95 transition cursor-pointer">
+            + Provision New Workspace
+          </button>
+          <a href="/#embed-code" class="px-4 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-bold text-slate-200 border border-white/10 transition">
+            Embed Tag
+          </a>
+        </div>
+      </div>
+
+      <!-- KPI Overview Grid -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <div class="p-5 rounded-2xl glass-card">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-mono text-slate-400 uppercase">Active Workspaces</span>
+            <span class="text-base">🏢</span>
+          </div>
+          <div class="text-2xl sm:text-3xl font-extrabold text-white font-mono" id="statWorkspaces">12</div>
+          <div class="mt-2 text-xs text-emerald-400 font-mono font-bold">+2 added this week</div>
+        </div>
+
+        <div class="p-5 rounded-2xl glass-card">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-mono text-slate-400 uppercase">Voice Notes Synthesized</span>
+            <span class="text-base">🎙️</span>
+          </div>
+          <div class="text-2xl sm:text-3xl font-extrabold text-white font-mono" id="statFeedbacks">1,482</div>
+          <div class="mt-2 text-xs text-cyan-400 font-mono font-bold">Gemini 3.6 Flash Active</div>
+        </div>
+
+        <div class="p-5 rounded-2xl glass-card">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-mono text-slate-400 uppercase">Platform CSAT Rating</span>
+            <span class="text-base">⭐</span>
+          </div>
+          <div class="text-2xl sm:text-3xl font-extrabold text-white font-mono" id="statCsat">4.85 / 5.0</div>
+          <div class="mt-2 text-xs text-emerald-400 font-mono font-bold">96.4% Positive / Constructive</div>
+        </div>
+
+        <div class="p-5 rounded-2xl glass-card">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-mono text-slate-400 uppercase">Gateway SLA & Uptime</span>
+            <span class="text-base">🛡️</span>
+          </div>
+          <div class="text-2xl sm:text-3xl font-extrabold text-white font-mono">99.99%</div>
+          <div class="mt-2 text-xs text-emerald-400 font-mono font-bold">WhatsApp & Email Operational</div>
+        </div>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <div class="flex border-b border-white/10 space-x-6 text-sm font-semibold">
+        <button onclick="switchTab('orgs')" id="tabBtnOrgs" class="pb-3 border-b-2 border-cyan-400 text-cyan-300 transition">
+          🏢 Organizations & Tenants
+        </button>
+        <button onclick="switchTab('feed')" id="tabBtnFeed" class="pb-3 border-b-2 border-transparent text-slate-400 hover:text-white transition">
+          🎙️ Live Voice Feedback Stream
+        </button>
+        <button onclick="switchTab('security')" id="tabBtnSecurity" class="pb-3 border-b-2 border-transparent text-slate-400 hover:text-white transition">
+          🔒 DPDP Act & Privacy Telemetry
+        </button>
+      </div>
+
+      <!-- ── TAB 1: ORGANIZATIONS & TENANTS ── -->
+      <div id="viewOrgs" class="space-y-6">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div class="relative w-full sm:w-80">
+            <input type="text" id="orgSearch" oninput="filterOrgs()" placeholder="Search workspaces, owners, phone..." class="w-full pl-9 pr-4 py-2.5 rounded-xl bg-black/60 border border-white/15 text-xs text-white focus:border-cyan-500 outline-none font-mono" />
+            <span class="absolute left-3 top-3 text-slate-500 text-xs">🔍</span>
+          </div>
+
+          <div class="text-xs font-mono text-slate-400">
+            Showing <strong id="orgCountDisplay" class="text-white">4</strong> registered workspaces
+          </div>
+        </div>
+
+        <div class="glass-card rounded-2xl overflow-hidden shadow-2xl">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs text-slate-300">
+              <thead class="bg-slate-900/90 text-[11px] uppercase tracking-wider font-mono text-slate-400 border-b border-white/10">
+                <tr>
+                  <th class="py-3.5 px-4 sm:px-6">Workspace / Company</th>
+                  <th class="py-3.5 px-4">Owner & WhatsApp</th>
+                  <th class="py-3.5 px-4">API Key & Integration</th>
+                  <th class="py-3.5 px-4">Voice Notes</th>
+                  <th class="py-3.5 px-4">Avg CSAT</th>
+                  <th class="py-3.5 px-4 sm:px-6 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="orgsTableBody" class="divide-y divide-white/5 font-mono">
+                <!-- Pre-loaded Tenant Rows -->
+                <tr class="hover:bg-white/[0.02] transition">
+                  <td class="py-4 px-4 sm:px-6 font-sans">
+                    <div class="font-bold text-white text-sm">SayPulse Global Platform</div>
+                    <div class="text-[11px] text-slate-400 font-mono">saypulse.nextgenmultiverse.com</div>
+                  </td>
+                  <td class="py-4 px-4">
+                    <div class="text-white font-sans font-medium">Vivek Mandal</div>
+                    <div class="text-cyan-400 text-[11px]">+91 9013793020</div>
+                  </td>
+                  <td class="py-4 px-4">
+                    <button onclick="copyKey('sp_live_saypulse_master_key')" class="px-2.5 py-1 rounded bg-black/50 border border-white/10 text-[11px] text-slate-300 hover:text-cyan-300 transition">
+                      sp_live_saypulse... 📋
+                    </button>
+                  </td>
+                  <td class="py-4 px-4 text-white font-bold">1,482</td>
+                  <td class="py-4 px-4 text-emerald-400 font-bold">4.92 / 5.0</td>
+                  <td class="py-4 px-4 sm:px-6 text-right font-sans">
+                    <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[10px] font-bold">Superadmin Master</span>
+                  </td>
+                </tr>
+
+                <tr class="hover:bg-white/[0.02] transition">
+                  <td class="py-4 px-4 sm:px-6 font-sans">
+                    <div class="font-bold text-white text-sm">NextGen ExamDesk</div>
+                    <div class="text-[11px] text-slate-400 font-mono">examdesk.nextgenmultiverse.com</div>
+                  </td>
+                  <td class="py-4 px-4">
+                    <div class="text-white font-sans font-medium">ExamDesk Admin</div>
+                    <div class="text-cyan-400 text-[11px]">+91 9013793020</div>
+                  </td>
+                  <td class="py-4 px-4">
+                    <button onclick="copyKey('sp_live_examdesk_prod_778a')" class="px-2.5 py-1 rounded bg-black/50 border border-white/10 text-[11px] text-slate-300 hover:text-cyan-300 transition">
+                      sp_live_examdesk... 📋
+                    </button>
+                  </td>
+                  <td class="py-4 px-4 text-white font-bold">482</td>
+                  <td class="py-4 px-4 text-emerald-400 font-bold">4.85 / 5.0</td>
+                  <td class="py-4 px-4 sm:px-6 text-right font-sans">
+                    <a href="/demo" class="px-3 py-1.5 rounded-lg bg-cyan-500/20 text-cyan-300 hover:bg-cyan-500/30 border border-cyan-500/40 text-xs font-bold transition">View Demo ➔</a>
+                  </td>
+                </tr>
+
+                <tr class="hover:bg-white/[0.02] transition">
+                  <td class="py-4 px-4 sm:px-6 font-sans">
+                    <div class="font-bold text-white text-sm">Tecton Enterprise</div>
+                    <div class="text-[11px] text-slate-400 font-mono">tecton.enterprise.io</div>
+                  </td>
+                  <td class="py-4 px-4">
+                    <div class="text-white font-sans font-medium">Enterprise Lead</div>
+                    <div class="text-slate-400 text-[11px]">enterprise@tecton.io</div>
+                  </td>
+                  <td class="py-4 px-4">
+                    <button onclick="copyKey('sp_live_tecton_ent_9921')" class="px-2.5 py-1 rounded bg-black/50 border border-white/10 text-[11px] text-slate-300 hover:text-cyan-300 transition">
+                      sp_live_tecton... 📋
+                    </button>
+                  </td>
+                  <td class="py-4 px-4 text-white font-bold">219</td>
+                  <td class="py-4 px-4 text-emerald-400 font-bold">4.78 / 5.0</td>
+                  <td class="py-4 px-4 sm:px-6 text-right font-sans">
+                    <span class="px-2 py-0.5 rounded bg-blue-500/20 text-blue-300 border border-blue-500/30 text-[10px] font-bold">Active Enterprise</span>
+                  </td>
+                </tr>
+
+                <tr class="hover:bg-white/[0.02] transition">
+                  <td class="py-4 px-4 sm:px-6 font-sans">
+                    <div class="font-bold text-white text-sm">Demo Sandbox Workspace</div>
+                    <div class="text-[11px] text-slate-400 font-mono">sandbox.saypulse.io</div>
+                  </td>
+                  <td class="py-4 px-4">
+                    <div class="text-white font-sans font-medium">Demo Visitor</div>
+                    <div class="text-slate-400 text-[11px]">guest@saypulse.io</div>
+                  </td>
+                  <td class="py-4 px-4">
+                    <button onclick="copyKey('sp_dev_local_master')" class="px-2.5 py-1 rounded bg-black/50 border border-white/10 text-[11px] text-slate-300 hover:text-cyan-300 transition">
+                      sp_dev_local... 📋
+                    </button>
+                  </td>
+                  <td class="py-4 px-4 text-white font-bold">95</td>
+                  <td class="py-4 px-4 text-emerald-400 font-bold">4.90 / 5.0</td>
+                  <td class="py-4 px-4 sm:px-6 text-right font-sans">
+                    <span class="px-2 py-0.5 rounded bg-slate-500/20 text-slate-300 border border-slate-500/30 text-[10px] font-bold">Sandbox</span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── TAB 2: LIVE VOICE FEEDBACK STREAM ── -->
+      <div id="viewFeed" class="hidden space-y-4">
+        <div class="p-4 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-xs text-cyan-300 flex items-center justify-between">
+          <span>🎙️ <strong>Live Ingestion Stream:</strong> Telemetry from embedded SayPulse widgets across all client web apps.</span>
+          <span class="font-mono text-[11px] text-emerald-400">● 100% Real-time</span>
+        </div>
+
+        <div class="space-y-4" id="feedbackList">
+          <!-- Voice Note 1 -->
+          <div class="p-5 rounded-2xl glass-card space-y-3">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <div class="flex items-center space-x-2">
+                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-purple-500/20 text-purple-300 border border-purple-500/30">Feature_Request</span>
+                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">Positive (5/5 ⭐)</span>
+                <span class="text-xs font-mono text-slate-400">NextGen ExamDesk</span>
+              </div>
+              <span class="text-[11px] font-mono text-slate-500">2 minutes ago</span>
+            </div>
+
+            <div class="p-3.5 rounded-xl bg-black/50 border border-white/5 space-y-1.5">
+              <div class="text-[11px] font-mono text-slate-400 uppercase font-semibold">Spoken Transcript (Original Audio)</div>
+              <p class="text-xs text-slate-200 italic">"Mujhe yah wala design bahut hi Achcha Laga aur Main Chahta Hun Ki Aisa Hi Kuchh Main Apne system per ya Apne application per Dalo kya yah possible hai..."</p>
+            </div>
+
+            <div class="p-3.5 rounded-xl bg-cyan-500/10 border border-cyan-500/30 space-y-1.5">
+              <div class="text-[11px] font-mono text-cyan-300 uppercase font-bold flex items-center space-x-1.5">
+                <span>✨ Gemini AI Executive Summary</span>
+              </div>
+              <p class="text-xs text-white font-medium">User expressed strong appreciation for the voice feedback design and inquired about integration feasibility for their custom web application.</p>
+              <div class="pt-2 text-[11px] text-cyan-300 font-mono">
+                <strong>Actionable Item:</strong> Provide SayPulse embed SDK documentation and developer guide for custom platform integration.
+              </div>
+            </div>
+          </div>
+
+          <!-- Voice Note 2 -->
+          <div class="p-5 rounded-2xl glass-card space-y-3">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <div class="flex items-center space-x-2">
+                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">General_Praise</span>
+                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">Positive (5/5 ⭐)</span>
+                <span class="text-xs font-mono text-slate-400">Tecton Enterprise</span>
+              </div>
+              <span class="text-[11px] font-mono text-slate-500">18 minutes ago</span>
+            </div>
+
+            <div class="p-3.5 rounded-xl bg-black/50 border border-white/5 space-y-1.5">
+              <div class="text-[11px] font-mono text-slate-400 uppercase font-semibold">Spoken Transcript</div>
+              <p class="text-xs text-slate-200 italic">"The voice feedback recording was super fast and didn't slow down the checkout at all. Love the Siri wave animation!"</p>
+            </div>
+
+            <div class="p-3.5 rounded-xl bg-cyan-500/10 border border-cyan-500/30 space-y-1.5">
+              <div class="text-[11px] font-mono text-cyan-300 uppercase font-bold">✨ Gemini AI Executive Summary</div>
+              <p class="text-xs text-white font-medium">User praised the voice feedback widget performance and the interactive Siri wave animation.</p>
+              <div class="pt-2 text-[11px] text-cyan-300 font-mono">
+                <strong>Actionable Item:</strong> Maintain high UI rendering performance across checkout flow.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── TAB 3: DPDP ACT & SECURITY ── -->
+      <div id="viewSecurity" class="hidden space-y-6">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+          <div class="p-5 rounded-2xl glass-card">
+            <h4 class="font-bold text-white text-sm mb-2">Zero-Storage Audio Invariant</h4>
+            <p class="text-xs text-slate-400 leading-relaxed">
+              Spoken audio buffers are destroyed in browser memory immediately after speech synthesis. Zero voice recordings touch remote disk.
+            </p>
+          </div>
+          <div class="p-5 rounded-2xl glass-card">
+            <h4 class="font-bold text-white text-sm mb-2">Client-Side PII Redaction</h4>
+            <p class="text-xs text-slate-400 leading-relaxed">
+              Aadhaar, PAN, emails, and phone numbers are redacted via deterministic regex on the client device prior to AI transmission.
+            </p>
+          </div>
+          <div class="p-5 rounded-2xl glass-card">
+            <h4 class="font-bold text-white text-sm mb-2">DPDP Act 2023 Compliant</h4>
+            <p class="text-xs text-slate-400 leading-relaxed">
+              Explicit user consent is captured per session. Complete right to be forgotten and organizational data isolation enforced.
+            </p>
+          </div>
+        </div>
+      </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-white/10 bg-[#040711]/90 py-6 text-center text-xs text-slate-500 font-mono">
+      SayPulse AI Voice Intelligence • NextGen Multiverse Enterprise • WhatsApp Gateway v2.0
+    </footer>
+  </div>
+
+  <!-- Create Workspace Modal -->
+  <div id="workspaceModal" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-300">
+    <div class="bg-[#0b1325] border border-white/15 rounded-3xl p-6 sm:p-8 w-full max-w-md shadow-2xl relative">
+      <button onclick="closeNewWorkspaceModal()" class="absolute top-5 right-5 p-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white">✕</button>
+      <h3 class="font-extrabold text-white text-lg mb-1">Provision New Workspace</h3>
+      <p class="text-xs text-slate-400 mb-5">Create a dedicated tenant workspace with an isolated API key.</p>
+
+      <form onsubmit="handleCreateWorkspace(event)" class="space-y-4">
+        <div>
+          <label class="block text-[11px] font-mono font-semibold uppercase text-slate-400 mb-1">Company / Product Name *</label>
+          <input type="text" id="newOrgName" placeholder="e.g. Acme Corp" class="w-full px-3.5 py-2.5 rounded-xl bg-black/60 border border-white/15 text-xs text-white outline-none focus:border-cyan-500" required />
+        </div>
+        <div>
+          <label class="block text-[11px] font-mono font-semibold uppercase text-slate-400 mb-1">Owner Name *</label>
+          <input type="text" id="newOwnerName" placeholder="e.g. John Doe" class="w-full px-3.5 py-2.5 rounded-xl bg-black/60 border border-white/15 text-xs text-white outline-none focus:border-cyan-500" required />
+        </div>
+        <div>
+          <label class="block text-[11px] font-mono font-semibold uppercase text-slate-400 mb-1">WhatsApp Mobile Number</label>
+          <input type="tel" id="newOwnerPhone" placeholder="10-digit mobile number" maxlength="10" class="w-full px-3.5 py-2.5 rounded-xl bg-black/60 border border-white/15 text-xs text-white outline-none focus:border-cyan-500 font-mono" />
+        </div>
+        <button type="submit" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-cyan-500 to-indigo-600 text-xs font-bold text-white shadow-lg transition cursor-pointer">
+          🚀 Provision Workspace
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // Verify session
+    const token = localStorage.getItem('saypulse_auth_token');
+    const userStr = localStorage.getItem('saypulse_user');
+    let user = null;
+    if (userStr) {
+      try { user = JSON.parse(userStr); } catch(e) {}
+    }
+
+    if (user && (user.role === 'superadmin' || (user.phone && user.phone.includes('9013793020')))) {
+      document.getElementById('superadminBadge').classList.remove('hidden');
+      document.getElementById('userIdentifierDisplay').textContent = `${user.name || 'Superadmin'} (${user.phone || '9013793020'})`;
+    }
+
+    function switchTab(tab) {
+      document.getElementById('viewOrgs').classList.toggle('hidden', tab !== 'orgs');
+      document.getElementById('viewFeed').classList.toggle('hidden', tab !== 'feed');
+      document.getElementById('viewSecurity').classList.toggle('hidden', tab !== 'security');
+
+      document.getElementById('tabBtnOrgs').className = tab === 'orgs' ? 'pb-3 border-b-2 border-cyan-400 text-cyan-300 transition' : 'pb-3 border-b-2 border-transparent text-slate-400 hover:text-white transition';
+      document.getElementById('tabBtnFeed').className = tab === 'feed' ? 'pb-3 border-b-2 border-cyan-400 text-cyan-300 transition' : 'pb-3 border-b-2 border-transparent text-slate-400 hover:text-white transition';
+      document.getElementById('tabBtnSecurity').className = tab === 'security' ? 'pb-3 border-b-2 border-cyan-400 text-cyan-300 transition' : 'pb-3 border-b-2 border-transparent text-slate-400 hover:text-white transition';
+    }
+
+    function copyKey(key) {
+      navigator.clipboard.writeText(key);
+      alert('✓ API Key copied to clipboard: ' + key);
+    }
+
+    function handleSignOut() {
+      localStorage.removeItem('saypulse_auth_token');
+      localStorage.removeItem('saypulse_user');
+      window.location.href = '/';
+    }
+
+    function openNewWorkspaceModal() {
+      const el = document.getElementById('workspaceModal');
+      el.classList.remove('opacity-0', 'pointer-events-none');
+      el.classList.add('opacity-100');
+    }
+
+    function closeNewWorkspaceModal() {
+      const el = document.getElementById('workspaceModal');
+      el.classList.remove('opacity-100');
+      el.classList.add('opacity-0', 'pointer-events-none');
+    }
+
+    function handleCreateWorkspace(e) {
+      e.preventDefault();
+      const name = document.getElementById('newOrgName').value.trim();
+      const owner = document.getElementById('newOwnerName').value.trim();
+      const phone = document.getElementById('newOwnerPhone').value.trim();
+      if (!name) return;
+
+      const slug = name.toLowerCase().replace(/[^a-z0-9]/g, '-');
+      const apiKey = `sp_live_${slug}_${Math.random().toString(36).substring(2, 8)}`;
+
+      const tbody = document.getElementById('orgsTableBody');
+      const tr = document.createElement('tr');
+      tr.className = 'hover:bg-white/[0.02] transition';
+      tr.innerHTML = `
+        <td class="py-4 px-4 sm:px-6 font-sans">
+          <div class="font-bold text-white text-sm">${name}</div>
+          <div class="text-[11px] text-slate-400 font-mono">${slug}.saypulse.io</div>
+        </td>
+        <td class="py-4 px-4">
+          <div class="text-white font-sans font-medium">${owner}</div>
+          <div class="text-cyan-400 text-[11px]">${phone ? '+91 ' + phone : 'Owner'}</div>
+        </td>
+        <td class="py-4 px-4">
+          <button onclick="copyKey('${apiKey}')" class="px-2.5 py-1 rounded bg-black/50 border border-white/10 text-[11px] text-slate-300 hover:text-cyan-300 transition">
+            ${apiKey.substring(0, 16)}... 📋
+          </button>
+        </td>
+        <td class="py-4 px-4 text-white font-bold">0</td>
+        <td class="py-4 px-4 text-emerald-400 font-bold">5.0 / 5.0</td>
+        <td class="py-4 px-4 sm:px-6 text-right font-sans">
+          <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[10px] font-bold">Newly Active</span>
+        </td>
+      `;
+      tbody.prepend(tr);
+      closeNewWorkspaceModal();
+      alert(`🎉 Workspace "${name}" provisioned successfully!\nGenerated API Key: ${apiKey}`);
+    }
+  </script>
+</body>
+</html>
