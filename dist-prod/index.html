@@ -1,197 +1,1123 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SayPulse — Next-Gen AI Voice Feedback Platform</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SayPulse — AI Voice Intelligence & Telemetry Platform | NextGen Multiverse</title>
+  <meta name="description" content="SayPulse replaces static feedback forms with an unboxed, futuristic voice widget powered by Google Gemini 3.6 Flash AI and instant WhatsApp Login OTP." />
+  <link rel="canonical" href="https://saypulse.nextgenmultiverse.com" />
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2306b6d4' stroke-width='2'%3E%3Cpath d='M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z'/%3E%3Cpath d='M19 10v2a7 7 0 0 1-14 0v-2'/%3E%3Cline x1='12' x2='12' y1='19' y2='22'/%3E%3C/svg%3E" />
+
+  <!-- OpenGraph (WhatsApp, LinkedIn, Social) -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://saypulse.nextgenmultiverse.com" />
+  <meta property="og:title" content="SayPulse — Next-Gen AI Voice Feedback Platform" />
+  <meta property="og:description" content="Turn 15 seconds of spoken customer frustration into instant actionable product growth with Gemini 3.6 Flash AI & automated telemetry." />
+  <meta property="og:image" content="https://saypulse.nextgenmultiverse.com/SayPulse_Pitch_Deck.html" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="SayPulse — Next-Gen AI Voice Feedback Platform" />
+  <meta name="twitter:description" content="Turn 15 seconds of spoken customer feedback into instant engineering tasks and CSAT intelligence." />
+
+  <!-- Preconnect Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
+      darkMode: 'class',
       theme: {
         extend: {
           colors: {
-            brand: {
-              cyan: '#06B6D4',
-              indigo: '#6366F1',
-              dark: '#0B1120',
-              card: '#0F172A',
-              border: '#1E293B',
-            }
+            deep: {
+              950: '#040711',
+              900: '#080d1a',
+              850: '#0b1325',
+              800: '#0f172a',
+            },
+            cyanAccent: '#06b6d4',
+            skyAccent: '#38bdf8',
+            indigoAccent: '#6366f1',
+            emeraldAccent: '#10b981',
+            amberAccent: '#f59e0b',
           },
           fontFamily: {
-            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            sans: ['"Plus Jakarta Sans"', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
             mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          animation: {
+            'pulse-subtle': 'pulseSubtle 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            'glow-drift': 'glowDrift 12s ease-in-out infinite alternate',
+          },
+          keyframes: {
+            pulseSubtle: {
+              '0%, 100%': { opacity: 0.2, transform: 'scale(1)' },
+              '50%': { opacity: 0.35, transform: 'scale(1.05)' },
+            },
+            glowDrift: {
+              '0%': { transform: 'translate(0px, 0px) scale(1)' },
+              '50%': { transform: 'translate(30px, -20px) scale(1.1)' },
+              '100%': { transform: 'translate(-20px, 25px) scale(0.95)' },
+            },
           }
         }
       }
     }
   </script>
+
   <style>
-    body { background-color: #0B1120; color: #F8FAFC; }
-    .glow-cyan { background: radial-gradient(circle, rgba(6,182,212,0.15) 0%, rgba(6,182,212,0) 70%); }
-    .glow-indigo { background: radial-gradient(circle, rgba(99,102,241,0.15) 0%, rgba(99,102,241,0) 70%); }
+    * {
+      border-color: rgba(255, 255, 255, 0.08);
+      -webkit-font-smoothing: antialiased;
+    }
+    body {
+      background-color: #040711;
+      color: #f1f5f9;
+      overflow-x: hidden;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    ::selection {
+      background: rgba(6, 182, 212, 0.25);
+      color: #38bdf8;
+    }
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #040711;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(6, 182, 212, 0.4);
+    }
+
+    .glass-card {
+      position: relative;
+      background: rgba(15, 23, 42, 0.65);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      overflow: hidden;
+    }
+    .glass-card:hover {
+      transform: translateY(-3px);
+      border-color: rgba(6, 182, 212, 0.35);
+      box-shadow: 0 16px 40px -10px rgba(0, 0, 0, 0.8), 0 0 25px -5px rgba(6, 182, 212, 0.2);
+    }
+
+    .bg-grid-pattern {
+      background-size: 40px 40px;
+      background-image: 
+        linear-gradient(to right, rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+    }
+
+    .shimmer-btn {
+      position: relative;
+      overflow: hidden;
+    }
+    .shimmer-btn::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(60deg, transparent 20%, rgba(255, 255, 255, 0.18) 25%, transparent 30%);
+      transform: rotate(30deg);
+      animation: shimmerSweep 6s infinite;
+    }
+    @keyframes shimmerSweep {
+      0% { transform: translate(-100%, -100%) rotate(30deg); }
+      20%, 100% { transform: translate(100%, 100%) rotate(30deg); }
+    }
+
+    .typewriter-cursor {
+      display: inline-block;
+      width: 3px;
+      background-color: #06b6d4;
+      margin-left: 4px;
+      animation: blink 0.9s infinite;
+      vertical-align: baseline;
+      height: 0.85em;
+    }
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
   </style>
 </head>
-<body class="min-h-screen relative overflow-x-hidden font-sans selection:bg-cyan-500/30 selection:text-cyan-200">
+<body class="bg-deep-950 text-slate-100 min-h-screen relative selection:bg-cyan-500/20 selection:text-cyan-300 flex flex-col justify-between">
 
-  <!-- Ambient Glow -->
-  <div class="fixed top-0 right-0 w-[500px] h-[500px] glow-cyan pointer-events-none -z-10"></div>
-  <div class="fixed bottom-0 left-0 w-[500px] h-[500px] glow-indigo pointer-events-none -z-10"></div>
+  <!-- Ambient Light Orbs -->
+  <div class="fixed inset-0 overflow-hidden pointer-events-none z-0">
+    <div class="absolute top-[-10%] left-[20%] w-[650px] h-[650px] bg-indigo-600/10 rounded-full blur-[150px] animate-glow-drift"></div>
+    <div class="absolute top-[35%] right-[-5%] w-[550px] h-[550px] bg-cyan-500/10 rounded-full blur-[140px] animate-glow-drift" style="animation-delay: -4s;"></div>
+    <div class="absolute bottom-[10%] left-[10%] w-[600px] h-[600px] bg-emerald-500/5 rounded-full blur-[160px] animate-glow-drift" style="animation-delay: -8s;"></div>
+  </div>
 
-  <!-- Navbar -->
-  <header class="border-b border-slate-800/80 bg-slate-950/60 backdrop-blur-md sticky top-0 z-50">
-    <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-      <div class="flex items-center gap-3">
-        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-cyan-500 to-indigo-500 flex items-center justify-center text-lg shadow-lg shadow-cyan-500/20">
-          🎙️
+  <!-- Background Grid Pattern -->
+  <div class="fixed inset-0 bg-grid-pattern pointer-events-none z-0 opacity-70"></div>
+
+  <!-- ══════════════════════════════════════════════════════════════════════════
+       STICKY INSTITUTIONAL HEADER (Clean Navbar: Brand + Sign In + Get Started + Burger)
+       ══════════════════════════════════════════════════════════════════════════ -->
+  <header class="sticky top-0 z-40 w-full backdrop-blur-2xl bg-deep-950/85 border-b border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.6)]">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 sm:py-4 flex items-center justify-between">
+      
+      <!-- Brand Anchor & Identity -->
+      <a href="#" class="flex items-center space-x-3 group">
+        <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-gradient-to-br from-cyanAccent/25 via-sky-500/15 to-indigoAccent/35 border border-cyanAccent/50 flex items-center justify-center relative shadow-[0_0_20px_rgba(6,182,212,0.25)] group-hover:shadow-[0_0_30px_rgba(6,182,212,0.5)] transition-all group-hover:scale-105">
+          <svg class="w-5 h-5 sm:w-6 sm:h-6 text-cyanAccent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" />
+            <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+            <line x1="12" x2="12" y1="19" y2="22" />
+          </svg>
+          <div class="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-cyanAccent shadow-[0_0_8px_#06b6d4] animate-ping"></div>
+          <div class="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-cyanAccent"></div>
         </div>
-        <div class="flex items-center gap-2">
-          <span class="text-xl font-extrabold tracking-tight text-white">SayPulse</span>
-          <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 uppercase tracking-widest">Production CDN</span>
+        
+        <div>
+          <div class="font-extrabold tracking-wider text-sm sm:text-base text-white group-hover:text-cyanAccent transition-colors">
+            SAYPULSE
+          </div>
+          <div class="text-[10px] sm:text-[11px] text-slate-400 font-mono tracking-wide">
+            A NextGen Multiverse Company
+          </div>
         </div>
-      </div>
+      </a>
 
-      <div class="flex items-center gap-4">
-        <a href="SayPulse_Business_Pitch_Deck.pdf" target="_blank" class="hidden sm:inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg border border-slate-700 bg-slate-800/60 text-xs font-semibold text-slate-300 hover:text-white hover:border-slate-600 transition">
-          📄 Download Pitch Deck (PDF)
-        </a>
-        <a href="https://github.com/mandalvivek/SayPulse" target="_blank" class="px-4 py-1.5 rounded-lg bg-gradient-to-r from-cyan-500 to-indigo-600 text-xs font-bold text-white shadow-md shadow-cyan-500/20 hover:opacity-95 transition">
-          GitHub Repo ↗
-        </a>
+      <!-- Right Header Actions (Sign In, Get Started, Burger Menu ONLY) -->
+      <div class="flex items-center space-x-3 sm:space-x-4">
+        
+        <!-- Sign In Action Button -->
+        <button onclick="openAuthModal('signin')" class="px-3.5 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-bold text-slate-300 hover:text-white hover:bg-white/5 transition-all">
+          Sign In
+        </button>
+
+        <!-- Get Started Shimmer Button -->
+        <button onclick="openAuthModal('register')" class="shimmer-btn px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 via-sky-500 to-indigo-600 text-xs sm:text-sm font-bold text-white shadow-[0_0_20px_rgba(6,182,212,0.35)] hover:shadow-[0_0_30px_rgba(6,182,212,0.55)] transition-all">
+          Get Started
+        </button>
+
+        <!-- Minimalist Burger Menu Trigger -->
+        <button id="openDrawerBtn" aria-label="Open directory drawer" class="p-2.5 sm:p-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/15 text-slate-300 hover:text-white transition-all focus:outline-none">
+          <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
       </div>
     </div>
   </header>
 
-  <!-- Hero Section -->
-  <main class="max-w-7xl mx-auto px-6 py-16 sm:py-24">
-    <div class="text-center max-w-3xl mx-auto space-y-6">
-      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-xs font-bold tracking-wide">
-        ✨ POWERED BY GOOGLE GEMINI 3.6 FLASH & WHATSAPP OTP
-      </div>
-      <h1 class="text-4xl sm:text-6xl font-extrabold tracking-tight leading-tight sm:leading-none text-white">
-        Turn 15 Seconds of Spoken Feedback into <span class="bg-gradient-to-r from-cyan-400 via-sky-300 to-indigo-400 bg-clip-text text-transparent">Instant Product Growth</span>
-      </h1>
-      <p class="text-slate-400 text-base sm:text-lg leading-relaxed">
-        SayPulse replaces tedious text feedback forms with an unboxed, futuristic voice widget. Our AI synthesizes audio into actionable engineering tasks and captures full technical diagnostics in under 1.5 seconds.
-      </p>
+  <!-- ══════════════════════════════════════════════════════════════════════════
+       RIGHT-TO-LEFT SLIDE-OVER DRAWER
+       ══════════════════════════════════════════════════════════════════════════ -->
+  <div id="drawerBackdrop" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm transition-opacity duration-300 opacity-0 pointer-events-none"></div>
 
-      <div class="flex flex-wrap items-center justify-center gap-4 pt-4">
-        <button onclick="window.__SAYPULSE_TRIGGER_MIC && window.__SAYPULSE_TRIGGER_MIC()" class="px-6 py-3 rounded-xl bg-gradient-to-r from-cyan-500 to-indigo-600 text-sm font-bold text-white shadow-lg shadow-cyan-500/25 hover:scale-105 active:scale-95 transition">
-          🎙️ Test Live Voice Widget
-        </button>
-        <a href="#embed-code" class="px-6 py-3 rounded-xl border border-slate-700 bg-slate-900/60 text-sm font-bold text-slate-300 hover:text-white hover:border-slate-500 transition">
-          ⚡ Get 1-Line Embed Script
-        </a>
-      </div>
-    </div>
-
-    <!-- Live Metric Cards -->
-    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-20">
-      <div class="p-6 rounded-2xl bg-slate-900/80 border border-slate-800 text-center">
-        <div class="text-3xl font-extrabold text-cyan-400 mb-1">4.2x</div>
-        <div class="text-xs font-medium text-slate-400">Feedback Volume Increase</div>
-      </div>
-      <div class="p-6 rounded-2xl bg-slate-900/80 border border-slate-800 text-center">
-        <div class="text-3xl font-extrabold text-emerald-400 mb-1">68%</div>
-        <div class="text-xs font-medium text-slate-400">Faster Bug Resolution</div>
-      </div>
-      <div class="p-6 rounded-2xl bg-slate-900/80 border border-slate-800 text-center">
-        <div class="text-3xl font-extrabold text-purple-400 mb-1">&lt;1.5s</div>
-        <div class="text-xs font-medium text-slate-400">Gemini AI Synthesis Latency</div>
-      </div>
-      <div class="p-6 rounded-2xl bg-slate-900/80 border border-slate-800 text-center">
-        <div class="text-3xl font-extrabold text-amber-400 mb-1">1-Line</div>
-        <div class="text-xs font-medium text-slate-400">Universal Embed Script</div>
-      </div>
-    </div>
-
-    <!-- Embed Code Generator Section -->
-    <section id="embed-code" class="mt-24 p-8 sm:p-10 rounded-3xl bg-slate-900/90 border border-slate-800 shadow-2xl">
-      <div class="max-w-3xl">
-        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/30 text-indigo-400 text-xs font-bold mb-3">
-          ⚡ UNIVERSAL INTEGRATION
+  <div id="sideDrawer" class="fixed top-0 right-0 bottom-0 z-50 w-80 sm:w-96 max-w-[85vw] bg-[#070b15] border-l border-white/10 shadow-2xl p-6 sm:p-8 flex flex-col justify-between transform translate-x-full transition-transform duration-300 ease-in-out">
+    <div>
+      <!-- Drawer Top Bar -->
+      <div class="flex items-center justify-between pb-6 border-b border-white/10">
+        <div class="flex items-center space-x-2.5">
+          <div class="w-8 h-8 rounded-lg bg-cyanAccent/20 border border-cyanAccent/40 flex items-center justify-center text-cyanAccent">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" />
+              <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+            </svg>
+          </div>
+          <span class="font-bold text-white text-sm tracking-wider font-mono">ENTERPRISE MENU</span>
         </div>
-        <h2 class="text-2xl sm:text-3xl font-extrabold text-white mb-2">Embed SayPulse on Any Website in 30 Seconds</h2>
-        <p class="text-slate-400 text-sm mb-6">
-          Works instantly on plain HTML, React, Next.js, WordPress, Shopify, Webflow, or PHP apps. Uses Shadow DOM so styles will never clash.
-        </p>
+        <button id="closeDrawerBtn" aria-label="Close menu" class="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white transition-colors">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
       </div>
 
-      <div class="relative bg-slate-950 border border-slate-800 rounded-2xl p-5 font-mono text-xs sm:text-sm text-cyan-300 overflow-x-auto shadow-inner">
-        <code>&lt;!-- SayPulse Voice Feedback Widget CDN --&gt;<br>
+      <!-- Navigation Directory Links -->
+      <nav class="mt-8 space-y-1.5 text-sm font-medium">
+        <a href="#sandbox" class="drawer-link flex items-center justify-between px-4 py-3 rounded-xl text-slate-200 hover:text-cyanAccent hover:bg-white/5 transition-all">
+          <span>01. Interactive Voice Sandbox</span>
+          <span class="font-mono text-xs text-cyan-400">01 →</span>
+        </a>
+        <a href="#telemetry" class="drawer-link flex items-center justify-between px-4 py-3 rounded-xl text-slate-200 hover:text-cyanAccent hover:bg-white/5 transition-all">
+          <span>02. Voice Telemetry & AI Synthesis</span>
+          <span class="font-mono text-xs text-cyan-400">02 →</span>
+        </a>
+        <a href="#embed-code" class="drawer-link flex items-center justify-between px-4 py-3 rounded-xl text-slate-200 hover:text-cyanAccent hover:bg-white/5 transition-all">
+          <span>03. 1-Line Universal Script Embed</span>
+          <span class="font-mono text-xs text-cyan-400">03 →</span>
+        </a>
+        <a href="#security" class="drawer-link flex items-center justify-between px-4 py-3 rounded-xl text-slate-200 hover:text-cyanAccent hover:bg-white/5 transition-all">
+          <span>04. DPDP & Audio Privacy</span>
+          <span class="font-mono text-xs text-cyan-400">04 →</span>
+        </a>
+        <a href="#pricing" class="drawer-link flex items-center justify-between px-4 py-3 rounded-xl text-slate-200 hover:text-cyanAccent hover:bg-white/5 transition-all">
+          <span>05. Commercial Plans & ROI</span>
+          <span class="font-mono text-xs text-cyan-400">05 →</span>
+        </a>
+        <button onclick="openInfoModal('about'); closeDrawer();" class="w-full drawer-link flex items-center justify-between px-4 py-3 rounded-xl text-slate-200 hover:text-cyanAccent hover:bg-white/5 transition-all text-left">
+          <span>06. About NextGen Multiverse</span>
+          <span class="font-mono text-xs text-cyan-400">06 →</span>
+        </button>
+        <button onclick="openInfoModal('contact'); closeDrawer();" class="w-full drawer-link flex items-center justify-between px-4 py-3 rounded-xl text-slate-200 hover:text-cyanAccent hover:bg-white/5 transition-all text-left">
+          <span>07. Enterprise Inquiries</span>
+          <span class="font-mono text-xs text-cyan-400">07 →</span>
+        </button>
+      </nav>
+    </div>
+
+    <!-- Drawer Footer -->
+    <div class="pt-6 border-t border-white/10 text-xs font-mono text-slate-400 space-y-1">
+      <div class="text-cyan-300 font-semibold">NextGen Multiverse Enterprises Pvt Ltd</div>
+      <div>"A NextGen Multiverse Company"</div>
+      <div class="text-[11px] text-slate-500">saypulse.nextgenmultiverse.com</div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════════════════
+       MAIN CONTENT SECTIONS
+       ══════════════════════════════════════════════════════════════════════════ -->
+  <main class="relative z-10 flex-grow">
+
+    <!-- 1. HERO SECTION WITH LEFT-TO-RIGHT TYPEWRITER HEADLINE -->
+    <section class="relative pt-8 pb-14 sm:pt-14 sm:pb-20 overflow-hidden">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-left relative">
+        
+        <!-- Eyebrow Tag -->
+        <div class="inline-flex items-center space-x-2 px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 text-[10px] sm:text-xs font-mono mb-5 sm:mb-6 hover:border-cyan-400/50 transition-colors shadow-[0_0_15px_rgba(6,182,212,0.15)] cursor-default">
+          <span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-cyanAccent animate-pulse shrink-0"></span>
+          <span class="tracking-normal sm:tracking-wide">Next-Gen Voice Intelligence • Powered by Google Gemini 3.6 Flash</span>
+        </div>
+
+        <!-- Left-to-Right Typewriter Headline -->
+        <div class="min-h-[140px] sm:min-h-[170px] lg:min-h-[185px] flex items-start justify-start text-left">
+          <h1 class="text-[26px] sm:text-4xl lg:text-6xl font-extrabold tracking-tight text-white leading-[1.22] sm:leading-[1.15] text-left">
+            <span id="typewriterText" class="bg-clip-text text-transparent bg-gradient-to-r from-white via-sky-100 to-cyan-300"></span><span class="typewriter-cursor"></span>
+          </h1>
+        </div>
+
+        <!-- Founder Vision Sub-headline -->
+        <p class="mt-4 sm:mt-6 text-sm sm:text-lg text-slate-300/90 max-w-3xl text-left leading-relaxed font-normal">
+          SayPulse eliminates 98% form drop-off by replacing traditional text boxes with an unboxed, futuristic voice widget. Capture spoken customer intent, auto-harvest route breadcrumbs & console errors, and generate Jira-ready bug tickets in under 1.5 seconds.
+        </p>
+
+        <!-- Primary Action CTAs -->
+        <div class="mt-8 sm:mt-10 flex flex-wrap items-center justify-start gap-4">
+          <button onclick="openAuthModal('register')" class="shimmer-btn px-7 sm:px-8 py-3.5 sm:py-4 rounded-xl bg-gradient-to-r from-cyan-500 via-sky-500 to-indigo-600 text-white font-bold text-xs sm:text-sm shadow-[0_0_30px_rgba(6,182,212,0.4)] hover:shadow-[0_0_40px_rgba(6,182,212,0.6)] transition-all flex items-center justify-center space-x-2.5">
+            <span>Get Started with WhatsApp</span>
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M7 17l9.2-9.2M17 17V8H8" />
+            </svg>
+          </button>
+
+          <a href="#sandbox" class="px-6 py-3.5 sm:py-4 rounded-xl border border-white/15 bg-white/5 hover:bg-white/10 text-xs sm:text-sm font-bold text-slate-200 hover:text-white transition-all">
+            🎙️ Try Live Audio Sandbox
+          </a>
+        </div>
+
+        <!-- Telemetry Scorecard Bar -->
+        <div class="mt-12 sm:mt-16 glass-card rounded-2xl sm:rounded-3xl border border-white/10 overflow-hidden shadow-2xl">
+          <div class="grid grid-cols-2 md:grid-cols-4 divide-y md:divide-y-0 md:divide-x divide-white/10">
+            <div class="p-4 sm:p-6 flex flex-col items-start justify-center">
+              <div class="text-2xl sm:text-3xl font-extrabold font-mono text-cyanAccent">4.2x</div>
+              <div class="text-[10px] sm:text-xs text-slate-400 mt-1 uppercase tracking-wider font-mono">Feedback Volume Lift</div>
+            </div>
+            <div class="p-4 sm:p-6 flex flex-col items-start justify-center">
+              <div class="text-2xl sm:text-3xl font-extrabold font-mono text-emeraldAccent">68%</div>
+              <div class="text-[10px] sm:text-xs text-slate-400 mt-1 uppercase tracking-wider font-mono">Faster Bug Reproduction</div>
+            </div>
+            <div class="p-4 sm:p-6 flex flex-col items-start justify-center">
+              <div class="text-2xl sm:text-3xl font-extrabold font-mono text-indigo-400">&lt; 1.5s</div>
+              <div class="text-[10px] sm:text-xs text-slate-400 mt-1 uppercase tracking-wider font-mono">Gemini AI Synthesis</div>
+            </div>
+            <div class="p-4 sm:p-6 flex flex-col items-start justify-center">
+              <div class="text-2xl sm:text-3xl font-extrabold font-mono text-amberAccent">1-Line</div>
+              <div class="text-[10px] sm:text-xs text-slate-400 mt-1 uppercase tracking-wider font-mono">Universal Script Embed</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- 2. INTERACTIVE LIVE VOICE SANDBOX & 6 SPACE VISUALIZERS -->
+    <section id="sandbox" class="py-16 border-t border-white/5 relative">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <div class="text-center max-w-3xl mx-auto mb-12">
+          <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/30 text-indigo-400 text-xs font-mono mb-3">
+            🎨 UNBOXED HOLOGRAPHIC WAVEFORMS
+          </div>
+          <h2 class="text-2xl sm:text-4xl font-extrabold text-white tracking-tight">
+            Test the 6 Futuristic Space Visualizers
+          </h2>
+          <p class="mt-3 text-slate-400 text-sm sm:text-base">
+            Select an animation style and tap the microphone to experience live voice synthesis with real-time waveform oscillation.
+          </p>
+        </div>
+
+        <!-- Interactive Wave Visualizer Studio Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          
+          <!-- Visualizer 1: Siri Wave -->
+          <div class="glass-card p-6 rounded-2xl border border-white/10 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-3">
+                <span class="text-2xl">🌊</span>
+                <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-cyan-500/10 text-cyan-400 border border-cyan-500/30">DEFAULT</span>
+              </div>
+              <h3 class="font-bold text-white text-base mb-1">Siri Wave</h3>
+              <p class="text-xs text-slate-400 mb-4">Fluid multi-layered holographic sine wave oscillation with amplitude scaling.</p>
+            </div>
+            <button onclick="previewAnimation('siri-wave')" class="w-full py-2.5 rounded-xl bg-white/5 hover:bg-cyan-500/20 text-xs font-bold text-cyan-300 border border-cyan-500/30 transition">
+              Preview Siri Wave →
+            </button>
+          </div>
+
+          <!-- Visualizer 2: Neural Sphere -->
+          <div class="glass-card p-6 rounded-2xl border border-white/10 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-3">
+                <span class="text-2xl">🔮</span>
+                <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-400 border border-indigo-500/30">3D DENSITY</span>
+              </div>
+              <h3 class="font-bold text-white text-base mb-1">Neural Sphere</h3>
+              <p class="text-xs text-slate-400 mb-4">3D particle sphere cluster responsive to spoken voice amplitudes and frequencies.</p>
+            </div>
+            <button onclick="previewAnimation('neural-sphere')" class="w-full py-2.5 rounded-xl bg-white/5 hover:bg-indigo-500/20 text-xs font-bold text-indigo-300 border border-indigo-500/30 transition">
+              Preview Neural Sphere →
+            </button>
+          </div>
+
+          <!-- Visualizer 3: Particle Ring -->
+          <div class="glass-card p-6 rounded-2xl border border-white/10 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-3">
+                <span class="text-2xl">🪐</span>
+                <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-purple-500/10 text-purple-400 border border-purple-500/30">QUANTUM</span>
+              </div>
+              <h3 class="font-bold text-white text-base mb-1">Particle Ring</h3>
+              <p class="text-xs text-slate-400 mb-4">Orbiting quantum dust halo with dynamic pulse rings and radial particle bloom.</p>
+            </div>
+            <button onclick="previewAnimation('particle-ring')" class="w-full py-2.5 rounded-xl bg-white/5 hover:bg-purple-500/20 text-xs font-bold text-purple-300 border border-purple-500/30 transition">
+              Preview Particle Ring →
+            </button>
+          </div>
+
+          <!-- Visualizer 4: Nebula Plasma -->
+          <div class="glass-card p-6 rounded-2xl border border-white/10 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-3">
+                <span class="text-2xl">🌌</span>
+                <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-pink-500/10 text-pink-400 border border-pink-500/30">PLASMA</span>
+              </div>
+              <h3 class="font-bold text-white text-base mb-1">Nebula Plasma</h3>
+              <p class="text-xs text-slate-400 mb-4">Ethereal cosmic gas cloud reactive to voice frequencies with neon aura.</p>
+            </div>
+            <button onclick="previewAnimation('nebula-plasma')" class="w-full py-2.5 rounded-xl bg-white/5 hover:bg-pink-500/20 text-xs font-bold text-pink-300 border border-pink-500/30 transition">
+              Preview Nebula Plasma →
+            </button>
+          </div>
+
+          <!-- Visualizer 5: Solar Ribbon -->
+          <div class="glass-card p-6 rounded-2xl border border-white/10 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-3">
+                <span class="text-2xl">🎗️</span>
+                <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/30">HELICAL</span>
+              </div>
+              <h3 class="font-bold text-white text-base mb-1">Solar Ribbon</h3>
+              <p class="text-xs text-slate-400 mb-4">Golden helical energy coil spinning with luminous ambient radiance.</p>
+            </div>
+            <button onclick="previewAnimation('solar-ribbon')" class="w-full py-2.5 rounded-xl bg-white/5 hover:bg-amber-500/20 text-xs font-bold text-amber-300 border border-amber-500/30 transition">
+              Preview Solar Ribbon →
+            </button>
+          </div>
+
+          <!-- Visualizer 6: Laser Horizon -->
+          <div class="glass-card p-6 rounded-2xl border border-white/10 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-3">
+                <span class="text-2xl">⚡</span>
+                <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">CYBERPUNK</span>
+              </div>
+              <h3 class="font-bold text-white text-base mb-1">Laser Horizon</h3>
+              <p class="text-xs text-slate-400 mb-4">Dual neon equalizer beams with reactive peaks and audio level decay.</p>
+            </div>
+            <button onclick="previewAnimation('laser-horizon')" class="w-full py-2.5 rounded-xl bg-white/5 hover:bg-emerald-500/20 text-xs font-bold text-emerald-300 border border-emerald-500/30 transition">
+              Preview Laser Horizon →
+            </button>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- 3. UNIVERSAL 1-LINE SCRIPT EMBED SECTION -->
+    <section id="embed-code" class="py-16 border-t border-white/5 relative">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <div class="glass-card p-8 sm:p-12 rounded-3xl border border-white/10 shadow-2xl relative">
+          <div class="max-w-3xl mb-8">
+            <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 text-xs font-mono mb-3">
+              ⚡ 30-SECOND INTEGRATION
+            </div>
+            <h2 class="text-2xl sm:text-4xl font-extrabold text-white tracking-tight">
+              Embed SayPulse on Any Website in 1 Line
+            </h2>
+            <p class="mt-3 text-slate-400 text-sm sm:text-base">
+              SayPulse works seamlessly on plain HTML, React, Next.js, Shopify, WordPress, Webflow, or PHP apps. Built with Shadow DOM so CSS will never leak or collide with your existing styles.
+            </p>
+          </div>
+
+          <!-- Code Box with 1-Click Copy -->
+          <div class="relative bg-black/60 border border-white/10 rounded-2xl p-5 sm:p-6 font-mono text-xs sm:text-sm text-cyan-300 overflow-x-auto shadow-inner">
+            <code>&lt;!-- SayPulse Universal Voice Widget (Production CDN) --&gt;<br>
 &lt;script <br>
 &nbsp;&nbsp;src="https://saypulse.nextgenmultiverse.com/saypulse.min.js"<br>
-&nbsp;&nbsp;data-key="sp_live_your_project_key"<br>
+&nbsp;&nbsp;data-key="sp_live_your_company_api_key"<br>
 &nbsp;&nbsp;data-position="bottom-right"<br>
 &nbsp;&nbsp;data-color="#06B6D4"<br>
 &nbsp;&nbsp;data-animation="siri-wave"<br>
 &nbsp;&nbsp;defer&gt;&lt;/script&gt;</code>
 
-        <button onclick="navigator.clipboard.writeText('<script src=\x22https://saypulse.nextgenmultiverse.com/saypulse.min.js\x22 data-key=\x22sp_live_your_project_key\x22 data-position=\x22bottom-right\x22 data-color=\x22#06B6D4\x22 data-animation=\x22siri-wave\x22 defer><\/script>'); alert('✓ Script Tag Copied to Clipboard!');" class="absolute top-4 right-4 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs text-white font-sans font-semibold transition">
-          📋 Copy Code
-        </button>
+            <button onclick="copyEmbedScript()" class="absolute top-4 right-4 px-4 py-2 rounded-xl bg-white/10 hover:bg-cyan-500/30 border border-white/15 text-xs text-white font-sans font-bold transition flex items-center gap-2">
+              <span id="copyBtnText">📋 Copy Script Tag</span>
+            </button>
+          </div>
+        </div>
+
       </div>
     </section>
 
-    <!-- 6 Space Visualizer Showcases -->
-    <section class="mt-24">
-      <div class="text-center max-w-2xl mx-auto mb-12">
-        <h2 class="text-2xl sm:text-3xl font-extrabold text-white mb-2">6 Unboxed Futuristic Visualizers</h2>
-        <p class="text-slate-400 text-sm">Choose the waveform animation that best matches your product brand.</p>
-      </div>
+    <!-- 4. ENTERPRISE TELEMETRY & SECURITY -->
+    <section id="security" class="py-16 border-t border-white/5 relative">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <div class="text-center max-w-3xl mx-auto mb-12">
+          <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-mono mb-3">
+            🛡️ DEFENSE-IN-DEPTH ARCHITECTURE
+          </div>
+          <h2 class="text-2xl sm:text-4xl font-extrabold text-white tracking-tight">
+            DPDP Act 2023 & Enterprise Audio Privacy
+          </h2>
+          <p class="mt-3 text-slate-400 text-sm sm:text-base">
+            Engineered for high-compliance healthcare, financial, and SaaS platforms.
+          </p>
+        </div>
 
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
-        <div class="p-5 rounded-2xl bg-slate-900 border border-slate-800">
-          <div class="text-2xl mb-2">🌊</div>
-          <h3 class="font-bold text-white text-sm mb-1">Siri Wave</h3>
-          <p class="text-xs text-slate-400">Fluid multi-layered holographic sine wave oscillation.</p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div class="glass-card p-6 rounded-2xl border border-white/10">
+            <div class="text-2xl text-emerald-400 mb-3">🔒</div>
+            <h3 class="font-bold text-white text-base mb-1">Zero Raw Audio Retention</h3>
+            <p class="text-xs text-slate-400">Audio buffers are converted to structured text in memory and immediately discarded.</p>
+          </div>
+          <div class="glass-card p-6 rounded-2xl border border-white/10">
+            <div class="text-2xl text-cyan-400 mb-3">🧹</div>
+            <h3 class="font-bold text-white text-base mb-1">Client-Side PII Redactor</h3>
+            <p class="text-xs text-slate-400">Scrubs credit cards, phone numbers, and emails before sending transcripts to the LLM.</p>
+          </div>
+          <div class="glass-card p-6 rounded-2xl border border-white/10">
+            <div class="text-2xl text-indigo-400 mb-3">⏱️</div>
+            <h3 class="font-bold text-white text-base mb-1">Tiered IP Rate Limiting</h3>
+            <p class="text-xs text-slate-400">Automated Sliding Window mitigation prevents scraping and denial-of-service floods.</p>
+          </div>
+          <div class="glass-card p-6 rounded-2xl border border-white/10">
+            <div class="text-2xl text-amber-400 mb-3">🔐</div>
+            <h3 class="font-bold text-white text-base mb-1">WhatsApp Login OTP</h3>
+            <p class="text-xs text-slate-400">Passwordless authentication backed by NextGen WhatsApp Web Gateway with anti-replay expiry.</p>
+          </div>
         </div>
-        <div class="p-5 rounded-2xl bg-slate-900 border border-slate-800">
-          <div class="text-2xl mb-2">🔮</div>
-          <h3 class="font-bold text-white text-sm mb-1">Neural Sphere</h3>
-          <p class="text-xs text-slate-400">3D particle sphere cluster responsive to spoken amplitude.</p>
+
+      </div>
+    </section>
+
+    <!-- 5. PRICING & ROI -->
+    <section id="pricing" class="py-16 border-t border-white/5 relative">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <div class="text-center max-w-3xl mx-auto mb-12">
+          <h2 class="text-2xl sm:text-4xl font-extrabold text-white tracking-tight">
+            Simple, High-Impact Pricing
+          </h2>
+          <p class="mt-3 text-slate-400 text-sm sm:text-base">
+            Transparent pricing designed to scale effortlessly with your monthly feedback volume.
+          </p>
         </div>
-        <div class="p-5 rounded-2xl bg-slate-900 border border-slate-800">
-          <div class="text-2xl mb-2">🪐</div>
-          <h3 class="font-bold text-white text-sm mb-1">Particle Ring</h3>
-          <p class="text-xs text-slate-400">Orbiting quantum dust halo with dynamic pulse rings.</p>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          
+          <!-- Starter Plan -->
+          <div class="glass-card p-8 rounded-3xl border border-white/10 flex flex-col justify-between">
+            <div>
+              <div class="text-xs font-mono font-bold text-slate-400 mb-2">STARTER</div>
+              <div class="text-4xl font-extrabold text-white mb-4">$49 <span class="text-sm font-normal text-slate-400">/ mo</span></div>
+              <p class="text-xs text-slate-400 mb-6">Ideal for early-stage startups and high-growth apps.</p>
+              <ul class="space-y-3 text-xs text-slate-300">
+                <li class="flex items-center gap-2">✓ Up to 500 Voice Notes / mo</li>
+                <li class="flex items-center gap-2">✓ Gemini 3.6 Flash AI Summaries</li>
+                <li class="flex items-center gap-2">✓ 1 Dedicated Workspace Slug</li>
+                <li class="flex items-center gap-2">✓ Standard Email Bug Alerts</li>
+                <li class="flex items-center gap-2">✓ All 6 Wave Visualizers</li>
+              </ul>
+            </div>
+            <button onclick="openAuthModal('register')" class="mt-8 w-full py-3 rounded-xl bg-white/10 hover:bg-white/15 text-xs font-bold text-white transition">
+              Get Started →
+            </button>
+          </div>
+
+          <!-- Growth Plan (Popular) -->
+          <div class="glass-card p-8 rounded-3xl border-2 border-cyanAccent shadow-[0_0_40px_rgba(6,182,212,0.2)] flex flex-col justify-between relative">
+            <div class="absolute -top-3 right-8 px-3 py-1 rounded-full bg-cyanAccent text-deep-950 text-[10px] font-extrabold font-mono uppercase tracking-wider">
+              RECOMMENDED
+            </div>
+            <div>
+              <div class="text-xs font-mono font-bold text-cyan-400 mb-2">GROWTH (POPULAR)</div>
+              <div class="text-4xl font-extrabold text-white mb-4">$149 <span class="text-sm font-normal text-slate-400">/ mo</span></div>
+              <p class="text-xs text-slate-400 mb-6">For scaling SaaS platforms and eCommerce brands.</p>
+              <ul class="space-y-3 text-xs text-slate-300">
+                <li class="flex items-center gap-2">✓ Up to 3,000 Voice Notes / mo</li>
+                <li class="flex items-center gap-2">✓ Route Journey & Console Logs</li>
+                <li class="flex items-center gap-2">✓ WhatsApp Login OTP Gateway</li>
+                <li class="flex items-center gap-2">✓ Unlimited Admin Seats</li>
+                <li class="flex items-center gap-2">✓ Priority Email & Webhook Sync</li>
+              </ul>
+            </div>
+            <button onclick="openAuthModal('register')" class="shimmer-btn mt-8 w-full py-3 rounded-xl bg-gradient-to-r from-cyan-500 to-indigo-600 text-xs font-bold text-white transition">
+              Start Free Trial →
+            </button>
+          </div>
+
+          <!-- Enterprise Plan -->
+          <div class="glass-card p-8 rounded-3xl border border-white/10 flex flex-col justify-between">
+            <div>
+              <div class="text-xs font-mono font-bold text-indigo-400 mb-2">ENTERPRISE</div>
+              <div class="text-4xl font-extrabold text-white mb-4">Custom <span class="text-sm font-normal text-slate-400">/ yr</span></div>
+              <p class="text-xs text-slate-400 mb-6">For enterprise operations with custom SLAs and data residency.</p>
+              <ul class="space-y-3 text-xs text-slate-300">
+                <li class="flex items-center gap-2">✓ Unlimited Voice Notes</li>
+                <li class="flex items-center gap-2">✓ Custom LLM Fine-Tuning</li>
+                <li class="flex items-center gap-2">✓ Jira, Slack & Linear Direct Sync</li>
+                <li class="flex items-center gap-2">✓ 99.99% Uptime SLA</li>
+                <li class="flex items-center gap-2">✓ Dedicated Technical Account Manager</li>
+              </ul>
+            </div>
+            <button onclick="openInfoModal('contact')" class="mt-8 w-full py-3 rounded-xl bg-white/10 hover:bg-white/15 text-xs font-bold text-white transition">
+              Contact Enterprise Sales →
+            </button>
+          </div>
+
         </div>
-        <div class="p-5 rounded-2xl bg-slate-900 border border-slate-800">
-          <div class="text-2xl mb-2">🌌</div>
-          <h3 class="font-bold text-white text-sm mb-1">Nebula Plasma</h3>
-          <p class="text-xs text-slate-400">Ethereal cosmic gas cloud reactive to voice frequencies.</p>
-        </div>
-        <div class="p-5 rounded-2xl bg-slate-900 border border-slate-800">
-          <div class="text-2xl mb-2">🎗️</div>
-          <h3 class="font-bold text-white text-sm mb-1">Solar Ribbon</h3>
-          <p class="text-xs text-slate-400">Helical energy ribbon with golden luminous aura.</p>
-        </div>
-        <div class="p-5 rounded-2xl bg-slate-900 border border-slate-800">
-          <div class="text-2xl mb-2">⚡</div>
-          <h3 class="font-bold text-white text-sm mb-1">Laser Horizon</h3>
-          <p class="text-xs text-slate-400">Dual neon equalizer beams with reactive peaks.</p>
-        </div>
+
       </div>
     </section>
 
   </main>
 
-  <!-- Footer -->
-  <footer class="border-t border-slate-800/80 bg-slate-950 py-10 mt-20 text-center text-xs text-slate-500">
-    <div class="max-w-7xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-      <div class="flex items-center gap-2">
-        <span class="font-bold text-slate-300">SayPulse AI</span> • NextGen Multiverse Enterprises Pvt Ltd
+  <!-- ══════════════════════════════════════════════════════════════════════════
+       CORPORATE FOOTER (NextGen Multiverse Standard)
+       ══════════════════════════════════════════════════════════════════════════ -->
+  <footer class="border-t border-white/10 bg-deep-950 py-10 mt-16 text-xs text-slate-400">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-6">
+      
+      <!-- Brand & Legal Attribution -->
+      <div class="flex items-center space-x-3">
+        <div class="font-bold text-slate-200">SayPulse AI</div>
+        <span class="text-slate-600">•</span>
+        <div>"A NextGen Multiverse Company"</div>
       </div>
-      <div>
-        WhatsApp Gateway: <span class="text-emerald-400 font-mono">wa.nextgenmultiverse.com</span> (Live)
+
+      <!-- Footer Policy Links -->
+      <div class="flex flex-wrap items-center gap-5 text-slate-400">
+        <button onclick="openInfoModal('about')" class="hover:text-cyanAccent transition">About Us</button>
+        <button onclick="openInfoModal('privacy')" class="hover:text-cyanAccent transition">Privacy Policy</button>
+        <button onclick="openInfoModal('terms')" class="hover:text-cyanAccent transition">Terms of Service</button>
+        <button onclick="openInfoModal('contact')" class="hover:text-cyanAccent transition">Contact</button>
       </div>
+
+      <!-- Status Indicator -->
+      <div class="flex items-center space-x-2 font-mono text-[11px] text-emerald-400">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        <span>Systems Operational</span>
+      </div>
+
     </div>
   </footer>
 
-  <!-- Universal 1-Line SayPulse Widget Script Included Live -->
-  <script src="saypulse.min.js" data-key="sp_live_demo" data-position="bottom-right" data-color="#06B6D4" data-animation="siri-wave" defer></script>
+  <!-- ══════════════════════════════════════════════════════════════════════════
+       WHATSAPP AUTHENTICATION & REGISTRATION MODAL (Phase 2)
+       ══════════════════════════════════════════════════════════════════════════ -->
+  <div id="authBackdrop" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-md transition-opacity duration-300 opacity-0 pointer-events-none flex items-center justify-center p-4">
+    
+    <div id="authDialog" class="bg-[#0b1325] border border-white/15 rounded-3xl p-6 sm:p-8 w-full max-w-md shadow-2xl transform scale-95 transition-all duration-300 relative">
+      
+      <!-- Close Button -->
+      <button onclick="closeAuthModal()" class="absolute top-5 right-5 p-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white transition">
+        ✕
+      </button>
+
+      <!-- Modal Header -->
+      <div class="flex items-center space-x-3 mb-6">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-indigo-600 flex items-center justify-center text-lg text-white shadow-lg shadow-cyan-500/30">
+          🎙️
+        </div>
+        <div>
+          <h3 class="font-extrabold text-white text-lg">SayPulse Access Gateway</h3>
+          <p class="text-xs text-slate-400">Passwordless Authentication via WhatsApp</p>
+        </div>
+      </div>
+
+      <!-- Tabs: Sign In / Create Account / Demo -->
+      <div class="flex bg-black/40 border border-white/10 rounded-xl p-1 mb-6">
+        <button id="authTabSignIn" onclick="switchAuthTab('signin')" class="flex-1 py-2 text-xs font-bold rounded-lg text-white bg-cyan-500 shadow-md transition">
+          Sign In
+        </button>
+        <button id="authTabRegister" onclick="switchAuthTab('register')" class="flex-1 py-2 text-xs font-bold rounded-lg text-slate-400 hover:text-white transition">
+          Create Account
+        </button>
+        <button id="authTabDemo" onclick="switchAuthTab('demo')" class="flex-1 py-2 text-xs font-bold rounded-lg text-slate-400 hover:text-white transition">
+          Sandbox Demo
+        </button>
+      </div>
+
+      <!-- Alert Message Box -->
+      <div id="authAlert" class="hidden p-3 rounded-xl mb-4 text-xs font-medium"></div>
+
+      <!-- ── TAB 1: SIGN IN ── -->
+      <div id="authViewSignIn">
+        <div id="signinStep1">
+          <label class="block text-xs font-mono font-bold uppercase tracking-wider text-slate-400 mb-2">Mobile Number</label>
+          <div class="flex items-center space-x-2 mb-4">
+            <span class="px-3.5 py-3 rounded-xl bg-black/50 border border-white/15 text-xs font-mono font-bold text-slate-300">🇮🇳 +91</span>
+            <input type="tel" id="signinPhone" placeholder="10-digit mobile number" maxlength="10" class="w-full px-4 py-3 rounded-xl bg-black/50 border border-white/15 text-sm text-white focus:outline-none focus:border-cyan-500 transition font-mono" />
+          </div>
+          <button id="signinSendOtpBtn" onclick="handleSendOtp('signin')" class="shimmer-btn w-full py-3.5 rounded-xl bg-gradient-to-r from-cyan-500 to-indigo-600 text-xs font-bold text-white shadow-lg shadow-cyan-500/25 hover:opacity-95 transition">
+            📲 Send WhatsApp Verification Code
+          </button>
+        </div>
+
+        <div id="signinStep2" class="hidden">
+          <div class="p-3.5 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 text-xs mb-4">
+            Verification code sent to WhatsApp: <strong id="signinPhoneDisplay"></strong>
+          </div>
+          <label class="block text-xs font-mono font-bold uppercase tracking-wider text-slate-400 mb-2">Enter 6-Digit OTP</label>
+          <input type="text" id="signinOtp" placeholder="e.g. 829471" maxlength="6" class="w-full px-4 py-3 rounded-xl bg-black/50 border border-white/15 text-center text-lg tracking-[0.5em] font-mono text-cyan-300 focus:outline-none focus:border-cyan-500 mb-4" />
+          
+          <button id="signinVerifyBtn" onclick="handleVerifyOtp('signin')" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 text-xs font-bold text-white shadow-lg shadow-emerald-500/25 transition">
+            ✓ Verify Code & Open Dashboard
+          </button>
+          
+          <div class="mt-3 flex justify-between items-center text-xs text-slate-400">
+            <button onclick="handleSendOtp('signin')" class="text-cyan-400 hover:underline">Resend WhatsApp OTP</button>
+            <button onclick="resetAuthSteps()" class="hover:underline">Change Mobile</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── TAB 2: CREATE ACCOUNT ── -->
+      <div id="authViewRegister" class="hidden">
+        <div id="regStep1">
+          <div class="space-y-3 mb-4">
+            <div>
+              <label class="block text-[11px] font-mono font-bold uppercase text-slate-400 mb-1">Company / Product Name</label>
+              <input type="text" id="regCompany" placeholder="e.g. Acme SaaS" class="w-full px-3.5 py-2.5 rounded-xl bg-black/50 border border-white/15 text-xs text-white focus:border-cyan-500 outline-none" />
+            </div>
+            <div>
+              <label class="block text-[11px] font-mono font-bold uppercase text-slate-400 mb-1">Your Name</label>
+              <input type="text" id="regName" placeholder="e.g. Alex Rivera" class="w-full px-3.5 py-2.5 rounded-xl bg-black/50 border border-white/15 text-xs text-white focus:border-cyan-500 outline-none" />
+            </div>
+            <div>
+              <label class="block text-[11px] font-mono font-bold uppercase text-slate-400 mb-1">Website URL</label>
+              <input type="url" id="regWebsite" placeholder="https://yourcompany.com" class="w-full px-3.5 py-2.5 rounded-xl bg-black/50 border border-white/15 text-xs text-white focus:border-cyan-500 outline-none" />
+            </div>
+            <div>
+              <label class="block text-[11px] font-mono font-bold uppercase text-slate-400 mb-1">WhatsApp Mobile Number</label>
+              <div class="flex items-center space-x-2">
+                <span class="px-3 py-2.5 rounded-xl bg-black/50 border border-white/15 text-xs font-mono text-slate-300">🇮🇳 +91</span>
+                <input type="tel" id="regPhone" placeholder="10-digit mobile number" maxlength="10" class="w-full px-3.5 py-2.5 rounded-xl bg-black/50 border border-white/15 text-xs text-white focus:border-cyan-500 outline-none font-mono" />
+              </div>
+            </div>
+          </div>
+
+          <button id="regSendOtpBtn" onclick="handleSendOtp('register')" class="shimmer-btn w-full py-3 rounded-xl bg-gradient-to-r from-cyan-500 to-indigo-600 text-xs font-bold text-white transition">
+            ✨ Verify via WhatsApp & Create Workspace
+          </button>
+        </div>
+
+        <div id="regStep2" class="hidden">
+          <div class="p-3.5 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 text-xs mb-4">
+            Verification code sent to WhatsApp: <strong id="regPhoneDisplay"></strong>
+          </div>
+          <label class="block text-xs font-mono font-bold uppercase tracking-wider text-slate-400 mb-2">Enter 6-Digit OTP</label>
+          <input type="text" id="regOtp" placeholder="e.g. 829471" maxlength="6" class="w-full px-4 py-3 rounded-xl bg-black/50 border border-white/15 text-center text-lg tracking-[0.5em] font-mono text-cyan-300 focus:outline-none focus:border-cyan-500 mb-4" />
+          
+          <button id="regVerifyBtn" onclick="handleVerifyOtp('register')" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 text-xs font-bold text-white shadow-lg shadow-emerald-500/25 transition">
+            🚀 Provision Workspace & Enter Dashboard
+          </button>
+        </div>
+      </div>
+
+      <!-- ── TAB 3: DEMO SANDBOX ── -->
+      <div id="authViewDemo" class="hidden text-center py-4">
+        <div class="text-3xl mb-3">⚡</div>
+        <h4 class="font-bold text-white text-base mb-1">Instant Sandbox Access</h4>
+        <p class="text-xs text-slate-400 mb-6">
+          Explore the pre-loaded SayPulse business intelligence dashboard with simulated customer voice notes and CSAT charts.
+        </p>
+        <button onclick="window.location.href='http://localhost:7100/admin/demo'" class="w-full py-3.5 rounded-xl bg-white/10 hover:bg-white/15 text-xs font-bold text-cyan-300 border border-cyan-500/30 transition">
+          🚀 Open Live Demo Sandbox →
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════════════════
+       SUPPORTIVE INFO MODALS (About, Privacy Policy, Terms, Contact)
+       ══════════════════════════════════════════════════════════════════════════ -->
+  <div id="infoBackdrop" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-md transition-opacity duration-300 opacity-0 pointer-events-none flex items-center justify-center p-4">
+    <div class="bg-[#0b1325] border border-white/15 rounded-3xl p-6 sm:p-8 w-full max-w-2xl max-h-[85vh] overflow-y-auto shadow-2xl relative">
+      <button onclick="closeInfoModal()" class="absolute top-5 right-5 p-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white transition">
+        ✕
+      </button>
+
+      <div id="infoModalContent"></div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════════════════
+       CLIENT-SIDE SCRIPT LOGIC (Typewriter, Drawer, Auth & Modals)
+       ══════════════════════════════════════════════════════════════════════════ -->
+  <script>
+    // 1. Left-to-Right Typewriter Effect
+    const typewriterPhrases = [
+      "Turn 15 Seconds of Spoken Feedback into Instant Product Growth.",
+      "Zero Form Abandonment. Gemini 3.6 Flash Voice Synthesis.",
+      "Auto-Harvest Route History, Console Logs & Viewport Specs.",
+      "1-Line Universal Script. Passwordless WhatsApp Login Gateway."
+    ];
+    let phraseIdx = 0;
+    let charIdx = 0;
+    let isDeleting = false;
+    const typewriterEl = document.getElementById('typewriterText');
+
+    function tickTypewriter() {
+      const current = typewriterPhrases[phraseIdx];
+      if (isDeleting) {
+        typewriterEl.textContent = current.substring(0, charIdx - 1);
+        charIdx--;
+      } else {
+        typewriterEl.textContent = current.substring(0, charIdx + 1);
+        charIdx++;
+      }
+
+      let speed = isDeleting ? 25 : 55;
+
+      if (!isDeleting && charIdx === current.length) {
+        speed = 2800; // Pause at end of sentence
+        isDeleting = true;
+      } else if (isDeleting && charIdx === 0) {
+        isDeleting = false;
+        phraseIdx = (phraseIdx + 1) % typewriterPhrases.length;
+        speed = 400;
+      }
+
+      setTimeout(tickTypewriter, speed);
+    }
+    document.addEventListener('DOMContentLoaded', tickTypewriter);
+
+    // 2. Right-to-Left Slide-Over Drawer
+    const sideDrawer = document.getElementById('sideDrawer');
+    const drawerBackdrop = document.getElementById('drawerBackdrop');
+    const openDrawerBtn = document.getElementById('openDrawerBtn');
+    const closeDrawerBtn = document.getElementById('closeDrawerBtn');
+
+    function openDrawer() {
+      drawerBackdrop.classList.remove('opacity-0', 'pointer-events-none');
+      drawerBackdrop.classList.add('opacity-100');
+      sideDrawer.classList.remove('translate-x-full');
+      sideDrawer.classList.add('translate-x-0');
+    }
+
+    function closeDrawer() {
+      drawerBackdrop.classList.remove('opacity-100');
+      drawerBackdrop.classList.add('opacity-0', 'pointer-events-none');
+      sideDrawer.classList.remove('translate-x-0');
+      sideDrawer.classList.add('translate-x-full');
+    }
+
+    openDrawerBtn.addEventListener('click', openDrawer);
+    closeDrawerBtn.addEventListener('click', closeDrawer);
+    drawerBackdrop.addEventListener('click', closeDrawer);
+
+    document.querySelectorAll('.drawer-link').forEach(link => {
+      link.addEventListener('click', () => {
+        closeDrawer();
+      });
+    });
+
+    // 3. Auth Modal Functions
+    const authBackdrop = document.getElementById('authBackdrop');
+    const authDialog = document.getElementById('authDialog');
+
+    function openAuthModal(tab = 'signin') {
+      authBackdrop.classList.remove('opacity-0', 'pointer-events-none');
+      authBackdrop.classList.add('opacity-100');
+      authDialog.classList.remove('scale-95');
+      authDialog.classList.add('scale-100');
+      switchAuthTab(tab);
+    }
+
+    function closeAuthModal() {
+      authBackdrop.classList.remove('opacity-100');
+      authBackdrop.classList.add('opacity-0', 'pointer-events-none');
+      authDialog.classList.remove('scale-100');
+      authDialog.classList.add('scale-95');
+      resetAuthSteps();
+    }
+
+    function switchAuthTab(tab) {
+      document.getElementById('authTabSignIn').className = tab === 'signin' ? 'flex-1 py-2 text-xs font-bold rounded-lg text-white bg-cyan-500 shadow-md transition' : 'flex-1 py-2 text-xs font-bold rounded-lg text-slate-400 hover:text-white transition';
+      document.getElementById('authTabRegister').className = tab === 'register' ? 'flex-1 py-2 text-xs font-bold rounded-lg text-white bg-cyan-500 shadow-md transition' : 'flex-1 py-2 text-xs font-bold rounded-lg text-slate-400 hover:text-white transition';
+      document.getElementById('authTabDemo').className = tab === 'demo' ? 'flex-1 py-2 text-xs font-bold rounded-lg text-white bg-cyan-500 shadow-md transition' : 'flex-1 py-2 text-xs font-bold rounded-lg text-slate-400 hover:text-white transition';
+
+      document.getElementById('authViewSignIn').classList.toggle('hidden', tab !== 'signin');
+      document.getElementById('authViewRegister').classList.toggle('hidden', tab !== 'register');
+      document.getElementById('authViewDemo').classList.toggle('hidden', tab !== 'demo');
+      hideAuthAlert();
+    }
+
+    function showAuthAlert(msg, isError = true) {
+      const el = document.getElementById('authAlert');
+      el.textContent = msg;
+      el.className = isError 
+        ? 'p-3 rounded-xl mb-4 text-xs font-medium bg-red-500/15 border border-red-500/30 text-red-300 block'
+        : 'p-3 rounded-xl mb-4 text-xs font-medium bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 block';
+    }
+
+    function hideAuthAlert() {
+      document.getElementById('authAlert').className = 'hidden';
+    }
+
+    function resetAuthSteps() {
+      document.getElementById('signinStep1').classList.remove('hidden');
+      document.getElementById('signinStep2').classList.add('hidden');
+      document.getElementById('regStep1').classList.remove('hidden');
+      document.getElementById('regStep2').classList.add('hidden');
+      hideAuthAlert();
+    }
+
+    let activeAuthPhone = '';
+
+    async function handleSendOtp(flow) {
+      hideAuthAlert();
+      const phoneInput = flow === 'signin' ? document.getElementById('signinPhone') : document.getElementById('regPhone');
+      const phone = phoneInput.value.trim();
+
+      if (!phone || phone.length !== 10) {
+        return showAuthAlert('Please enter a valid 10-digit Indian mobile number.');
+      }
+
+      activeAuthPhone = phone;
+      const btn = flow === 'signin' ? document.getElementById('signinSendOtpBtn') : document.getElementById('regSendOtpBtn');
+      btn.disabled = true;
+      btn.textContent = '⏳ Dispatching WhatsApp OTP...';
+
+      try {
+        const res = await fetch('http://localhost:8000/saypulse/v1/auth/send-otp', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ method: 'whatsapp', phone: phone })
+        });
+
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Failed to send OTP.');
+
+        showAuthAlert('✓ 6-Digit code sent to your WhatsApp number (+91 ' + phone + ')', false);
+
+        if (flow === 'signin') {
+          document.getElementById('signinStep1').classList.add('hidden');
+          document.getElementById('signinStep2').classList.remove('hidden');
+          document.getElementById('signinPhoneDisplay').textContent = '+91 ' + phone;
+        } else {
+          document.getElementById('regStep1').classList.add('hidden');
+          document.getElementById('regStep2').classList.remove('hidden');
+          document.getElementById('regPhoneDisplay').textContent = '+91 ' + phone;
+        }
+      } catch (err) {
+        showAuthAlert(err.message || 'Error communicating with WhatsApp Gateway.');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = flow === 'signin' ? '📲 Send WhatsApp Verification Code' : '✨ Verify via WhatsApp & Create Workspace';
+      }
+    }
+
+    async function handleVerifyOtp(flow) {
+      hideAuthAlert();
+      const otpInput = flow === 'signin' ? document.getElementById('signinOtp') : document.getElementById('regOtp');
+      const otp = otpInput.value.trim();
+
+      if (!otp || otp.length !== 6) {
+        return showAuthAlert('Please enter the 6-digit numeric OTP.');
+      }
+
+      const btn = flow === 'signin' ? document.getElementById('signinVerifyBtn') : document.getElementById('regVerifyBtn');
+      btn.disabled = true;
+      btn.textContent = '⏳ Verifying Code...';
+
+      try {
+        const res = await fetch('http://localhost:8000/saypulse/v1/auth/verify-otp', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ target: activeAuthPhone, otp: otp })
+        });
+
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Invalid or expired OTP.');
+
+        showAuthAlert('✓ Verified successfully! Redirecting...', false);
+
+        setTimeout(() => {
+          if (data.isSuperAdmin) {
+            window.location.href = 'http://localhost:7100/admin/master';
+          } else if (data.redirectUrl) {
+            window.location.href = `http://localhost:7100${data.redirectUrl}`;
+          } else {
+            window.location.href = 'http://localhost:7100/admin/demo';
+          }
+        }, 800);
+      } catch (err) {
+        showAuthAlert(err.message || 'Invalid or expired OTP code.');
+        btn.disabled = false;
+        btn.textContent = '✓ Verify Code';
+      }
+    }
+
+    // 4. Supportive Info Modals Content (About, Privacy, Terms, Contact)
+    const infoBackdrop = document.getElementById('infoBackdrop');
+    const infoContent = document.getElementById('infoModalContent');
+
+    function openInfoModal(type) {
+      let html = '';
+      if (type === 'about') {
+        html = `
+          <div class="space-y-4">
+            <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 text-xs font-mono">
+              ENTERPRISE IDENTITY
+            </div>
+            <h3 class="text-2xl font-extrabold text-white">NextGen Multiverse Enterprises Pvt Ltd</h3>
+            <p class="text-slate-300 text-sm leading-relaxed">
+              NextGen Multiverse creates sovereign digital infrastructure across health, conversational AI, education, dynamic data systems, and grassroots community governance platforms.
+            </p>
+            <div class="p-4 rounded-2xl bg-black/40 border border-white/10 space-y-2 text-xs font-mono text-slate-400">
+              <div><strong>Corporate Anchor:</strong> nextgenmultiverse.com</div>
+              <div><strong>Platform:</strong> SayPulse AI Voice Intelligence (saypulse.nextgenmultiverse.com)</div>
+              <div><strong>Gateway Node:</strong> wa.nextgenmultiverse.com</div>
+            </div>
+          </div>
+        `;
+      } else if (type === 'privacy') {
+        html = `
+          <div class="space-y-4">
+            <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs font-mono">
+              DPDP ACT 2023 & HIPAA PRIVACY
+            </div>
+            <h3 class="text-2xl font-extrabold text-white">Audio & Data Privacy Invariants</h3>
+            <p class="text-slate-300 text-sm leading-relaxed">
+              SayPulse enforces a strict Zero-Storage raw audio policy. Spoken voice clips are converted into structured text in ephemeral memory, PII is scrubbed on the client before AI synthesis, and raw audio files are permanently purged.
+            </p>
+            <ul class="space-y-2 text-xs text-slate-400 list-disc pl-4">
+              <li>No raw voice recordings are stored on our servers.</li>
+              <li>Client-side automatic redaction of payment cards, phones, and emails.</li>
+              <li>Encrypted transport via TLS 1.3 and SHA-256 OTP hashes.</li>
+            </ul>
+          </div>
+        `;
+      } else if (type === 'terms') {
+        html = `
+          <div class="space-y-4">
+            <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/30 text-indigo-300 text-xs font-mono">
+              TERMS OF SERVICE
+            </div>
+            <h3 class="text-2xl font-extrabold text-white">Platform Terms & SLA</h3>
+            <p class="text-slate-300 text-sm leading-relaxed">
+              By integrating SayPulse, enterprise tenants agree to adhere to fair use rate limits and responsible voice data ingestion standards. 
+            </p>
+            <div class="p-4 rounded-2xl bg-black/40 border border-white/10 text-xs text-slate-400 space-y-1">
+              <div><strong>Availability SLA:</strong> 99.99% Core API Uptime</div>
+              <div><strong>Support SLA:</strong> 24/7 Tiered Response for Enterprise Plans</div>
+            </div>
+          </div>
+        `;
+      } else if (type === 'contact') {
+        html = `
+          <div class="space-y-4">
+            <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 text-xs font-mono">
+              COMMUNICATION & INQUIRIES
+            </div>
+            <h3 class="text-2xl font-extrabold text-white">Enterprise Consultation</h3>
+            <p class="text-slate-300 text-sm">
+              Connect with our enterprise engineering and solutions team for custom model fine-tuning or dedicated on-premise deployments.
+            </p>
+            <div class="space-y-3 pt-2">
+              <input type="text" placeholder="Your Name" class="w-full px-4 py-3 rounded-xl bg-black/50 border border-white/15 text-xs text-white outline-none focus:border-cyan-500" />
+              <input type="email" placeholder="Business Email" class="w-full px-4 py-3 rounded-xl bg-black/50 border border-white/15 text-xs text-white outline-none focus:border-cyan-500" />
+              <textarea placeholder="Describe your product & expected feedback volume..." rows="3" class="w-full px-4 py-3 rounded-xl bg-black/50 border border-white/15 text-xs text-white outline-none focus:border-cyan-500"></textarea>
+              <button onclick="alert('✓ Inquiry Dispatched Successfully. Our engineering team will reach out via WhatsApp/Email shortly.'); closeInfoModal();" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-cyan-500 to-indigo-600 text-xs font-bold text-white shadow-lg transition">
+                🚀 Dispatch Enterprise Inquiry
+              </button>
+            </div>
+          </div>
+        `;
+      }
+
+      infoContent.innerHTML = html;
+      infoBackdrop.classList.remove('opacity-0', 'pointer-events-none');
+      infoBackdrop.classList.add('opacity-100');
+    }
+
+    function closeInfoModal() {
+      infoBackdrop.classList.remove('opacity-100');
+      infoBackdrop.classList.add('opacity-0', 'pointer-events-none');
+    }
+    infoBackdrop.addEventListener('click', (e) => {
+      if (e.target === infoBackdrop) closeInfoModal();
+    });
+
+    // 5. Visualizer Simulator Trigger & 1-Click Copy
+    function previewAnimation(type) {
+      if (window.__SAYPULSE_SET_ANIMATION) {
+        window.__SAYPULSE_SET_ANIMATION(type);
+      }
+      alert('✨ Visualizer switched to: ' + type + '. Tap the floating mic in the bottom right corner to test!');
+    }
+
+    function copyEmbedScript() {
+      const code = `<script src="https://saypulse.nextgenmultiverse.com/saypulse.min.js" data-key="sp_live_your_company_api_key" data-position="bottom-right" data-color="#06B6D4" data-animation="siri-wave" defer><\/script>`;
+      navigator.clipboard.writeText(code);
+      const btn = document.getElementById('copyBtnText');
+      btn.textContent = '✓ Copied to Clipboard!';
+      setTimeout(() => {
+        btn.textContent = '📋 Copy Script Tag';
+      }, 2500);
+    }
+  </script>
+
+  <!-- Live SayPulse Universal Embed Script -->
+  <script src="saypulse.min.js" data-key="sp_live_saypulse_prod" data-position="bottom-right" data-color="#06B6D4" data-animation="siri-wave" defer></script>
 </body>
 </html>
