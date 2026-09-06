@@ -1,106 +1,84 @@
 # 🚀 NextGen Multiverse — FTP & Server Deployment Guide
 
-**Version:** 1.0  
-**Host Server:** `ftp.nextgenmultiverse.com`  
-**Connection Type:** Passive FTP (Port 21)  
-**Root Directory:** `/home/u459840062/domains/nextgenmultiverse.com/public_html`  
+**Version:** 2.0 (Production Live Edition)  
+**Main Domain:** `https://saypulse.nextgenmultiverse.com`  
+**Host Server:** `ftp.nextgenmultiverse.com` (Port 21, Passive Mode / PASV)  
 
 ---
 
-## 🔑 1. Connection Credentials
+## 🔑 1. Environment Connection Credentials
 
-| Property | Value | Notes |
-|---|---|---|
-| **Host** | `ftp.nextgenmultiverse.com` | Primary FTP endpoint |
-| **Port** | `21` | Standard FTP port |
-| **Connection Type** | `FTP` | Standard FTP over IPv4 |
-| **Username** | `u459840062.antigravity` | Dedicated deployment user |
-| **Password** | `N7!qR4@vL9#xT2mK8pZ6` | Stored securely |
-| **Transfer Mode** | **Passive Mode (PASV)** | Required by firewall/server |
-| **Root Public Directory** | `/home/u459840062/domains/nextgenmultiverse.com/public_html` | Server public web root |
+### 🟢 Production Deployment
+| Property | Value |
+|---|---|
+| **Host** | `ftp.nextgenmultiverse.com` |
+| **Port** | `21` (Passive Mode / PASV) |
+| **Username** | `u459840062.antigravity` |
+| **Password** | `N7!qR4@vL9#xT2mK8pZ6` |
+| **Remote Directory** | `/home/u459840062/domains/nextgenmultiverse.com/public_html/services/saypulse/prod` |
+| **Live URL / Subdomain** | **`https://saypulse.nextgenmultiverse.com`** |
+
+### 🟡 Development Deployment
+| Property | Value |
+|---|---|
+| **Host** | `ftp.nextgenmultiverse.com` |
+| **Port** | `21` (Passive Mode / PASV) |
+| **Username** | `u459840062.ag_dev_saypulse` |
+| **Password** | `D3v!S6@pL8#qW1mZ` |
+| **Remote Directory** | `services/saypulse/dev` (Chrooted to root `/`) |
+| **Dev URL** | `https://services.nextgenmultiverse.com/saypulse/dev` |
 
 ---
 
 ## 📁 2. Subdomain Directory Mapping
 
-The subdomains and services are organized into distinct folders under the root directory:
-
 ```
-/home/u459840062/domains/nextgenmultiverse.com/public_html/
+ftp.nextgenmultiverse.com (Root: public_html)
 ├── services/
 │   ├── saypulse/
-│   │   ├── prod/        ➔ SayPulse AI Platform (Production CDN & Widget)
-│   │   └── dev/         ➔ SayPulse AI Platform (Development / Staging)
+│   │   ├── prod/        ➔ https://saypulse.nextgenmultiverse.com
+│   │   └── dev/         ➔ https://services.nextgenmultiverse.com/saypulse/dev
 │   ├── pay/
-│   │   ├── prod/        ➔ Payment Gateway Microservice (Production)
-│   │   └── dev/         ➔ Payment Gateway Microservice (Dev)
+│   │   ├── prod/        ➔ Payment Gateway (Prod)
+│   │   └── dev/         ➔ Payment Gateway (Dev)
 │   └── wa/
-│       ├── prod/        ➔ WhatsApp Gateway / Baileys Connector (Production)
-│       └── dev/         ➔ WhatsApp Gateway / Baileys Connector (Dev)
+│       ├── prod/        ➔ https://wa.nextgenmultiverse.com
+│       └── dev/         ➔ https://dev-wa.nextgenmultiverse.com
 │
 └── portals/
     ├── smartforms/
-    │   ├── prod/        ➔ Smart Forms Portal (Production)
+    │   ├── prod/        ➔ Smart Forms Portal (Prod)
     │   └── dev/         ➔ Smart Forms Portal (Dev)
     └── samiti/
-        ├── prod/        ➔ Samiti / Society Management (Production)
-        └── dev/         ➔ Samiti / Society Management (Dev)
+        ├── prod/        ➔ Samiti Management (Prod)
+        └── dev/         ➔ Samiti Management (Dev)
 ```
 
 ---
 
-## 🛠️ 3. Node.js Automated Deployment Script Example
+## ⚡ 3. Universal 1-Line Embed Script (Production CDN)
 
-You can deploy builds (e.g. `@saypulse/cdn` or static portals) using `basic-ftp`:
-
-```javascript
-// deploy.js
-const ftp = require('basic-ftp');
-const path = require('path');
-
-async function deploy(localDir, remoteSubdir) {
-  const client = new ftp.Client();
-  client.ftp.verbose = true;
-
-  try {
-    await client.access({
-      host: 'ftp.nextgenmultiverse.com',
-      port: 21,
-      user: 'u459840062.antigravity',
-      password: 'N7!qR4@vL9#xT2mK8pZ6',
-      secure: false,
-      pasv: true, // Passive mode
-    });
-
-    const targetDir = `/home/u459840062/domains/nextgenmultiverse.com/public_html/${remoteSubdir}`;
-    console.log(`📁 Navigating to ${targetDir}...`);
-    await client.ensureDir(targetDir);
-    await client.clearWorkingDir();
-
-    console.log(`🚀 Uploading ${localDir} ➔ ${targetDir}...`);
-    await client.uploadFromDir(localDir);
-
-    console.log('✅ Deployment successful!');
-  } catch (err) {
-    console.error('❌ Deployment failed:', err);
-  } finally {
-    client.close();
-  }
-}
-
-// Deploy SayPulse Widget Bundle to Production:
-// deploy(path.join(__dirname, 'packages/cdn/dist'), 'services/saypulse/prod');
+```html
+<!-- SayPulse AI Voice Feedback Widget -->
+<script 
+  src="https://saypulse.nextgenmultiverse.com/saypulse.min.js" 
+  data-key="sp_live_your_project_key" 
+  data-position="bottom-right" 
+  data-color="#06B6D4" 
+  data-animation="siri-wave" 
+  defer>
+</script>
 ```
 
 ---
 
-## 🛡️ 4. Environment Variables (`.env.deploy`)
+## 🛠️ 4. One-Command Automated Deployers
 
-```env
-FTP_HOST=ftp.nextgenmultiverse.com
-FTP_PORT=21
-FTP_USER=u459840062.antigravity
-FTP_PASS=N7!qR4@vL9#xT2mK8pZ6
-FTP_ROOT=/home/u459840062/domains/nextgenmultiverse.com/public_html
-FTP_PASV=true
-```
+- **Deploy to Production:**
+  ```bash
+  python3 deploy_prod_ftp.py
+  ```
+- **Deploy to Development:**
+  ```bash
+  python3 deploy_dev_ftp.py
+  ```
