@@ -23,6 +23,15 @@ if (usersInfo.length > 0 && !hasPhone) {
   }
 }
 
+const hasPasswordHash = usersInfo.some((col: any) => col.name === 'password_hash');
+if (usersInfo.length > 0 && !hasPasswordHash) {
+  try {
+    db.exec(`ALTER TABLE users ADD COLUMN password_hash TEXT;`);
+  } catch (e) {
+    // Column might already exist
+  }
+}
+
 const orgsInfo = db.prepare("PRAGMA table_info(organizations)").all() as any[];
 const hasWebsiteUrl = orgsInfo.some((col: any) => col.name === 'website_url');
 if (orgsInfo.length > 0 && !hasWebsiteUrl) {
@@ -53,6 +62,7 @@ db.exec(`
     organization_id TEXT NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
     email           TEXT,
     phone           TEXT,
+    password_hash   TEXT,
     full_name       TEXT NOT NULL,
     role            TEXT NOT NULL DEFAULT 'admin', -- 'superadmin', 'owner', 'admin', 'member'
     avatar_url      TEXT,
@@ -97,6 +107,7 @@ db.exec(`
   CREATE TABLE IF NOT EXISTS widget_configurations (
     id                  TEXT PRIMARY KEY,
     organization_id     TEXT UNIQUE NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
+    layout_mode         TEXT NOT NULL DEFAULT 'card', -- 'card', 'bottom-pill'
     default_animation   TEXT NOT NULL DEFAULT 'siri-wave',
     primary_color       TEXT NOT NULL DEFAULT '#06B6D4',
     position            TEXT NOT NULL DEFAULT 'bottom-right',
@@ -104,6 +115,8 @@ db.exec(`
     header_subtitle     TEXT NOT NULL DEFAULT 'Tap a star to rate',
     enable_voice        INTEGER NOT NULL DEFAULT 1,
     enable_star_rating  INTEGER NOT NULL DEFAULT 1,
+    trigger_style       TEXT NOT NULL DEFAULT 'pill-wave-voice',
+    auto_collapse       INTEGER NOT NULL DEFAULT 1,
     quick_tag_presets   TEXT DEFAULT '["Bug / Error", "Slow / Laggy", "Confusing UI", "Missing Feature"]',
     updated_at          TEXT NOT NULL DEFAULT (datetime('now'))
   );
@@ -132,48 +145,106 @@ db.exec(`
   );
 `);
 
+// Safe column migrations for existing databases
+try { db.exec("ALTER TABLE widget_configurations ADD COLUMN trigger_style TEXT DEFAULT 'pill-wave-voice'"); } catch (_) {}
+try { db.exec("ALTER TABLE widget_configurations ADD COLUMN auto_collapse INTEGER DEFAULT 1"); } catch (_) {}
+
 // ──────────────────────────────────────────────────────────────────────────────
-// Seed Default Demo Organizations
+// Seed Default Master & Demo Organizations
 // ──────────────────────────────────────────────────────────────────────────────
-const DEMO_ORG_ID = 'org_demo_acme_analytics';
+export const MASTER_ORG_ID = 'org_master';
+export const DEMO_ORG_ID = 'org_demo_sandbox';
 
-const existingDemo = db.prepare('SELECT id FROM organizations WHERE slug = ?').get('demo');
+// Clean up any legacy test / placeholder artifacts from initial development
+try {
+  db.prepare(`DELETE FROM organizations WHERE id = 'org_acme_analytics_master' OR slug = 'acme-analytics'`).run();
+  db.prepare(`DELETE FROM organizations WHERE slug LIKE 'swiggy-foods%'`).run();
+  db.prepare(`DELETE FROM users WHERE id = 'user_admin_01'`).run();
+} catch (e) {}
 
-if (!existingDemo) {
-  // 1. Create Isolated Demo Sandbox Organization
-  db.prepare(`
-    INSERT INTO organizations (id, name, slug, website_url, plan, data_residency)
-    VALUES (?, ?, ?, ?, ?, ?)
-  `).run(DEMO_ORG_ID, 'Acme Analytics (Demo Sandbox)', 'demo', 'https://acme-analytics-demo.io', 'enterprise', 'us-east');
+// 1. Ensure Master Platform Organization for Vivek Mandal (Superadmin)
+db.prepare(`
+  INSERT OR REPLACE INTO organizations (id, name, slug, website_url, plan, data_residency)
+  VALUES (?, ?, ?, ?, ?, ?)
+`).run(
+  MASTER_ORG_ID,
+  'SayPulse Master (NextGen Multiverse)',
+  'master',
+  'https://saypulse.nextgenmultiverse.com',
+  'platform_owner',
+  'us-east'
+);
 
-  // Also create slug 'acme-analytics' pointing to same demo
-  db.prepare(`
-    INSERT OR IGNORE INTO organizations (id, name, slug, website_url, plan, data_residency)
-    VALUES (?, ?, ?, ?, ?, ?)
-  `).run('org_acme_analytics_master', 'Acme Analytics', 'acme-analytics', 'https://acme.io', 'enterprise', 'us-east');
+// 2. Ensure Superadmin User Vivek Mandal is bound to Master Org
+db.prepare(`
+  INSERT OR REPLACE INTO users (id, organization_id, email, phone, full_name, role)
+  VALUES (?, ?, ?, ?, ?, ?)
+`).run(
+  'user_superadmin_vivek',
+  MASTER_ORG_ID,
+  'vivek@nextgenmultiverse.com',
+  '919013793020',
+  'Vivek Mandal',
+  'superadmin'
+);
 
-  // 2. Create Superadmin User for Vivek
-  db.prepare(`
-    INSERT OR REPLACE INTO users (id, organization_id, email, phone, full_name, role)
-    VALUES (?, ?, ?, ?, ?, ?)
-  `).run('user_superadmin_vivek', DEMO_ORG_ID, 'vivek@saypulse.ai', '919013793020', 'Vivek Mandal', 'superadmin');
+// 3. Ensure Master API Key
+db.prepare(`
+  INSERT OR REPLACE INTO api_keys (id, organization_id, api_key, name, environment, allowed_origins)
+  VALUES (?, ?, ?, ?, ?, ?)
+`).run('key_master_live', MASTER_ORG_ID, 'sp_live_master_9013793020', 'Master Platform Key', 'production', '["*"]');
 
-  // 3. Create Default Master API Key
-  db.prepare(`
-    INSERT OR REPLACE INTO api_keys (id, organization_id, api_key, name, environment, allowed_origins)
-    VALUES (?, ?, ?, ?, ?, ?)
-  `).run('key_local_master', DEMO_ORG_ID, 'sp_dev_local_master', 'Master Dev Key', 'development', '["*"]');
+// 4. Ensure Master Widget Configuration
+db.prepare(`
+  INSERT OR REPLACE INTO widget_configurations (id, organization_id, default_animation, primary_color, position)
+  VALUES (?, ?, ?, ?, ?)
+`).run('widget_cfg_master', MASTER_ORG_ID, 'siri-wave', '#06B6D4', 'bottom-right');
 
-  // 4. Create Default Widget Config
-  db.prepare(`
-    INSERT OR REPLACE INTO widget_configurations (id, organization_id, default_animation, primary_color, position)
-    VALUES (?, ?, ?, ?, ?)
-  `).run('widget_cfg_demo', DEMO_ORG_ID, 'siri-wave', '#06B6D4', 'bottom-right');
+// 5. Ensure Isolated Demo Sandbox Organization for Public Testing (/admin/demo)
+db.prepare(`
+  INSERT OR REPLACE INTO organizations (id, name, slug, website_url, plan, data_residency)
+  VALUES (?, ?, ?, ?, ?, ?)
+`).run(
+  DEMO_ORG_ID,
+  'Demo Sandbox',
+  'demo',
+  'https://saypulse.nextgenmultiverse.com/admin/demo',
+  'sandbox',
+  'us-east'
+);
 
-  // 5. Seed Realistic Multi-Category Voice Feedback Records strictly for the Demo Org
+// 6. Ensure Demo Sandbox Member User
+db.prepare(`
+  INSERT OR REPLACE INTO users (id, organization_id, email, phone, full_name, role)
+  VALUES (?, ?, ?, ?, ?, ?)
+`).run(
+  'user_demo_guest',
+  DEMO_ORG_ID,
+  'demo@saypulse.ai',
+  null,
+  'Demo Visitor',
+  'member'
+);
+
+// 7. Ensure Demo Sandbox API Key
+db.prepare(`
+  INSERT OR REPLACE INTO api_keys (id, organization_id, api_key, name, environment, allowed_origins)
+  VALUES (?, ?, ?, ?, ?, ?)
+`).run('key_demo_sandbox', DEMO_ORG_ID, 'sp_live_demo_sandbox', 'Demo Sandbox Key', 'development', '["*"]');
+
+// 8. Ensure Demo Sandbox Widget Config
+db.prepare(`
+  INSERT OR REPLACE INTO widget_configurations (id, organization_id, default_animation, primary_color, position)
+  VALUES (?, ?, ?, ?, ?)
+`).run('widget_cfg_demo', DEMO_ORG_ID, 'siri-wave', '#06B6D4', 'bottom-right');
+
+// 9. Seed Realistic Multi-Category Voice Feedback Records strictly for the Demo Org
+const existingDemoFeedback = db.prepare('SELECT COUNT(*) as count FROM feedback WHERE organization_id = ?').get(DEMO_ORG_ID) as { count: number };
+
+if (existingDemoFeedback.count === 0) {
   const SEED_FEEDBACK = [
     {
-      id: 'fb_001',
+      id: 'fb_demo_001',
       rating: 1,
       quick_tags: ['Bug / Error', 'Slow / Laggy'],
       raw_transcript: "the export button is completely non-responsive on mobile safari and settings page won't load properly",
@@ -183,17 +254,17 @@ if (!existingDemo) {
       actionable_item: "Fix mobile Safari tap listener on Export button and optimize settings route bundle size.",
       tone_variations: {
         short: "Export button broken on mobile Safari.",
-        formal: "The user reported severe functional issues with the export and settings modules on mobile Safari.",
-        elaborated: "A 1-star review was submitted highlighting that the export trigger on mobile browsers fails to respond to touch events and the settings page exhibits severe loading latency."
+        formal: "The user reported functional issues with export and settings modules on mobile Safari.",
+        elaborated: "A 1-star review was submitted highlighting that the export trigger on mobile browsers fails to respond to touch events and the settings page exhibits loading latency."
       },
       status: 'new',
-      page_url: 'http://localhost:7100/analytics',
-      page_pathname: '/analytics',
+      page_url: 'https://saypulse.nextgenmultiverse.com/admin/demo',
+      page_pathname: '/admin/demo',
       browser: 'Mobile Safari',
       os: 'iOS 17.5',
       device_type: 'mobile',
       client_context: {
-        routeHistory: ['/', '/dashboard', '/analytics'],
+        routeHistory: ['/', '/demo'],
         consoleErrors: ["TypeError: Cannot read properties of undefined (reading 'exportBlob')"],
         viewport: { width: 393, height: 852 },
         userAgent: "Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X)"
@@ -201,7 +272,7 @@ if (!existingDemo) {
       created_at: new Date(Date.now() - 1000 * 60 * 35).toISOString(),
     },
     {
-      id: 'fb_002',
+      id: 'fb_demo_002',
       rating: 2,
       quick_tags: ['Confusing UI'],
       raw_transcript: "the cohort retention graph is really confusing to read on smaller screens because legends overlap",
@@ -215,13 +286,13 @@ if (!existingDemo) {
         elaborated: "The user expressed frustration with the cohort retention chart formatting on tablet/mobile screens where text overlapping degrades readability."
       },
       status: 'in_review',
-      page_url: 'http://localhost:7100/dashboard',
-      page_pathname: '/dashboard',
+      page_url: 'https://saypulse.nextgenmultiverse.com/admin/demo',
+      page_pathname: '/admin/demo',
       browser: 'Chrome 128',
       os: 'macOS 15',
       device_type: 'desktop',
       client_context: {
-        routeHistory: ['/', '/dashboard'],
+        routeHistory: ['/demo'],
         consoleErrors: [],
         viewport: { width: 1280, height: 800 },
         userAgent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)"
@@ -229,22 +300,22 @@ if (!existingDemo) {
       created_at: new Date(Date.now() - 1000 * 60 * 120).toISOString(),
     },
     {
-      id: 'fb_003',
+      id: 'fb_demo_003',
       rating: 5,
       quick_tags: ['Loved the UX', 'Fast & Smooth', 'Helpful AI'],
       raw_transcript: "the voice feedback widget with the glowing siri wave is insane! it feels so natural and futuristic to use",
       summary: "User expressed strong praise for the voice widget interface and Siri-style holographic wave visualizer.",
       category: 'General_Praise',
       sentiment: 'Positive',
-      actionable_item: "Share praise with the design and frontend engineering teams; consider featuring user feedback in marketing.",
+      actionable_item: "Share praise with the design and frontend engineering teams.",
       tone_variations: {
         short: "User loved the voice feedback widget and animations.",
         formal: "The user provided enthusiastic positive feedback regarding the futuristic design and fluidity of the voice interface.",
         elaborated: "The user submitted a 5-star rating specifically commending the futuristic aesthetic of the fluid waveform visualizer and natural voice interactions."
       },
       status: 'resolved',
-      page_url: 'http://localhost:7100/',
-      page_pathname: '/',
+      page_url: 'https://saypulse.nextgenmultiverse.com/admin/demo',
+      page_pathname: '/admin/demo',
       browser: 'Chrome 128',
       os: 'macOS 15',
       device_type: 'desktop',
@@ -255,62 +326,6 @@ if (!existingDemo) {
         userAgent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)"
       },
       created_at: new Date(Date.now() - 1000 * 60 * 360).toISOString(),
-    },
-    {
-      id: 'fb_004',
-      rating: 4,
-      quick_tags: ['Missing Feature', 'Great Design'],
-      raw_transcript: "would love to have an automated daily CSV export scheduled directly to my email or Google Drive",
-      summary: "Feature request for scheduled daily CSV exports delivered via email or Google Drive integration.",
-      category: 'Feature_Request',
-      sentiment: 'Neutral',
-      actionable_item: "Add scheduled CSV export functionality to the product roadmap backlog.",
-      tone_variations: {
-        short: "Feature request: automated daily CSV email exports.",
-        formal: "The user requested the addition of scheduled recurring CSV data export capabilities.",
-        elaborated: "The user suggested adding automated daily report exports sent to email or connected cloud storage providers."
-      },
-      status: 'new',
-      page_url: 'http://localhost:7100/analytics',
-      page_pathname: '/analytics',
-      browser: 'Firefox 129',
-      os: 'Windows 11',
-      device_type: 'desktop',
-      client_context: {
-        routeHistory: ['/dashboard', '/analytics'],
-        consoleErrors: [],
-        viewport: { width: 1920, height: 1080 },
-        userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
-      },
-      created_at: new Date(Date.now() - 1000 * 60 * 720).toISOString(),
-    },
-    {
-      id: 'fb_005',
-      rating: 1,
-      quick_tags: ['Slow / Laggy', 'Bug / Error'],
-      raw_transcript: "page load time takes over five seconds when switching between analytics tabs on 4G network",
-      summary: "High latency observed on tab navigation over mobile network with load times exceeding 5 seconds.",
-      category: 'Performance',
-      sentiment: 'Critical',
-      actionable_item: "Implement client-side SWR caching and route pre-fetching for analytics sub-routes.",
-      tone_variations: {
-        short: "Analytics tab switching latency over 5s on 4G.",
-        formal: "The user observed severe latency exceeding 5000ms when transitioning between analytics views on cellular connections.",
-        elaborated: "A 1-star performance report was lodged indicating that tab navigation in the analytics section suffers from significant lag on mobile connections."
-      },
-      status: 'in_review',
-      page_url: 'http://localhost:7100/analytics',
-      page_pathname: '/analytics',
-      browser: 'Chrome Mobile',
-      os: 'Android 14',
-      device_type: 'mobile',
-      client_context: {
-        routeHistory: ['/', '/analytics'],
-        consoleErrors: ["Network request /api/analytics timed out after 5000ms"],
-        viewport: { width: 412, height: 915 },
-        userAgent: "Mozilla/5.0 (Linux; Android 14; Pixel 8 Pro)"
-      },
-      created_at: new Date(Date.now() - 1000 * 60 * 1440).toISOString(),
     },
   ];
 
@@ -326,7 +341,7 @@ if (!existingDemo) {
     insertFb.run(
       f.id,
       DEMO_ORG_ID,
-      'key_local_master',
+      'key_demo_sandbox',
       f.rating,
       JSON.stringify(f.quick_tags),
       f.raw_transcript,
@@ -345,9 +360,9 @@ if (!existingDemo) {
       f.created_at,
     );
   });
-
-  console.log('[SayPulse DB] Multi-tenant schema initialized with isolated demo organization.');
 }
+
+console.log('[SayPulse DB] Master platform organization and isolated Demo Sandbox initialized.');
 
 // ──────────────────────────────────────────────────────────────────────────────
 // Organization & Tenant Helpers
@@ -396,6 +411,44 @@ export function getOrganizationByEmail(email: string) {
   return { ...org, user };
 }
 
+export function getOrganizationAlertEmail(organizationIdOrSlug: string): string | null {
+  const orgId = resolveOrgId(organizationIdOrSlug);
+  const row = db
+    .prepare(`
+      SELECT email FROM users 
+      WHERE organization_id = ? 
+        AND email IS NOT NULL 
+        AND email != '' 
+        AND email NOT LIKE '%@workspace.saypulse' 
+        AND email NOT LIKE '%@saypulse.ai'
+      ORDER BY CASE WHEN role IN ('owner', 'superadmin') THEN 0 ELSE 1 END
+      LIMIT 1
+    `)
+    .get(orgId) as { email: string } | undefined;
+
+  return row?.email || null;
+}
+
+export function getUserWithCredentials(identifier: string) {
+  const clean = identifier.trim();
+  const cleanPhone = clean.replace(/[^0-9]/g, '');
+  let user: any = null;
+
+  if (clean.includes('@')) {
+    user = db
+      .prepare('SELECT id, organization_id, role, full_name, email, phone, password_hash FROM users WHERE LOWER(email) = LOWER(?) LIMIT 1')
+      .get(clean) as any;
+  } else if (cleanPhone.length >= 7) {
+    user = db
+      .prepare('SELECT id, organization_id, role, full_name, email, phone, password_hash FROM users WHERE phone LIKE ? LIMIT 1')
+      .get(`%${cleanPhone.slice(-10)}%`) as any;
+  }
+
+  if (!user) return null;
+  const org = getOrganizationById(user.organization_id);
+  return { ...user, organization: org };
+}
+
 export function createOrganization(data: {
   name: string;
   slug?: string;
@@ -403,6 +456,7 @@ export function createOrganization(data: {
   ownerName?: string;
   ownerPhone?: string;
   ownerEmail?: string;
+  passwordHash?: string;
   plan?: string;
 }) {
   let baseSlug = slugify(data.slug || data.name);
@@ -428,13 +482,14 @@ export function createOrganization(data: {
 
   // 2. Create Owner User Record
   db.prepare(`
-    INSERT INTO users (id, organization_id, email, phone, full_name, role)
-    VALUES (?, ?, ?, ?, ?, ?)
+    INSERT INTO users (id, organization_id, email, phone, password_hash, full_name, role)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
   `).run(
     userId,
     orgId,
     data.ownerEmail || `${uniqueSlug}@workspace.saypulse`,
     data.ownerPhone || null,
+    data.passwordHash || null,
     data.ownerName || 'Workspace Owner',
     'owner'
   );
@@ -482,10 +537,10 @@ export function getAllOrganizationsWithStats() {
         (SELECT COUNT(*) FROM feedback f WHERE f.organization_id = o.id) as feedback_count,
         (SELECT AVG(f.rating) FROM feedback f WHERE f.organization_id = o.id) as avg_rating
       FROM organizations o
-      LEFT JOIN users u ON u.organization_id = o.id AND u.role IN ('owner', 'superadmin')
+      LEFT JOIN users u ON u.organization_id = o.id AND u.role IN ('owner', 'superadmin', 'member')
       LEFT JOIN api_keys k ON k.organization_id = o.id AND k.is_active = 1
       GROUP BY o.id
-      ORDER BY o.created_at DESC
+      ORDER BY CASE WHEN o.slug = 'master' THEN 0 WHEN o.slug = 'demo' THEN 2 ELSE 1 END, o.created_at DESC
     `)
     .all() as any[];
 
@@ -497,15 +552,16 @@ export function getAllOrganizationsWithStats() {
 }
 
 export function getGlobalPlatformAnalytics() {
-  const totalOrgs = db.prepare('SELECT COUNT(*) as count FROM organizations').get() as { count: number };
-  const totalFeedback = db.prepare('SELECT COUNT(*) as count, AVG(rating) as avg_rating FROM feedback').get() as { count: number; avg_rating: number | null };
-  const totalUsers = db.prepare('SELECT COUNT(*) as count FROM users').get() as { count: number };
-  const criticalCount = db.prepare("SELECT COUNT(*) as count FROM feedback WHERE sentiment = 'Critical' OR rating <= 2").get() as { count: number };
+  // Real platform metrics (excluding demo sandbox and master system org)
+  const totalOrgs = db.prepare("SELECT COUNT(*) as count FROM organizations WHERE slug NOT IN ('demo', 'master')").get() as { count: number };
+  const totalFeedback = db.prepare("SELECT COUNT(*) as count, AVG(rating) as avg_rating FROM feedback WHERE organization_id NOT IN (SELECT id FROM organizations WHERE slug = 'demo')").get() as { count: number; avg_rating: number | null };
+  const totalUsers = db.prepare("SELECT COUNT(*) as count FROM users WHERE organization_id NOT IN (SELECT id FROM organizations WHERE slug = 'demo')").get() as { count: number };
+  const criticalCount = db.prepare("SELECT COUNT(*) as count FROM feedback WHERE (sentiment = 'Critical' OR rating <= 2) AND organization_id NOT IN (SELECT id FROM organizations WHERE slug = 'demo')").get() as { count: number };
 
   return {
     totalOrganizations: totalOrgs.count || 0,
     totalVoiceFeedbacks: totalFeedback.count || 0,
-    platformAverageCsat: totalFeedback.avg_rating ? Number(totalFeedback.avg_rating.toFixed(1)) : 4.5,
+    platformAverageCsat: totalFeedback.avg_rating ? Number(totalFeedback.avg_rating.toFixed(1)) : 5.0,
     totalPlatformUsers: totalUsers.count || 0,
     totalCriticalIssues: criticalCount.count || 0,
   };
@@ -516,11 +572,13 @@ export function getGlobalPlatformAnalytics() {
 // ──────────────────────────────────────────────────────────────────────────────
 
 export function resolveOrgId(orgIdOrSlug?: string): string {
-  if (!orgIdOrSlug) return DEMO_ORG_ID;
+  if (!orgIdOrSlug) return MASTER_ORG_ID;
+  if (orgIdOrSlug === 'demo') return DEMO_ORG_ID;
+  if (orgIdOrSlug === 'master') return MASTER_ORG_ID;
   if (orgIdOrSlug.startsWith('org_')) return orgIdOrSlug;
 
   const org = getOrganizationBySlug(orgIdOrSlug);
-  return org ? org.id : DEMO_ORG_ID;
+  return org ? org.id : MASTER_ORG_ID;
 }
 
 export function validateApiKey(key: string): { partner: string; allowedOrigins: string[]; organizationId: string; apiKeyId: string } | null {
@@ -534,12 +592,12 @@ export function validateApiKey(key: string): { partner: string; allowedOrigins: 
     .get(key) as any;
 
   if (!row) {
-    if (key === 'sp_dev_local_master') {
+    if (key === 'sp_dev_local_master' || key === 'sp_live_master_9013793020') {
       return {
-        partner: 'Acme Analytics',
+        partner: 'SayPulse Master',
         allowedOrigins: ['*'],
-        organizationId: DEMO_ORG_ID,
-        apiKeyId: 'key_local_master',
+        organizationId: MASTER_ORG_ID,
+        apiKeyId: 'key_master_live',
       };
     }
     return null;
@@ -783,7 +841,10 @@ export function getWidgetConfig(organizationIdOrSlug?: string) {
 
   if (!row) {
     return {
+      layout_mode: 'card',
       default_animation: 'siri-wave',
+      trigger_style: 'pill-wave-voice',
+      auto_collapse: true,
       primary_color: '#06B6D4',
       position: 'bottom-right',
       header_title: "How's your experience? 🎯",
@@ -796,6 +857,9 @@ export function getWidgetConfig(organizationIdOrSlug?: string) {
 
   return {
     ...row,
+    layout_mode: row.layout_mode || 'card',
+    trigger_style: row.trigger_style || 'pill-wave-voice',
+    auto_collapse: row.auto_collapse !== undefined ? Boolean(row.auto_collapse) : true,
     enable_voice: Boolean(row.enable_voice),
     enable_star_rating: Boolean(row.enable_star_rating),
     quick_tag_presets: JSON.parse(row.quick_tag_presets || '[]'),
@@ -806,12 +870,15 @@ export function updateWidgetConfig(organizationIdOrSlug: string, data: any) {
   const orgId = resolveOrgId(organizationIdOrSlug);
   return db.prepare(`
     INSERT INTO widget_configurations (
-      id, organization_id, default_animation, primary_color, position,
-      header_title, header_subtitle, enable_voice, enable_star_rating,
+      id, organization_id, layout_mode, default_animation, trigger_style, auto_collapse,
+      primary_color, position, header_title, header_subtitle, enable_voice, enable_star_rating,
       quick_tag_presets, updated_at
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))
     ON CONFLICT(organization_id) DO UPDATE SET
+      layout_mode = excluded.layout_mode,
       default_animation = excluded.default_animation,
+      trigger_style = excluded.trigger_style,
+      auto_collapse = excluded.auto_collapse,
       primary_color = excluded.primary_color,
       position = excluded.position,
       header_title = excluded.header_title,
@@ -823,7 +890,10 @@ export function updateWidgetConfig(organizationIdOrSlug: string, data: any) {
   `).run(
     uuidv4(),
     orgId,
+    data.layout_mode || 'card',
     data.default_animation || 'siri-wave',
+    data.trigger_style || 'pill-wave-voice',
+    data.auto_collapse === false ? 0 : 1,
     data.primary_color || '#06B6D4',
     data.position || 'bottom-right',
     data.header_title || "How's your experience? 🎯",

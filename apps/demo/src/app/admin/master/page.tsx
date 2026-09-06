@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { apiFetch } from '@/lib/api';
 
 interface OrgSummary {
   id: string;
@@ -46,8 +47,8 @@ export default function SuperadminMasterPage() {
     try {
       setLoading(true);
       const [overviewRes, orgsRes] = await Promise.all([
-        fetch('/saypulse/v1/admin/master/overview'),
-        fetch('/saypulse/v1/admin/master/organizations'),
+        apiFetch('/saypulse/v1/admin/master/overview'),
+        apiFetch('/saypulse/v1/admin/master/organizations'),
       ]);
 
       const overviewData = await overviewRes.json();
@@ -72,7 +73,7 @@ export default function SuperadminMasterPage() {
 
     setCreating(true);
     try {
-      const res = await fetch('/saypulse/v1/auth/register-org', {
+      const res = await apiFetch('/saypulse/v1/auth/register-org', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -223,7 +224,19 @@ export default function SuperadminMasterPage() {
                 {filteredOrgs.map((org) => (
                   <tr key={org.id} style={styles.tableRow}>
                     <td style={styles.td}>
-                      <div style={styles.orgName}>{org.name}</div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <span style={styles.orgName}>{org.name}</span>
+                        {org.slug === 'master' && (
+                          <span style={{ fontSize: 10, padding: '2px 6px', borderRadius: 4, background: 'rgba(168,85,247,0.2)', color: '#C084FC', fontWeight: 700 }}>
+                            👑 PLATFORM MASTER
+                          </span>
+                        )}
+                        {org.slug === 'demo' && (
+                          <span style={{ fontSize: 10, padding: '2px 6px', borderRadius: 4, background: 'rgba(234,179,8,0.2)', color: '#FACC15', fontWeight: 700 }}>
+                            ⚡ SANDBOX
+                          </span>
+                        )}
+                      </div>
                       <div style={styles.orgSlug}>
                         Slug: <code>{org.slug}</code>
                         {org.website_url && (
@@ -252,12 +265,16 @@ export default function SuperadminMasterPage() {
                         style={{
                           ...styles.planBadge,
                           background:
-                            org.plan === 'enterprise' || org.plan === 'platform_owner'
+                            org.plan === 'platform_owner'
                               ? 'rgba(168,85,247,0.15)'
+                              : org.plan === 'sandbox'
+                              ? 'rgba(234,179,8,0.15)'
                               : 'rgba(6,182,212,0.15)',
                           color:
-                            org.plan === 'enterprise' || org.plan === 'platform_owner'
+                            org.plan === 'platform_owner'
                               ? '#C084FC'
+                              : org.plan === 'sandbox'
+                              ? '#FACC15'
                               : '#22D3EE',
                         }}
                       >
@@ -360,7 +377,7 @@ export default function SuperadminMasterPage() {
                     type="tel"
                     value={newOwnerPhone}
                     onChange={(e) => setNewOwnerPhone(e.target.value.replace(/[^0-9]/g, ''))}
-                    placeholder="e.g. 9876543210"
+                    placeholder="Enter 10-digit mobile number"
                     style={styles.input}
                   />
                 </div>
@@ -372,7 +389,7 @@ export default function SuperadminMasterPage() {
                   type="email"
                   value={newOwnerEmail}
                   onChange={(e) => setNewOwnerEmail(e.target.value)}
-                  placeholder="owner@company.com"
+                  placeholder="name@organization.com"
                   style={styles.input}
                 />
               </div>

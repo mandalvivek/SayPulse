@@ -14,7 +14,7 @@ interface ApiKeyItem {
 
 export default function AdminSettingsPage() {
   // Email Alert Settings State
-  const [alertEmail, setAlertEmail] = useState('alerts@acmeanalytics.com');
+  const [alertEmail, setAlertEmail] = useState('support@nextgenmultiverse.com');
   const [critAlert, setCritAlert] = useState(true);
   const [lowRatingAlert, setLowRatingAlert] = useState(true);
   const [dailyDigest, setDailyDigest] = useState(true);
@@ -22,7 +22,7 @@ export default function AdminSettingsPage() {
   const [savedEmail, setSavedEmail] = useState(false);
 
   // WhatsApp Login Gateway State
-  const [waPhone, setWaPhone] = useState('+14155552671');
+  const [waPhone, setWaPhone] = useState('');
   const [waOtpSent, setWaOtpSent] = useState(false);
 
   // API Keys State
@@ -97,7 +97,7 @@ export default function AdminSettingsPage() {
                 type="email"
                 value={alertEmail}
                 onChange={(e) => setAlertEmail(e.target.value)}
-                placeholder="alerts@acmeanalytics.com"
+                placeholder="Enter work email for alerts"
                 style={styles.textInput}
               />
             </div>
@@ -257,14 +257,14 @@ export default function AdminSettingsPage() {
             </div>
           </div>
 
-          <div style={styles.profileGrid}>
+            <div style={styles.profileGrid}>
             <div style={styles.profileItem}>
               <span style={styles.profKey}>Organization Name</span>
-              <span style={styles.profVal}>Acme Analytics Inc.</span>
+              <span style={styles.profVal}>SayPulse Master Workspace</span>
             </div>
             <div style={styles.profileItem}>
               <span style={styles.profKey}>Tenant ID</span>
-              <span style={styles.profVal}>org_acme_analytics_master</span>
+              <span style={styles.profVal}>org_master</span>
             </div>
             <div style={styles.profileItem}>
               <span style={styles.profKey}>Subscription Plan</span>

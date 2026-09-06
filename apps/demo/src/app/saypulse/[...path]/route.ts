@@ -14,6 +14,9 @@ async function forwardRequest(req: NextRequest, path: string, method: string) {
     const apiKey = req.headers.get('X-SayPulse-Key');
     if (apiKey) headers['X-SayPulse-Key'] = apiKey;
 
+    const authHeader = req.headers.get('Authorization');
+    if (authHeader) headers['Authorization'] = authHeader;
+
     let body: string | undefined = undefined;
     if (['POST', 'PUT', 'PATCH'].includes(method)) {
       try {
@@ -30,8 +33,17 @@ async function forwardRequest(req: NextRequest, path: string, method: string) {
       body,
     });
 
-    const data = await response.json();
-    return NextResponse.json(data, { status: response.status });
+    const contentType = response.headers.get('content-type') || '';
+    if (contentType.includes('application/json')) {
+      const data = await response.json();
+      return NextResponse.json(data, { status: response.status });
+    } else {
+      const textData = await response.text();
+      return new NextResponse(textData, {
+        status: response.status,
+        headers: { 'Content-Type': contentType || 'text/plain' },
+      });
+    }
   } catch (error: any) {
     console.error(`[SayPulse Proxy Error] Failed forwarding ${method} to ${targetUrl}:`, error?.message);
     return NextResponse.json(

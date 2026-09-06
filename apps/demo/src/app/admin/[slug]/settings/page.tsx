@@ -8,7 +8,7 @@ export default function TenantSettingsPage() {
   const slug = (params?.slug as string) || 'demo';
 
   // Email Alert State
-  const [alertEmail, setAlertEmail] = useState('alerts@company.com');
+  const [alertEmail, setAlertEmail] = useState('support@nextgenmultiverse.com');
   const [critAlert, setCritAlert] = useState(true);
   const [lowRatingAlert, setLowRatingAlert] = useState(true);
   const [dailyDigest, setDailyDigest] = useState(true);
@@ -83,7 +83,7 @@ export default function TenantSettingsPage() {
                 type="email"
                 value={alertEmail}
                 onChange={(e) => setAlertEmail(e.target.value)}
-                placeholder="alerts@company.com"
+                placeholder="name@organization.com"
                 style={styles.textInput}
               />
             </div>

@@ -35,6 +35,23 @@
   const primaryColor = (currentScript && currentScript.getAttribute('data-color')) || '#06B6D4';
   const animationType = (currentScript && currentScript.getAttribute('data-animation')) || 'siri-wave';
 
+  // Phonetic brand dictionary for speech normalizations
+  const PHONETIC_BRAND_DICTIONARY = [
+    { pattern: /\b(sepals?|sepal|safe\s*pulse|say\s*pulse|say\s*pause|c\s*pulse|see\s*pulse|save\s*pulse|say\s*polls|say\s*poles|staples|stay\s*pulse|sayplus|say\s*plus|sapulse)\b/gi, replacement: 'SayPulse' },
+    { pattern: /\b(next\s*gen\s*multiverse|nextgen\s*multiverse|next\s*generation\s*multiverse)\b/gi, replacement: 'NextGen Multiverse' },
+    { pattern: /\b(exam\s*desk|examdesk)\b/gi, replacement: 'ExamDesk' },
+    { pattern: /\b(tekton|tecton\s*enterprise)\b/gi, replacement: 'Tecton Enterprise' },
+  ];
+
+  function normalizeBrandTerms(text) {
+    if (!text) return '';
+    let res = text;
+    for (let i = 0; i < PHONETIC_BRAND_DICTIONARY.length; i++) {
+      res = res.replace(PHONETIC_BRAND_DICTIONARY[i].pattern, PHONETIC_BRAND_DICTIONARY[i].replacement);
+    }
+    return res;
+  }
+
   // Global Context Harvesting
   const capturedErrors = [];
   const routeHistory = [window.location.pathname];
@@ -471,15 +488,8 @@
     actionBtn.classList.remove('recording');
     actionIcon.textContent = '✨';
     actionText.textContent = 'Synthesizing with Gemini AI…';
-    statusText.textContent = 'Processing with Gemini Flash AI…';
-
-    if (recognition) {
-      try {
-        recognition.stop();
-      } catch (e) {}
-    }
-
-    const finalNotes = spokenTranscript.trim() || 'Great experience on this page, smooth and responsive.';
+    const rawNotes = spokenTranscript.trim() || 'Great experience on this page, smooth and responsive.';
+    const finalNotes = normalizeBrandTerms(rawNotes);
 
     try {
       // 1. Summarize with Gemini AI

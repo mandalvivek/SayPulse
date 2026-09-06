@@ -9,6 +9,9 @@ authRouter.post('/send-otp', AuthController.sendOtp);
 // ── POST /verify-otp — Verify OTP, check Superadmin / tenant existence ─────────
 authRouter.post('/verify-otp', AuthController.verifyOtp);
 
+// ── POST /login-password — Direct Password login (Email/Phone + Password) ─────
+authRouter.post('/login-password', AuthController.loginPassword);
+
 // ── POST /register-org — Onboarding: Register new company & issue workspace slug
 authRouter.post('/register-org', AuthController.registerOrg);
 

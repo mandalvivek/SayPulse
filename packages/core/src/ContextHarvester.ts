@@ -16,6 +16,9 @@ export interface HarvestedContext {
   routeHistory: string[];
 }
 
+export type FeedbackContext = HarvestedContext;
+export type ConsoleError = string;
+
 // ──────────────────────────────────────────────────────────────────────────────
 // ContextHarvester
 // Collects client-side metadata at the moment of feedback submission.

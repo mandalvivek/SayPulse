@@ -37,6 +37,14 @@ export interface AiData {
   tone_variations: { short: string; formal: string; elaborated: string };
 }
 
+export type TriggerStyle =
+  | 'pill-wave-voice'
+  | 'bubble-wave'
+  | 'tab-corner'
+  | 'badge-compact'
+  | 'memo-voice'
+  | 'tab-vertical';
+
 export interface SayPulseContextValue {
   phase: WidgetPhase;
   setPhase: (p: WidgetPhase) => void;
@@ -57,12 +65,18 @@ export interface SayPulseContextValue {
   animationIndex: number;
   setActiveAnimation: (v: AnimationVariant) => void;
   cycleNextAnimation: () => void;
+  triggerStyle: TriggerStyle;
+  setTriggerStyle: (s: TriggerStyle) => void;
+  autoCollapse: boolean;
+  setAutoCollapse: (v: boolean) => void;
 }
 
 export interface SayPulseProviderProps {
   apiKey: string;
   apiEndpoint?: string;
   animationVariant?: AnimationVariant | 'cycle' | 'random';
+  triggerStyle?: TriggerStyle;
+  autoCollapse?: boolean;
   children: React.ReactNode;
 }
 
@@ -95,6 +109,8 @@ export function SayPulseProvider({
   apiKey,
   apiEndpoint = 'http://localhost:8000',
   animationVariant = 'cycle',
+  triggerStyle: initialTriggerStyle = 'pill-wave-voice',
+  autoCollapse: initialAutoCollapse = true,
   children,
 }: SayPulseProviderProps) {
   const [phase, setPhase] = useState<WidgetPhase>('idle');
@@ -107,6 +123,9 @@ export function SayPulseProvider({
 
   const [activeAnimation, setActiveAnimation] = useState<AnimationVariant>('siri-wave');
   const [animationIndex, setAnimationIndex] = useState(0);
+
+  const [triggerStyle, setTriggerStyle] = useState<TriggerStyle>(initialTriggerStyle);
+  const [autoCollapse, setAutoCollapse] = useState<boolean>(initialAutoCollapse);
 
   // ── Sequential Animation Cycling across Page Refreshes ───────────────────
   useEffect(() => {
@@ -163,7 +182,7 @@ export function SayPulseProvider({
     setRouteHistory(state?.routeHistory ?? [pathname]);
   }, [pathname]);
 
-  // ── Mount portal root in body ─────────────────────────────────────────────
+  // ── Mount portal root in body & Expose Global Controller ─────────────────
   useEffect(() => {
     if (typeof document === 'undefined') return;
     if (!document.getElementById('saypulse-root')) {
@@ -173,10 +192,68 @@ export function SayPulseProvider({
         'position:fixed;top:0;left:0;width:0;height:0;z-index:999999;pointer-events:none;';
       document.body.appendChild(root);
     }
+
+    if (typeof window !== 'undefined') {
+      (window as any).SayPulse = {
+        open: (targetPhase: WidgetPhase = 'rating') => {
+          setPhase(targetPhase);
+        },
+        close: () => {
+          setPhase('idle');
+        },
+        toggle: () => {
+          setPhase((prev) => (prev === 'idle' ? 'rating' : 'idle'));
+        },
+        setLayout: (mode: 'card' | 'bottom-pill') => {
+          if (mode === 'bottom-pill') {
+            setPhase('recording');
+          } else {
+            setPhase('rating');
+          }
+        },
+        setAnimation: (variant: AnimationVariant) => {
+          setActiveAnimation(variant);
+          const idx = ALL_VARIANTS.indexOf(variant);
+          if (idx >= 0) setAnimationIndex(idx);
+        },
+        setTriggerStyle: (style: TriggerStyle) => {
+          setTriggerStyle(style);
+        },
+        setAutoCollapse: (enable: boolean) => {
+          setAutoCollapse(enable);
+        },
+        startRecording: () => {
+          setPhase('recording');
+        },
+        stopRecording: () => {
+          setPhase('review');
+        },
+        getPhase: () => phase,
+      };
+
+      (window as any).__SAYPULSE_OPEN = (mode?: string) => {
+        setPhase(mode === 'bottom-pill' ? 'recording' : 'rating');
+      };
+      (window as any).__SAYPULSE_SET_ANIMATION = (v: AnimationVariant) => {
+        setActiveAnimation(v);
+        const idx = ALL_VARIANTS.indexOf(v);
+        if (idx >= 0) setAnimationIndex(idx);
+      };
+      (window as any).__SAYPULSE_SET_LAYOUT = (mode: 'card' | 'bottom-pill') => {
+        setPhase(mode === 'bottom-pill' ? 'recording' : 'rating');
+      };
+      (window as any).__SAYPULSE_SET_TRIGGER_STYLE = (s: TriggerStyle) => {
+        setTriggerStyle(s);
+      };
+      (window as any).__SAYPULSE_SET_AUTO_COLLAPSE = (enable: boolean) => {
+        setAutoCollapse(enable);
+      };
+    }
+
     return () => {
       harvesterRef.current.destroy();
     };
-  }, []);
+  }, [phase, setPhase, setActiveAnimation, setTriggerStyle, setAutoCollapse]);
 
   const value: SayPulseContextValue = {
     phase,
@@ -198,6 +275,10 @@ export function SayPulseProvider({
     animationIndex,
     setActiveAnimation,
     cycleNextAnimation,
+    triggerStyle,
+    setTriggerStyle,
+    autoCollapse,
+    setAutoCollapse,
   };
 
   return (

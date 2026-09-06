@@ -102,7 +102,7 @@ export function SummaryReviewModal() {
   if (isSuccess) {
     return (
       <div style={styles.backdrop}>
-        <div style={styles.modal}>
+        <div style={styles.modalSuccess}>
           <div style={styles.successEmoji}>🎉</div>
           <p style={styles.successTitle}>Feedback Submitted!</p>
           <p style={styles.successSub}>
@@ -116,28 +116,51 @@ export function SummaryReviewModal() {
   const effectiveRaw = rawTranscript?.trim() || (quickTags?.length ? `Selected tags: ${quickTags.join(', ')}` : '[Voice note processed]');
 
   return (
-    <div style={styles.backdrop}>
-      <div style={styles.modal}>
-        {/* ── Header ── */}
-        <div style={styles.header}>
-          <div>
-            <p style={styles.headerTitle}>Review Your Feedback</p>
-            <p style={styles.headerSub}>Verify what was heard and how AI structured it</p>
+    <>
+      <style>{`
+        @keyframes sp-backdrop-fade {
+          0% { opacity: 0; }
+          100% { opacity: 1; }
+        }
+        @keyframes sp-modal-expand-corner {
+          0% {
+            opacity: 0;
+            transform: scale(0.15) translate(360px, 360px);
+            transform-origin: bottom right;
+          }
+          75% {
+            opacity: 1;
+            transform: scale(1.02) translate(0, 0);
+          }
+          100% {
+            opacity: 1;
+            transform: scale(1) translate(0, 0);
+            transform-origin: center center;
+          }
+        }
+      `}</style>
+      <div style={styles.backdrop}>
+        <div style={styles.modal}>
+          {/* ── Header ── */}
+          <div style={styles.header}>
+            <div>
+              <p style={styles.headerTitle}>Review Your Feedback</p>
+              <p style={styles.headerSub}>Verify what was heard and how AI structured it</p>
+            </div>
+            <button
+              aria-label="Close"
+              onClick={() => setPhase('idle')}
+              style={styles.closeBtn}
+            >
+              ✕
+            </button>
           </div>
-          <button
-            aria-label="Close"
-            onClick={() => setPhase('idle')}
-            style={styles.closeBtn}
-          >
-            ✕
-          </button>
-        </div>
 
-        {/* ── Meta Chips Row (Category, Sentiment, Rating) ── */}
-        <div style={styles.metaRow}>
-          {aiData?.category && (
-            <span style={styles.chip}>
-              {CATEGORY_LABELS[aiData.category] ?? aiData.category}
+          {/* ── Meta Chips Row (Category, Sentiment, Rating) ── */}
+          <div style={styles.metaRow}>
+            {aiData?.category && (
+              <span style={styles.chip}>
+                {CATEGORY_LABELS[aiData.category] ?? aiData.category}
             </span>
           )}
           {aiData?.sentiment && (
@@ -337,6 +360,7 @@ export function SummaryReviewModal() {
         </div>
       </div>
     </div>
+    </>
   );
 }
 
@@ -362,10 +386,23 @@ const styles: Record<string, React.CSSProperties> = {
     padding: '22px 24px 20px',
     width: '100%',
     maxWidth: 560,
-    boxShadow: '0 24px 80px rgba(0,0,0,0.7)',
-    border: '1px solid #1E293B',
+    boxShadow: '0 24px 80px rgba(0,0,0,0.8), 0 0 40px rgba(6, 182, 212, 0.15)',
+    border: '1px solid rgba(255, 255, 255, 0.12)',
     maxHeight: '90vh',
     overflowY: 'auto',
+    animation: 'sp-modal-expand-corner 0.38s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+    willChange: 'transform, opacity',
+  },
+  modalSuccess: {
+    background: '#0F172A',
+    borderRadius: 20,
+    padding: '28px 32px',
+    width: '100%',
+    maxWidth: 420,
+    boxShadow: '0 24px 80px rgba(0,0,0,0.8), 0 0 40px rgba(16, 185, 129, 0.2)',
+    border: '1px solid rgba(16, 185, 129, 0.3)',
+    textAlign: 'center',
+    animation: 'sp-modal-expand-corner 0.38s cubic-bezier(0.16, 1, 0.3, 1) forwards',
   },
   header: {
     display: 'flex',

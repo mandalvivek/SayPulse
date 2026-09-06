@@ -7,10 +7,12 @@ export default function LoginPage() {
   const router = useRouter();
 
   // Auth State
-  const [method, setMethod] = useState<'whatsapp' | 'email'>('whatsapp');
-  const [email, setEmail] = useState('alex@acmeanalytics.com');
-  const [phoneTenDigit, setPhoneTenDigit] = useState('9013793020');
+  const [method, setMethod] = useState<'whatsapp' | 'email' | 'password'>('whatsapp');
+  const [email, setEmail] = useState('');
+  const [phoneTenDigit, setPhoneTenDigit] = useState('');
   const [countryCode, setCountryCode] = useState('+91');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [otpSent, setOtpSent] = useState(false);
   const [otpCode, setOtpCode] = useState('');
   const [loading, setLoading] = useState(false);
@@ -33,18 +35,26 @@ export default function LoginPage() {
     }
   }, [countdown]);
 
-  const target = method === 'email' ? email : `${countryCode.replace('+', '')}${phoneTenDigit}`;
+  const target = method === 'email' ? email.trim().toLowerCase() : `${countryCode.replace('+', '')}${phoneTenDigit.replace(/\D/g, '')}`;
 
   const handleSendOtp = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
-    setError(null);
-    setLoading(true);
-
-    if (method === 'whatsapp' && phoneTenDigit.length < 10) {
-      setError('Please enter a valid 10-digit mobile number');
-      setLoading(false);
+    if (countdown > 0) {
+      setError(`⏳ Please wait ${countdown} seconds before requesting another code.`);
       return;
     }
+    setError(null);
+
+    if (method === 'whatsapp' && phoneTenDigit.length < 10) {
+      setError('Please enter a valid 10-digit mobile number.');
+      return;
+    }
+    if (method === 'email' && (!email || !email.includes('@'))) {
+      setError('Please enter a valid work email address.');
+      return;
+    }
+
+    setLoading(true);
 
     try {
       const res = await fetch('/saypulse/v1/auth/send-otp', {
@@ -55,14 +65,66 @@ export default function LoginPage() {
 
       const data = await res.json();
       if (!res.ok || !data.success) {
-        throw new Error(data.error || 'Failed sending OTP');
+        if (res.status === 429 || data.waitSeconds) {
+          const wait = data.waitSeconds || 20;
+          setCountdown(wait);
+          throw new Error(`⏳ Please wait ${wait} seconds before requesting another code.`);
+        }
+        throw new Error(data.error || 'Failed sending verification code.');
       }
 
       setOtpSent(true);
-      setCountdown(60);
+      setCountdown(20);
       if (data.waLink) setWaLink(data.waLink);
     } catch (err: any) {
-      setError(err.message || 'Error sending code');
+      setError(err.message || 'Error sending code.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handlePasswordLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const identifier = (email || phoneTenDigit).trim();
+    if (!identifier) {
+      setError('Please enter your email or mobile number.');
+      return;
+    }
+    if (!password) {
+      setError('Please enter your password.');
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      const res = await fetch('/saypulse/v1/auth/login-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          identifier: identifier.includes('@') ? identifier.toLowerCase() : `91${identifier.replace(/\D/g, '')}`,
+          password,
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || 'Invalid email/phone or password.');
+      }
+
+      if (data.token) localStorage.setItem('saypulse_auth_token', data.token);
+      if (data.user) localStorage.setItem('saypulse_user', JSON.stringify(data.user));
+
+      if (data.isSuperAdmin) {
+        router.push('/admin/master');
+      } else if (data.redirectUrl) {
+        router.push(data.redirectUrl);
+      } else {
+        router.push('/admin/demo');
+      }
+    } catch (err: any) {
+      setError(err.message || 'Password authentication failed.');
     } finally {
       setLoading(false);
     }
@@ -82,7 +144,7 @@ export default function LoginPage() {
 
       const data = await res.json();
       if (!res.ok || !data.success) {
-        throw new Error(data.error || 'Invalid verification code');
+        throw new Error(data.error || 'Invalid verification code.');
       }
 
       // Check if user is NEW and needs to register their company workspace
@@ -105,7 +167,7 @@ export default function LoginPage() {
         router.push('/admin/demo');
       }
     } catch (err: any) {
-      setError(err.message || 'Verification failed');
+      setError(err.message || 'Verification failed.');
     } finally {
       setLoading(false);
     }
@@ -114,6 +176,11 @@ export default function LoginPage() {
   const handleCompleteRegistration = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!companyName.trim()) return;
+
+    if (password && password !== confirmPassword) {
+      setError('Passwords do not match. Please re-enter.');
+      return;
+    }
 
     setRegistering(true);
     setError(null);
@@ -127,13 +194,14 @@ export default function LoginPage() {
           websiteUrl: websiteUrl.trim(),
           ownerName: ownerName.trim() || companyName.trim(),
           phone: method === 'whatsapp' ? target : undefined,
-          email: method === 'email' ? target : undefined,
+          email: method === 'email' ? target : (email || undefined),
+          password: password.trim() || undefined,
         }),
       });
 
       const data = await res.json();
       if (!res.ok || !data.success) {
-        throw new Error(data.error || 'Failed to create workspace');
+        throw new Error(data.error || 'Failed to create workspace.');
       }
 
       // Store auth session
@@ -143,7 +211,7 @@ export default function LoginPage() {
       // Redirect to newly created tenant dashboard (/admin/[slug])
       router.push(data.redirectUrl || `/admin/${data.organization.slug}`);
     } catch (err: any) {
-      setError(err.message || 'Error creating workspace');
+      setError(err.message || 'Error creating workspace.');
     } finally {
       setRegistering(false);
     }
@@ -156,8 +224,8 @@ export default function LoginPage() {
       JSON.stringify({
         id: 'user_demo_guest',
         name: 'Demo Visitor',
-        role: 'admin',
-        organization: { id: 'org_demo_acme_analytics', name: 'Acme Analytics', slug: 'demo' },
+        role: 'member',
+        organization: { id: 'org_demo_sandbox', name: 'Demo Sandbox', slug: 'demo' },
       })
     );
     router.push('/admin/demo');
@@ -183,12 +251,12 @@ export default function LoginPage() {
               }}
               style={{
                 ...styles.tabBtn,
-                background: method === 'whatsapp' ? 'rgba(16,185,129,0.12)' : 'transparent',
+                background: method === 'whatsapp' ? 'rgba(16,185,129,0.15)' : 'transparent',
                 color: method === 'whatsapp' ? '#10B981' : '#64748B',
                 borderColor: method === 'whatsapp' ? '#10B981' : 'transparent',
               }}
             >
-              📲 WhatsApp OTP
+              📲 WhatsApp
             </button>
             <button
               onClick={() => {
@@ -197,72 +265,142 @@ export default function LoginPage() {
               }}
               style={{
                 ...styles.tabBtn,
-                background: method === 'email' ? 'rgba(6,182,212,0.12)' : 'transparent',
+                background: method === 'email' ? 'rgba(6,182,212,0.15)' : 'transparent',
                 color: method === 'email' ? '#06B6D4' : '#64748B',
                 borderColor: method === 'email' ? '#06B6D4' : 'transparent',
               }}
             >
               📧 Email OTP
             </button>
+            <button
+              onClick={() => {
+                setMethod('password');
+                setError(null);
+              }}
+              style={{
+                ...styles.tabBtn,
+                background: method === 'password' ? 'rgba(99,102,241,0.15)' : 'transparent',
+                color: method === 'password' ? '#818CF8' : '#64748B',
+                borderColor: method === 'password' ? '#818CF8' : 'transparent',
+              }}
+            >
+              🔑 Password
+            </button>
           </div>
         )}
 
         {error && <div style={styles.errorAlert}>⚠️ {error}</div>}
 
-        {/* ── Step 1: Request Code ── */}
+        {/* ── Step 1: Request Code / Password Login ── */}
         {!otpSent ? (
-          <form onSubmit={handleSendOtp} style={styles.form}>
-            {method === 'whatsapp' ? (
+          method === 'password' ? (
+            /* ── PASSWORD LOGIN ── */
+            <form onSubmit={handlePasswordLogin} style={styles.form}>
               <div style={styles.inputGroup}>
-                <label style={styles.uppercaseLabel}>MOBILE NUMBER</label>
-
-                {/* ── Country Code + 10-Digit Split Input ── */}
-                <div style={styles.phoneInputRow}>
-                  <div style={styles.countryCodePill}>
-                    <span style={styles.flagIcon}>🇮🇳</span>
-                    <span style={styles.codeText}>{countryCode}</span>
-                  </div>
-                  <input
-                    type="tel"
-                    required
-                    maxLength={10}
-                    value={phoneTenDigit}
-                    onChange={(e) => setPhoneTenDigit(e.target.value.replace(/[^0-9]/g, ''))}
-                    placeholder="10-digit number"
-                    style={styles.phoneInputField}
-                  />
-                </div>
-                <span style={styles.hint}>We will dispatch a 6-digit login code via MHC WhatsApp Gateway.</span>
-              </div>
-            ) : (
-              <div style={styles.inputGroup}>
-                <label style={styles.uppercaseLabel}>WORK EMAIL ADDRESS</label>
+                <label style={styles.uppercaseLabel}>EMAIL OR 10-DIGIT MOBILE NUMBER</label>
                 <input
-                  type="email"
+                  type="text"
                   required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="alex@acmeanalytics.com"
+                  value={email || phoneTenDigit}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    if (val.includes('@')) {
+                      setEmail(val);
+                    } else {
+                      setPhoneTenDigit(val.replace(/\D/g, ''));
+                      setEmail(val);
+                    }
+                  }}
+                  placeholder="Enter registered email or username"
                   style={styles.textInput}
                 />
-                <span style={styles.hint}>We will send a 6-digit login verification code to your email.</span>
               </div>
-            )}
 
-            <button
-              type="submit"
-              disabled={loading}
-              style={{
-                ...styles.primaryBtn,
-                background:
-                  method === 'whatsapp'
-                    ? 'linear-gradient(135deg,#059669,#10B981)'
-                    : 'linear-gradient(135deg,#06B6D4,#6366F1)',
-              }}
-            >
-              {loading ? 'Sending Code…' : method === 'whatsapp' ? '📲 Send WhatsApp Code' : '📧 Send Email Code'}
-            </button>
-          </form>
+              <div style={styles.inputGroup}>
+                <label style={styles.uppercaseLabel}>ACCOUNT PASSWORD</label>
+                <input
+                  type="password"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••••••••••"
+                  style={styles.textInput}
+                />
+              </div>
+
+              <button
+                type="submit"
+                disabled={loading}
+                style={{
+                  ...styles.primaryBtn,
+                  background: 'linear-gradient(135deg,#6366F1,#8B5CF6)',
+                }}
+              >
+                {loading ? 'Authenticating…' : '🔑 Sign In with Password'}
+              </button>
+            </form>
+          ) : (
+            /* ── OTP DISPATCH (WhatsApp / Email) ── */
+            <form onSubmit={handleSendOtp} style={styles.form}>
+              {method === 'whatsapp' ? (
+                <div style={styles.inputGroup}>
+                  <label style={styles.uppercaseLabel}>MOBILE NUMBER</label>
+                  <div style={styles.phoneInputRow}>
+                    <div style={styles.countryCodePill}>
+                      <span style={styles.flagIcon}>🇮🇳</span>
+                      <span style={styles.codeText}>{countryCode}</span>
+                    </div>
+                    <input
+                      type="tel"
+                      required
+                      maxLength={10}
+                      value={phoneTenDigit}
+                      onChange={(e) => setPhoneTenDigit(e.target.value.replace(/[^0-9]/g, ''))}
+                      placeholder="10-digit number"
+                      style={styles.phoneInputField}
+                    />
+                  </div>
+                  <span style={styles.hint}>We will dispatch a 6-digit login code via WhatsApp.</span>
+                </div>
+              ) : (
+                <div style={styles.inputGroup}>
+                  <label style={styles.uppercaseLabel}>WORK EMAIL ADDRESS</label>
+                  <input
+                    type="email"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="Enter registered work email"
+                    style={styles.textInput}
+                  />
+                  <span style={styles.hint}>We will send a 6-digit login verification code to your email.</span>
+                </div>
+              )}
+
+              <button
+                type="submit"
+                disabled={loading || countdown > 0}
+                style={{
+                  ...styles.primaryBtn,
+                  background:
+                    countdown > 0
+                      ? '#334155'
+                      : method === 'whatsapp'
+                      ? 'linear-gradient(135deg,#059669,#10B981)'
+                      : 'linear-gradient(135deg,#06B6D4,#6366F1)',
+                  cursor: countdown > 0 ? 'not-allowed' : 'pointer',
+                }}
+              >
+                {loading
+                  ? 'Sending Code…'
+                  : countdown > 0
+                  ? `⏳ Resend Code (${countdown}s)`
+                  : method === 'whatsapp'
+                  ? '📲 Send WhatsApp Code'
+                  : '📧 Send Email Code'}
+              </button>
+            </form>
+          )
         ) : (
           /* ── Step 2: Enter 6-Digit Code ── */
           <form onSubmit={handleVerifyOtp} style={styles.form}>
@@ -291,7 +429,7 @@ export default function LoginPage() {
                 maxLength={6}
                 value={otpCode}
                 onChange={(e) => setOtpCode(e.target.value.replace(/[^0-9]/g, ''))}
-                placeholder="123456"
+                placeholder="······"
                 style={styles.otpInput}
               />
             </div>
@@ -385,13 +523,38 @@ export default function LoginPage() {
                 />
               </div>
 
+              <div style={styles.inputGroup}>
+                <label style={styles.uppercaseLabel}>CREATE MASTER PASSWORD *</label>
+                <input
+                  type="password"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••••••••••"
+                  style={styles.textInput}
+                />
+              </div>
+
+              <div style={styles.inputGroup}>
+                <label style={styles.uppercaseLabel}>CONFIRM PASSWORD *</label>
+                <input
+                  type="password"
+                  required
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  placeholder="••••••••••••"
+                  style={styles.textInput}
+                />
+              </div>
+
               <button
                 type="submit"
-                disabled={registering || !companyName.trim()}
+                disabled={registering || !companyName.trim() || !password || password !== confirmPassword}
                 style={{
                   ...styles.primaryBtn,
                   marginTop: 10,
                   background: 'linear-gradient(135deg,#06B6D4,#6366F1)',
+                  opacity: (!companyName.trim() || !password || password !== confirmPassword) ? 0.6 : 1,
                 }}
               >
                 {registering ? 'Creating Workspace…' : '🚀 Launch My Workspace ➔'}
@@ -497,15 +660,18 @@ const styles: Record<string, React.CSSProperties> = {
     width: '100%',
   },
   countryCodePill: {
-    background: '#1E293B',
-    border: '1px solid #334155',
+    background: '#0F172A',
+    border: '1px solid rgba(255,255,255,0.18)',
     borderRadius: 12,
-    padding: '11px 14px',
+    padding: '12px 14px',
     display: 'flex',
     alignItems: 'center',
+    justifyContent: 'center',
     gap: 8,
+    minWidth: '120px',
     flexShrink: 0,
     userSelect: 'none',
+    boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.5)',
   },
   flagIcon: {
     fontSize: 16,
@@ -513,21 +679,23 @@ const styles: Record<string, React.CSSProperties> = {
   codeText: {
     color: '#F8FAFC',
     fontSize: 14,
-    fontWeight: 600,
+    fontWeight: 700,
+    fontFamily: 'monospace',
   },
   phoneInputField: {
     flex: 1,
-    background: '#1E293B',
-    border: '1px solid #334155',
+    background: '#030712',
+    border: '1px solid rgba(255,255,255,0.15)',
     borderRadius: 12,
     color: '#F8FAFC',
-    fontSize: 14,
-    fontWeight: 500,
-    padding: '11px 16px',
+    fontSize: 15,
+    fontFamily: 'monospace',
+    fontWeight: 600,
+    padding: '12px 16px',
     outline: 'none',
     boxSizing: 'border-box',
     width: '100%',
-    letterSpacing: 0.5,
+    letterSpacing: 1.5,
   },
 
   textInput: {

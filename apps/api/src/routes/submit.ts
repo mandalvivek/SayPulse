@@ -1,6 +1,9 @@
 import { Router, Request, Response } from 'express';
-import { saveFeedback } from '../db/sqlite';
-import { dispatchEmailAlert } from '../services/emailAlertService';
+import { saveFeedback, getOrganizationAlertEmail } from '../db/sqlite';
+import {
+  dispatchFeedbackRatingAlert,
+  dispatchApplicationErrorAlert,
+} from '../services/emailAlertService';
 
 const router = Router();
 
@@ -42,7 +45,7 @@ router.post('/', async (req: Request, res: Response): Promise<void> => {
       apiKey: req.saypulse?.apiKey ?? 'sp_dev_local_master',
       organizationId: req.saypulse?.organizationId,
       apiKeyId: req.saypulse?.apiKeyId,
-      partner: req.saypulse?.partner ?? 'Acme Analytics',
+      partner: req.saypulse?.partner ?? 'SayPulse Client',
       sessionId: (context as any)?.sessionId,
       rating,
       quickTags,
@@ -57,25 +60,45 @@ router.post('/', async (req: Request, res: Response): Promise<void> => {
 
     console.log(`[SayPulse] Feedback saved: ${id} | ${category} | ${sentiment} | rating: ${rating}`);
 
-    // If critical issue or 1-2 stars, trigger transactional email alert
+    // If critical issue or 1-2 stars, trigger tenant-scoped rating alert ONLY if tenant has an email in the system
     if (rating && (rating <= 2 || sentiment === 'Critical' || category === 'Bug')) {
-      dispatchEmailAlert({
-        organizationName: req.saypulse?.partner ?? 'Acme Analytics',
-        rating: rating || 1,
-        category: category ?? 'Bug',
-        sentiment: sentiment ?? 'Critical',
-        summary,
-        actionableItem: finalActionItem,
-        pagePath: ((context as any)?.pathname as string) || '/',
-        browser: ((context as any)?.browser as string) || 'Chrome',
-        os: ((context as any)?.os as string) || 'macOS',
-        recipientEmail: 'alerts@acmeanalytics.com',
-      }).catch((e) => console.error('[Email Alert Error]:', e));
+      const tenantEmail = req.saypulse?.organizationId
+        ? getOrganizationAlertEmail(req.saypulse.organizationId)
+        : null;
+
+      if (tenantEmail) {
+        dispatchFeedbackRatingAlert({
+          organizationName: req.saypulse?.partner ?? 'SayPulse Client',
+          rating: rating || 1,
+          category: category ?? 'Bug',
+          sentiment: sentiment ?? 'Critical',
+          summary,
+          actionableItem: finalActionItem,
+          pagePath: ((context as any)?.pathname as string) || '/',
+          browser: ((context as any)?.browser as string) || 'Chrome',
+          os: ((context as any)?.os as string) || 'macOS',
+          recipientEmail: tenantEmail,
+        }).catch((e) => console.error('[Tenant Rating Alert Error]:', e));
+      } else {
+        console.log(`[SayPulse] Rating alert skipped — workspace "${req.saypulse?.partner}" has no registered tenant email in system.`);
+      }
     }
 
     res.json({ id, success: true });
-  } catch (err) {
+  } catch (err: any) {
     console.error('[SayPulse /submit error]:', err);
+
+    // Dispatch application exception to dedicated company email
+    dispatchApplicationErrorAlert({
+      error: err.message || 'Failed saving feedback record to database',
+      stack: err.stack,
+      component: 'Feedback Submit Route',
+      path: '/saypulse/v1/feedback/submit',
+      method: 'POST',
+      statusCode: 500,
+      timestamp: new Date().toISOString(),
+    }).catch((e) => console.error('[App Error Alert Error]:', e));
+
     res.status(500).json({ error: 'Failed to save feedback' });
   }
 });

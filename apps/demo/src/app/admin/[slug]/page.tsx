@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { apiFetch } from '@/lib/api';
 import { useParams } from 'next/navigation';
 
 interface AnalyticsData {
@@ -34,9 +35,9 @@ export default function TenantDashboardPage() {
       try {
         setLoading(true);
         const [analyticsRes, feedbackRes, keysRes] = await Promise.all([
-          fetch(`/saypulse/v1/admin/analytics?slug=${slug}`),
-          fetch(`/saypulse/v1/admin/feedback?slug=${slug}&limit=5`),
-          fetch(`/saypulse/v1/admin/api-keys?slug=${slug}`),
+          apiFetch(`/saypulse/v1/admin/analytics?slug=${slug}`),
+          apiFetch(`/saypulse/v1/admin/feedback?slug=${slug}&limit=5`),
+          apiFetch(`/saypulse/v1/admin/api-keys?slug=${slug}`),
         ]);
 
         const analytics = await analyticsRes.json();

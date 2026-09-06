@@ -111,31 +111,18 @@ export class AudioRecorder {
   async stop(): Promise<AudioRecorderResult> {
     const durationMs = this.startTime > 0 ? Date.now() - this.startTime : 0;
 
-    // Gracefully stop recognition with a safety timeout so it never hangs
+    // Snapshot transcript immediately without blocking
+    const transcript = (this.finalTranscript + ' ' + this.interimTranscript).trim();
+
+    // Safely stop recognition and teardown audio in the background
     if (this.recognition && this.isRecognitionRunning) {
-      await new Promise<void>((resolve) => {
-        const timeout = setTimeout(() => {
-          this.isRecognitionRunning = false;
-          resolve();
-        }, 400);
-
-        this.recognition.onend = () => {
-          clearTimeout(timeout);
-          this.isRecognitionRunning = false;
-          resolve();
-        };
-
-        try {
-          this.recognition.stop();
-        } catch (e) {
-          clearTimeout(timeout);
-          this.isRecognitionRunning = false;
-          resolve();
-        }
-      });
+      try {
+        this.recognition.stop();
+      } catch {}
+      this.isRecognitionRunning = false;
     }
 
-    const transcript = (this.finalTranscript + ' ' + this.interimTranscript).trim();
+    // Immediate cleanup
     this.cleanup();
 
     return {

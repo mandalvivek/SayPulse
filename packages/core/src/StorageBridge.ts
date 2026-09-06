@@ -7,6 +7,8 @@ export interface SessionState {
   routeHistory: string[];
 }
 
+export type PersistedFeedbackState = SessionState;
+
 const KEY = '__saypulse_session__';
 
 // ──────────────────────────────────────────────────────────────────────────────

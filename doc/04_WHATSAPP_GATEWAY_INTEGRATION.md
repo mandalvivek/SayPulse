@@ -32,12 +32,12 @@ sequenceDiagram
     actor Superadmin as Platform Superadmin (9013793020)
     participant LoginUI as SayPulse Login Screen (/login)
     participant AuthAPI as Auth Service (apps/api)
-    participant WAGateway as NextGen WhatsApp Gateway (dev-wa.nextgenmultiverse.com)
+    participant WAGateway as NextGen WhatsApp Gateway (wa.nextgenmultiverse.com)
     participant EmailGateway as Transactional Email Engine
     participant DB as Multi-Tenant Database
 
     alt Login Method: Email OTP (Default)
-        User->>LoginUI: Enters business email (alex@acmeanalytics.com)
+        User->>LoginUI: Enters business email (registered email)
         LoginUI->>AuthAPI: POST /saypulse/v1/auth/send-otp { method: "email" }
         AuthAPI->>DB: Store 6-digit OTP with 10-minute expiry
         AuthAPI->>EmailGateway: Dispatch Email with 6-digit OTP
@@ -46,7 +46,7 @@ sequenceDiagram
         User->>LoginUI: Enters phone number (9013793020)
         LoginUI->>AuthAPI: POST /saypulse/v1/auth/send-otp { method: "whatsapp", phone: "9013793020" }
         AuthAPI->>DB: Store 6-digit OTP with 10-minute expiry
-        AuthAPI->>WAGateway: POST https://dev-wa.nextgenmultiverse.com/api/v1/send-message
+        AuthAPI->>WAGateway: POST https://wa.nextgenmultiverse.com/api/v1/send-message
         WAGateway->>User: 📲 WhatsApp message with 1-tap Copy Code
     end
 

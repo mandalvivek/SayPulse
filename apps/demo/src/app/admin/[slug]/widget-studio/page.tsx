@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
+import { apiFetch } from '@/lib/api';
 
 const ANIMATIONS = [
   {
@@ -42,12 +43,66 @@ const ANIMATIONS = [
   },
 ];
 
+const TRIGGER_STYLES = [
+  {
+    id: 'pill-wave-voice',
+    name: 'Hybrid Voice + Wave',
+    icon: '🎙️',
+    badge: 'RECOMMENDED',
+    desc: 'Pill dock with speech mic, animated micro-equalizer bars, and feedback text.',
+    previewText: 'Feedback',
+  },
+  {
+    id: 'bubble-wave',
+    name: 'Chat Bubble Wave',
+    icon: '💬',
+    badge: 'CONVERSATIONAL',
+    desc: 'Speech bubble icon with animated soundbars and clean feedback label.',
+    previewText: 'Feedback',
+  },
+  {
+    id: 'tab-corner',
+    name: 'Corner Tab',
+    icon: '✨',
+    badge: 'MINIMAL',
+    desc: 'Sleek corner-anchored sparkle tab with directional action indicator.',
+    previewText: 'Feedback ➔',
+  },
+  {
+    id: 'badge-compact',
+    name: 'Micro Voice Pill',
+    icon: '🎙️',
+    badge: 'ULTRA COMPACT',
+    desc: 'Lightweight micro-dock pill displaying a clean mic badge and text.',
+    previewText: 'Voice',
+  },
+  {
+    id: 'memo-voice',
+    name: 'Voice Memo',
+    icon: '🎧',
+    badge: 'AUDIO MEMO',
+    desc: 'Modern audio headset badge with soft indigo gradient accents.',
+    previewText: 'Voice Memo',
+  },
+  {
+    id: 'tab-vertical',
+    name: 'Vertical Edge Ribbon',
+    icon: '📑',
+    badge: 'SIDE DOCK',
+    desc: 'Lateral vertical edge tab docked directly on the screen margin.',
+    previewText: 'FEEDBACK',
+  },
+];
+
 export default function TenantWidgetStudioPage() {
   const params = useParams();
   const slug = (params?.slug as string) || 'demo';
 
   // Customizer State
+  const [layoutMode, setLayoutMode] = useState<'card' | 'bottom-pill'>('card');
   const [selectedAnimation, setSelectedAnimation] = useState('siri-wave');
+  const [triggerStyle, setTriggerStyle] = useState('pill-wave-voice');
+  const [autoCollapse, setAutoCollapse] = useState(true);
   const [primaryColor, setPrimaryColor] = useState('#06B6D4');
   const [position, setPosition] = useState('bottom-right');
   const [headerTitle, setHeaderTitle] = useState("How's your experience? 🎯");
@@ -61,15 +116,18 @@ export default function TenantWidgetStudioPage() {
     const loadConfig = async () => {
       try {
         const [configRes, keysRes] = await Promise.all([
-          fetch(`/saypulse/v1/admin/widget-config?slug=${slug}`),
-          fetch(`/saypulse/v1/admin/api-keys?slug=${slug}`),
+          apiFetch(`/saypulse/v1/admin/widget-config?slug=${slug}`),
+          apiFetch(`/saypulse/v1/admin/api-keys?slug=${slug}`),
         ]);
 
         const cfg = await configRes.json();
         const keys = await keysRes.json();
 
         if (cfg) {
+          if (cfg.layout_mode) setLayoutMode(cfg.layout_mode);
           if (cfg.default_animation) setSelectedAnimation(cfg.default_animation);
+          if (cfg.trigger_style) setTriggerStyle(cfg.trigger_style);
+          if (cfg.auto_collapse !== undefined) setAutoCollapse(Boolean(cfg.auto_collapse));
           if (cfg.primary_color) setPrimaryColor(cfg.primary_color);
           if (cfg.position) setPosition(cfg.position);
           if (cfg.header_title) setHeaderTitle(cfg.header_title);
@@ -90,12 +148,15 @@ export default function TenantWidgetStudioPage() {
   const handleSaveConfig = async () => {
     setSaving(true);
     try {
-      await fetch('/saypulse/v1/admin/widget-config', {
+      await apiFetch('/saypulse/v1/admin/widget-config', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           slug,
+          layout_mode: layoutMode,
           default_animation: selectedAnimation,
+          trigger_style: triggerStyle,
+          auto_collapse: autoCollapse,
           primary_color: primaryColor,
           position,
           header_title: headerTitle,
@@ -112,7 +173,18 @@ export default function TenantWidgetStudioPage() {
   };
 
   const copyScript = () => {
-    const code = `<script src="https://cdn.saypulse.ai/v1/saypulse.min.js" data-key="${apiKey}" data-animation="${selectedAnimation}" data-position="${position}" defer></script>`;
+    const code = `<!-- SayPulse AI Voice Feedback Widget -->
+<script 
+  src="https://saypulse.nextgenmultiverse.com/saypulse.min.js" 
+  data-key="${apiKey}" 
+  data-layout="${layoutMode}"
+  data-animation="${selectedAnimation}" 
+  data-trigger-style="${triggerStyle}"
+  data-auto-collapse="${autoCollapse}"
+  data-color="${primaryColor}" 
+  data-position="${position}" 
+  defer>
+</script>`;
     navigator.clipboard.writeText(code);
     setCopiedScript(true);
     setTimeout(() => setCopiedScript(false), 2000);
@@ -120,6 +192,18 @@ export default function TenantWidgetStudioPage() {
 
   return (
     <div style={styles.container}>
+      <style>{`
+        @keyframes sp-eq-1 { 0%, 100% { height: 3px; } 50% { height: 11px; } }
+        @keyframes sp-eq-2 { 0%, 100% { height: 11px; } 50% { height: 4px; } }
+        @keyframes sp-eq-3 { 0%, 100% { height: 5px; } 50% { height: 13px; } }
+        @keyframes sp-eq-4 { 0%, 100% { height: 9px; } 50% { height: 3px; } }
+        .sim-eq-bar { width: 2px; border-radius: 2px; background: currentColor; display: inline-block; }
+        .sim-eq-1 { animation: sp-eq-1 0.9s ease-in-out infinite; }
+        .sim-eq-2 { animation: sp-eq-2 0.7s ease-in-out infinite 0.15s; }
+        .sim-eq-3 { animation: sp-eq-3 1.1s ease-in-out infinite 0.3s; }
+        .sim-eq-4 { animation: sp-eq-4 0.8s ease-in-out infinite 0.2s; }
+      `}</style>
+
       {/* ── Header ── */}
       <div style={styles.header}>
         <div>
@@ -128,7 +212,7 @@ export default function TenantWidgetStudioPage() {
           </div>
           <h1 style={styles.title}>Widget Studio & Live Customizer</h1>
           <p style={styles.subtitle}>
-            Preview all 6 unboxed hyper-realistic space animations and customize your brand embed.
+            Customize your brand voice trigger aesthetic, unboxed space visualizer, and scroll collapse behaviors.
           </p>
         </div>
 
@@ -140,9 +224,104 @@ export default function TenantWidgetStudioPage() {
       <div style={styles.layoutGrid}>
         {/* ── Left Column: Configuration Controls ── */}
         <div style={styles.controlsCol}>
-          {/* Animation Selector */}
+          {/* 1. Presentation Architecture */}
           <div style={styles.controlCard}>
-            <h3 style={styles.cardTitle}>1. Unboxed Spoken Visualizer Animation</h3>
+            <h3 style={styles.cardTitle}>1. Widget Presentation Style</h3>
+            <p style={styles.cardSub}>Choose between a floating corner card or an unboxed bottom dock</p>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginTop: 12 }}>
+              <div
+                onClick={() => setLayoutMode('card')}
+                style={{
+                  ...styles.animOption,
+                  borderColor: layoutMode === 'card' ? primaryColor : '#1E293B',
+                  background: layoutMode === 'card' ? `${primaryColor}15` : '#0F172A',
+                  cursor: 'pointer',
+                  flexDirection: 'column',
+                  alignItems: 'flex-start',
+                }}
+              >
+                <div style={{ fontSize: 22, marginBottom: 4 }}>🗂️</div>
+                <div style={styles.animName}>Corner Card (Default)</div>
+                <div style={styles.animSub}>Compact corner badge that pops open a sleek dialog card</div>
+              </div>
+
+              <div
+                onClick={() => setLayoutMode('bottom-pill')}
+                style={{
+                  ...styles.animOption,
+                  borderColor: layoutMode === 'bottom-pill' ? primaryColor : '#1E293B',
+                  background: layoutMode === 'bottom-pill' ? `${primaryColor}15` : '#0F172A',
+                  cursor: 'pointer',
+                  flexDirection: 'column',
+                  alignItems: 'flex-start',
+                }}
+              >
+                <div style={{ fontSize: 22, marginBottom: 4 }}>💊</div>
+                <div style={styles.animName}>Unboxed Bottom Dock</div>
+                <div style={styles.animSub}>Dynamic island pill floating centrally at the bottom</div>
+              </div>
+            </div>
+          </div>
+
+          {/* 2. Floating Trigger Button Style */}
+          <div style={styles.controlCard}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
+              <h3 style={styles.cardTitle}>2. Floating Trigger Button Style</h3>
+              <span style={{ fontSize: 11, color: '#06B6D4', fontWeight: 600 }}>6 Distinct Aesthetics</span>
+            </div>
+            <p style={styles.cardSub}>Select the floating trigger badge displayed on your website pages</p>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+              {TRIGGER_STYLES.map((t) => (
+                <div
+                  key={t.id}
+                  onClick={() => setTriggerStyle(t.id)}
+                  style={{
+                    ...styles.animOption,
+                    borderColor: triggerStyle === t.id ? primaryColor : '#1E293B',
+                    background: triggerStyle === t.id ? `${primaryColor}15` : '#0F172A',
+                    flexDirection: 'column',
+                    alignItems: 'flex-start',
+                    gap: 6,
+                    padding: '12px 14px',
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+                    <span style={{ fontSize: 18 }}>{t.icon}</span>
+                    <span style={{ fontSize: 9, padding: '2px 6px', borderRadius: 4, background: `${primaryColor}22`, color: primaryColor, fontWeight: 700 }}>
+                      {t.badge}
+                    </span>
+                  </div>
+                  <div style={{ fontWeight: 700, fontSize: 13, color: '#F8FAFC' }}>{t.name}</div>
+                  <div style={{ fontSize: 11, color: '#94A3B8', lineHeight: 1.3 }}>{t.desc}</div>
+                  <div style={{ marginTop: 4, fontSize: 11, fontFamily: 'monospace', color: '#06B6D4', background: '#090D16', padding: '3px 8px', borderRadius: 6, width: '100%', boxSizing: 'border-box' }}>
+                    {t.previewText}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Auto Collapse Toggle Switch */}
+            <div style={{ marginTop: 16, paddingTop: 14, borderTop: '1px solid #1E293B', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div>
+                <div style={{ fontSize: 13, fontWeight: 600, color: '#F1F5F9' }}>Scroll-Aware Auto-Collapse</div>
+                <div style={{ fontSize: 11, color: '#64748B' }}>Smoothly collapse button text to a compact badge while user is scrolling</div>
+              </div>
+              <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
+                <input
+                  type="checkbox"
+                  checked={autoCollapse}
+                  onChange={(e) => setAutoCollapse(e.target.checked)}
+                  style={{ width: 18, height: 18, accentColor: '#06B6D4', cursor: 'pointer' }}
+                />
+              </label>
+            </div>
+          </div>
+
+          {/* 3. Animation Selector */}
+          <div style={styles.controlCard}>
+            <h3 style={styles.cardTitle}>3. Spoken Visualizer Animation</h3>
             <p style={styles.cardSub}>Choose the fluid visualizer shown when users speak</p>
 
             <div style={styles.animGrid}>
@@ -169,9 +348,9 @@ export default function TenantWidgetStudioPage() {
             </div>
           </div>
 
-          {/* Color & Position */}
+          {/* 4. Color & Position */}
           <div style={styles.controlCard}>
-            <h3 style={styles.cardTitle}>2. Brand Styling & Badge Placement</h3>
+            <h3 style={styles.cardTitle}>4. Brand Styling & Badge Placement</h3>
 
             <div style={styles.formRow}>
               <div style={styles.inputGroup}>
@@ -192,25 +371,27 @@ export default function TenantWidgetStudioPage() {
                 </div>
               </div>
 
-              <div style={styles.inputGroup}>
-                <label style={styles.label}>Floating Mic Position</label>
-                <select
-                  value={position}
-                  onChange={(e) => setPosition(e.target.value)}
-                  style={styles.selectInput}
-                >
-                  <option value="bottom-right">Bottom Right (Default)</option>
-                  <option value="bottom-left">Bottom Left</option>
-                  <option value="top-right">Top Right</option>
-                  <option value="top-left">Top Left</option>
-                </select>
-              </div>
+              {layoutMode === 'card' && (
+                <div style={styles.inputGroup}>
+                  <label style={styles.label}>Floating Trigger Position</label>
+                  <select
+                    value={position}
+                    onChange={(e) => setPosition(e.target.value)}
+                    style={styles.selectInput}
+                  >
+                    <option value="bottom-right">Bottom Right (Default)</option>
+                    <option value="bottom-left">Bottom Left</option>
+                    <option value="top-right">Top Right</option>
+                    <option value="top-left">Top Left</option>
+                  </select>
+                </div>
+              )}
             </div>
           </div>
 
-          {/* Modal Copy */}
+          {/* 5. Modal Copy */}
           <div style={styles.controlCard}>
-            <h3 style={styles.cardTitle}>3. Header Copy</h3>
+            <h3 style={styles.cardTitle}>5. Header Copy</h3>
             <div style={styles.inputGroup}>
               <label style={styles.label}>Dialog Header Title</label>
               <input
@@ -229,7 +410,7 @@ export default function TenantWidgetStudioPage() {
             <div style={styles.previewHeader}>
               <span style={styles.previewBadge}>LIVE SANDBOX PREVIEW</span>
               <span style={{ fontSize: 12, color: '#64748B' }}>
-                Animation: <strong>{selectedAnimation}</strong>
+                Style: <strong>{triggerStyle}</strong> • <strong>{selectedAnimation}</strong>
               </span>
             </div>
 
@@ -239,25 +420,129 @@ export default function TenantWidgetStudioPage() {
                 <div style={styles.mockHero}>
                   <div style={styles.mockTitle}>Your Website / Application</div>
                   <div style={styles.mockSub}>
-                    The SayPulse floating mic badge automatically floats over your UI.
+                    {layoutMode === 'bottom-pill'
+                      ? 'The unboxed dynamic dock floats centrally at the bottom of the viewport.'
+                      : 'The customizable SayPulse voice feedback trigger floats neatly in your UI with scroll collapse.'}
                   </div>
                 </div>
               </div>
 
-              {/* Floating Trigger Badge */}
-              <div
-                style={{
-                  ...styles.floatingBadgeSim,
-                  background: primaryColor,
-                  boxShadow: `0 0 24px ${primaryColor}66`,
-                  right: position.includes('right') ? 24 : 'auto',
-                  left: position.includes('left') ? 24 : 'auto',
-                  bottom: position.includes('bottom') ? 24 : 'auto',
-                  top: position.includes('top') ? 24 : 'auto',
-                }}
-              >
-                🎙️
-              </div>
+              {/* Simulated Floating Trigger Badge */}
+              {layoutMode === 'bottom-pill' ? (
+                <div
+                  style={{
+                    position: 'absolute',
+                    bottom: 20,
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    height: 44,
+                    padding: '0 20px',
+                    borderRadius: 22,
+                    background: primaryColor,
+                    boxShadow: `0 0 24px ${primaryColor}88`,
+                    color: '#fff',
+                    fontWeight: 700,
+                    fontSize: 13,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 8,
+                    cursor: 'pointer',
+                  }}
+                >
+                  <span>🎙️</span>
+                  <span>Speak Feedback</span>
+                </div>
+              ) : triggerStyle === 'tab-vertical' ? (
+                <div
+                  style={{
+                    position: 'absolute',
+                    top: '50%',
+                    right: 0,
+                    transform: 'translateY(-50%)',
+                    background: '#0F172A',
+                    border: `1px solid ${primaryColor}66`,
+                    borderRight: 'none',
+                    borderRadius: '8px 0 0 8px',
+                    padding: '12px 8px',
+                    color: '#FFF',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    gap: 6,
+                    boxShadow: '-4px 4px 16px rgba(0,0,0,0.5)',
+                    cursor: 'pointer',
+                  }}
+                >
+                  <span style={{ fontSize: 14 }}>🎙️</span>
+                  <span style={{ writingMode: 'vertical-rl', fontSize: 10, fontWeight: 700, letterSpacing: '0.1em' }}>FEEDBACK</span>
+                </div>
+              ) : (
+                <div
+                  style={{
+                    position: 'absolute',
+                    right: position.includes('right') ? 20 : 'auto',
+                    left: position.includes('left') ? 20 : 'auto',
+                    bottom: position.includes('bottom') ? 20 : 'auto',
+                    top: position.includes('top') ? 20 : 'auto',
+                    height: triggerStyle === 'badge-compact' ? 36 : 42,
+                    padding: triggerStyle === 'badge-compact' ? '0 12px' : '0 16px',
+                    borderRadius: 9999,
+                    background: triggerStyle === 'badge-compact' ? '#0F172A' : primaryColor,
+                    border: triggerStyle === 'badge-compact' ? `1px solid ${primaryColor}88` : '1px solid rgba(255,255,255,0.2)',
+                    boxShadow: `0 6px 20px ${primaryColor}55`,
+                    color: '#fff',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 7,
+                    fontWeight: 600,
+                    fontSize: 13,
+                    cursor: 'pointer',
+                  }}
+                >
+                  {triggerStyle === 'pill-wave-voice' && (
+                    <>
+                      <span>🎙️</span>
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 2, height: 12 }}>
+                        <span className="sim-eq-bar sim-eq-1" />
+                        <span className="sim-eq-bar sim-eq-2" />
+                        <span className="sim-eq-bar sim-eq-3" />
+                        <span className="sim-eq-bar sim-eq-4" />
+                      </span>
+                      <span>Feedback</span>
+                    </>
+                  )}
+                  {triggerStyle === 'bubble-wave' && (
+                    <>
+                      <span>💬</span>
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 2, height: 12 }}>
+                        <span className="sim-eq-bar sim-eq-1" />
+                        <span className="sim-eq-bar sim-eq-2" />
+                        <span className="sim-eq-bar sim-eq-3" />
+                      </span>
+                      <span>Feedback</span>
+                    </>
+                  )}
+                  {triggerStyle === 'tab-corner' && (
+                    <>
+                      <span>✨</span>
+                      <span>Feedback</span>
+                      <span style={{ fontSize: 11 }}>➔</span>
+                    </>
+                  )}
+                  {triggerStyle === 'badge-compact' && (
+                    <>
+                      <span>🎙️</span>
+                      <span>Voice</span>
+                    </>
+                  )}
+                  {triggerStyle === 'memo-voice' && (
+                    <>
+                      <span>🎧</span>
+                      <span>Voice Memo</span>
+                    </>
+                  )}
+                </div>
+              )}
             </div>
 
             {/* 1-Line Embed Snippet */}
@@ -269,7 +554,7 @@ export default function TenantWidgetStudioPage() {
                 </button>
               </div>
               <pre style={styles.codeBlock}>
-                {`<script src="https://cdn.saypulse.ai/v1/saypulse.min.js"\n  data-key="${apiKey}"\n  data-animation="${selectedAnimation}"\n  data-position="${position}"\n  defer></script>`}
+                {`<script \n  src="https://saypulse.nextgenmultiverse.com/saypulse.min.js" \n  data-key="${apiKey}" \n  data-layout="${layoutMode}"\n  data-animation="${selectedAnimation}" \n  data-trigger-style="${triggerStyle}"\n  data-auto-collapse="${autoCollapse}"\n  data-color="${primaryColor}" \n  data-position="${position}" \n  defer></script>`}
               </pre>
             </div>
           </div>

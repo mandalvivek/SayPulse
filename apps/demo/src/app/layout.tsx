@@ -4,8 +4,8 @@ import { SayPulseProvider } from '@saypulse/react';
 import { ClientShell } from './components/ClientShell';
 
 export const metadata: Metadata = {
-  title: 'Acme Analytics & SayPulse Admin',
-  description: 'AI Voice Feedback Intelligence Platform',
+  title: 'SayPulse AI • Voice Feedback Intelligence Platform',
+  description: 'AI Voice Feedback & Technical Telemetry Platform by NextGen Multiverse',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

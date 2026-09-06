@@ -27,8 +27,9 @@ export function BottomMicPill() {
 
   const [elapsed, setElapsed] = useState(0);
   const [isRecording, setIsRecording] = useState(false);
-  const [analysingText, setAnalysingText] = useState('');
   const [isAnalysing, setIsAnalysing] = useState(false);
+  const [analysisStep, setAnalysisStep] = useState<1 | 2 | 3>(1);
+  const [progressPercent, setProgressPercent] = useState(15);
 
   const recorderRef = useRef<AudioRecorder | null>(null);
   const freqRef = useRef<Uint8Array>(new Uint8Array(64));
@@ -70,24 +71,14 @@ export function BottomMicPill() {
     };
   }, [setPhase]);
 
-  // ── Stop & AI Analysis ──────────────────────────────────────────────────
+  // ── Stop & AI Analysis (Optimized & Docked to Bottom-Right) ──────────────
   const handleStop = useCallback(async () => {
     if (timerRef.current) clearInterval(timerRef.current);
+    // 1. Immediately halt recording animation and dock pill to bottom-right
     setIsRecording(false);
     setIsAnalysing(true);
-
-    const phrases = [
-      'Transcribing speech…',
-      'Redacting sensitive info…',
-      'Analyzing with Gemini AI…',
-      'Synthesizing feedback summary…',
-    ];
-    let idx = 0;
-    setAnalysingText(phrases[0]);
-    const phraseTimer = setInterval(() => {
-      idx = (idx + 1) % phrases.length;
-      setAnalysingText(phrases[idx]);
-    }, 800);
+    setAnalysisStep(1);
+    setProgressPercent(35);
 
     try {
       let rawTranscript = '';
@@ -99,8 +90,13 @@ export function BottomMicPill() {
       console.log('[SayPulse] Finished recording. Raw transcript:', rawTranscript);
       setRawTranscript(rawTranscript);
 
+      // Clean and normalize brand terms
       const { cleanText } = redactPii(rawTranscript);
       const context = harvester.harvest(routeHistory);
+
+      // Step 2: Transition to Gemini AI synthesis
+      setAnalysisStep(2);
+      setProgressPercent(75);
 
       const result = await client.summarize(cleanText, {
         ...context,
@@ -108,13 +104,17 @@ export function BottomMicPill() {
         quickTags,
       });
 
-      clearInterval(phraseTimer);
-      setIsAnalysing(false);
-      setAiData(result as any);
-      setSummary(result.summary);
-      setPhase('review');
+      // Step 3: Synthesis Complete
+      setAnalysisStep(3);
+      setProgressPercent(100);
+
+      setTimeout(() => {
+        setIsAnalysing(false);
+        setAiData(result as any);
+        setSummary(result.summary);
+        setPhase('review');
+      }, 220);
     } catch (err) {
-      clearInterval(phraseTimer);
       setIsAnalysing(false);
       console.warn('[SayPulse] Summarize error, applying smart client-side summary:', err);
 
@@ -145,6 +145,19 @@ export function BottomMicPill() {
   const formatTime = (s: number) =>
     `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`;
 
+  const getStepText = () => {
+    switch (analysisStep) {
+      case 1:
+        return 'Finalizing transcript & securing PII…';
+      case 2:
+        return 'Synthesizing intelligence with Gemini AI…';
+      case 3:
+        return '✓ Summary Ready!';
+      default:
+        return 'Processing feedback…';
+    }
+  };
+
   return (
     <>
       <style>{`
@@ -156,31 +169,42 @@ export function BottomMicPill() {
           0%, 100% { opacity: 1; transform: scale(1); }
           50%       { opacity: 0.3; transform: scale(0.85); }
         }
-        @keyframes sp-dots {
-          0%, 80%, 100% { transform: scale(0.6); opacity: 0.35; }
-          40%            { transform: scale(1.1); opacity: 1;    }
+        @keyframes sp-dock-pulse {
+          0%, 100% { transform: scale(1); }
+          50% { transform: scale(1.02); }
         }
       `}</style>
 
-      {/* ── 1. Tall Unboxed Animation Layer (240px) ── */}
-      <div style={styles.unboxedAnimationLayer}>
-        <AudioVisualizer
-          variant={activeAnimation}
-          freqRef={freqRef}
-          isActive={isRecording}
-          height={240}
-        />
-      </div>
+      {/* ── 1. Tall Unboxed Animation Layer (Halts immediately when recording stops) ── */}
+      {isRecording && (
+        <div style={styles.unboxedAnimationLayer}>
+          <AudioVisualizer
+            variant={activeAnimation}
+            freqRef={freqRef}
+            isActive={isRecording}
+            height={240}
+          />
+        </div>
+      )}
 
-      {/* ── 2. Simple Opaque Control Bar Dock at the Bottom ── */}
+      {/* ── 2. Opaque Control Dock / Bottom-Right Progress Dock ── */}
       {isAnalysing ? (
-        <div style={styles.opaqueControlDock}>
-          <div style={styles.dotRow}>
-            {[0, 1, 2].map((i) => (
-              <div key={i} style={{ ...styles.dot, animationDelay: `${i * 0.18}s` }} />
-            ))}
+        <div style={styles.bottomRightDock}>
+          <div style={styles.dockHeader}>
+            <div style={styles.sparkleOrb}>✨</div>
+            <div style={styles.progressMeta}>
+              <span style={styles.stepBadge}>STAGE {analysisStep}/2</span>
+              <span style={styles.analysingLabel}>{getStepText()}</span>
+            </div>
           </div>
-          <span style={styles.analysingLabel}>{analysingText}</span>
+          <div style={styles.progressBarTrack}>
+            <div
+              style={{
+                ...styles.progressBarFill,
+                width: `${progressPercent}%`,
+              }}
+            />
+          </div>
         </div>
       ) : (
         <div style={styles.opaqueControlDock}>
@@ -271,6 +295,87 @@ const styles: Record<string, React.CSSProperties> = {
     boxShadow: '0 16px 40px rgba(0, 0, 0, 0.7)',
     zIndex: 10001,
     fontFamily: 'Inter, system-ui, sans-serif',
+    transition: 'all 0.35s cubic-bezier(0.16, 1, 0.3, 1)',
+  },
+
+  // Docked at Bottom-Right corner during analysis
+  bottomRightDock: {
+    position: 'fixed',
+    bottom: 24,
+    right: 24,
+    width: 320,
+    maxWidth: 'calc(100vw - 48px)',
+    background: '#0B1325',
+    border: '1px solid rgba(6, 182, 212, 0.4)',
+    borderRadius: 18,
+    padding: '12px 16px',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 8,
+    boxShadow: '0 20px 50px rgba(0, 0, 0, 0.8), 0 0 25px rgba(6, 182, 212, 0.2)',
+    zIndex: 10001,
+    fontFamily: 'Inter, system-ui, sans-serif',
+    animation: 'sp-dock-pulse 2s ease-in-out infinite',
+    transition: 'all 0.35s cubic-bezier(0.16, 1, 0.3, 1)',
+  },
+
+  dockHeader: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 10,
+  },
+
+  sparkleOrb: {
+    width: 28,
+    height: 28,
+    borderRadius: '50%',
+    background: 'linear-gradient(135deg, #06B6D4, #6366F1)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    fontSize: 14,
+    boxShadow: '0 0 12px rgba(6, 182, 212, 0.4)',
+    flexShrink: 0,
+  },
+
+  progressMeta: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 1,
+    overflow: 'hidden',
+  },
+
+  stepBadge: {
+    fontSize: 9,
+    fontFamily: 'monospace',
+    fontWeight: 700,
+    color: '#06B6D4',
+    letterSpacing: 0.5,
+  },
+
+  analysingLabel: {
+    color: '#F1F5F9',
+    fontSize: 12,
+    fontWeight: 600,
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+  },
+
+  progressBarTrack: {
+    width: '100%',
+    height: 4,
+    borderRadius: 4,
+    background: 'rgba(255, 255, 255, 0.1)',
+    overflow: 'hidden',
+    marginTop: 2,
+  },
+
+  progressBarFill: {
+    height: '100%',
+    borderRadius: 4,
+    background: 'linear-gradient(90deg, #06B6D4, #6366F1)',
+    transition: 'width 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
   },
 
   dockLeft: {
@@ -370,23 +475,5 @@ const styles: Record<string, React.CSSProperties> = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-  },
-
-  dotRow: {
-    display: 'flex',
-    gap: 5,
-    alignItems: 'center',
-  },
-  dot: {
-    width: 6,
-    height: 6,
-    borderRadius: '50%',
-    background: '#06B6D4',
-    animation: 'sp-dots 1.2s ease-in-out infinite',
-  },
-  analysingLabel: {
-    color: '#CBD5E1',
-    fontSize: 13,
-    fontWeight: 500,
   },
 };

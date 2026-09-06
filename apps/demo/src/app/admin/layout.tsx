@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
+import { apiFetch } from '@/lib/api';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -32,7 +33,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     } catch (e) {}
 
     // Load available organizations for switcher
-    fetch('/saypulse/v1/admin/master/organizations')
+    apiFetch('/saypulse/v1/admin/master/organizations')
       .then((res) => res.json())
       .then((data) => {
         if (Array.isArray(data)) setOrgsList(data);
@@ -113,14 +114,50 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
           <div style={styles.userProfile}>
             <div style={styles.avatar}>
-              {user?.name ? user.name.substring(0, 2).toUpperCase() : 'VM'}
+              {isMaster
+                ? 'VM'
+                : currentSlug === 'demo'
+                ? 'DV'
+                : user?.name
+                ? user.name.substring(0, 2).toUpperCase()
+                : 'WO'}
             </div>
             <div style={styles.userInfo}>
-              <span style={styles.userName}>{user?.name || 'Vivek Mandal'}</span>
+              <span style={styles.userName}>
+                {isMaster
+                  ? (user?.name || 'Vivek Mandal')
+                  : currentSlug === 'demo'
+                  ? (user?.name || 'Demo Visitor')
+                  : (user?.name || 'Workspace Owner')}
+              </span>
               <span style={styles.userRole}>
-                {isSuperAdmin ? 'Platform Owner' : 'Workspace Owner'}
+                {isMaster
+                  ? '👑 Platform Superadmin'
+                  : currentSlug === 'demo'
+                  ? '⚡ Sandbox Preview'
+                  : '🏢 Business Owner'}
               </span>
             </div>
+            <button
+              onClick={() => {
+                localStorage.removeItem('saypulse_auth_token');
+                localStorage.removeItem('saypulse_user');
+                window.location.href = '/';
+              }}
+              title="Sign Out"
+              style={{
+                marginLeft: 10,
+                padding: '4px 8px',
+                borderRadius: 6,
+                border: '1px solid rgba(255,255,255,0.1)',
+                background: 'rgba(255,255,255,0.05)',
+                color: '#94A3B8',
+                fontSize: 11,
+                cursor: 'pointer',
+              }}
+            >
+              🚪 Exit
+            </button>
           </div>
         </div>
       </header>

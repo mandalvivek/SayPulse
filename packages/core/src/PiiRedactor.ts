@@ -48,13 +48,51 @@ const PATTERNS: ReadonlyArray<{
   },
 ];
 
+// Phonetic dictionary to correct speech-to-text misrecognitions of brand terms
+export const PHONETIC_BRAND_DICTIONARY: ReadonlyArray<{ pattern: RegExp; replacement: string }> = [
+  // SayPulse phonetic homophones & speech recognition variations
+  {
+    pattern: /\b(sepals?|sepal|safe\s*pulse|say\s*pulse|say\s*pause|c\s*pulse|see\s*pulse|save\s*pulse|say\s*polls|say\s*poles|staples|stay\s*pulse|sayplus|say\s*plus|sapulse)\b/gi,
+    replacement: 'SayPulse',
+  },
+  // NextGen Multiverse
+  {
+    pattern: /\b(next\s*gen\s*multiverse|nextgen\s*multiverse|next\s*generation\s*multiverse)\b/gi,
+    replacement: 'NextGen Multiverse',
+  },
+  // NextGen ExamDesk
+  {
+    pattern: /\b(exam\s*desk|examdesk)\b/gi,
+    replacement: 'ExamDesk',
+  },
+  // Tecton Enterprise
+  {
+    pattern: /\b(tekton|tecton\s*enterprise)\b/gi,
+    replacement: 'Tecton Enterprise',
+  },
+];
+
+/**
+ * Normalizes speech recognition acoustic artifacts and misheard brand terms
+ */
+export function normalizeBrandTerms(text: string): string {
+  if (!text) return '';
+  let result = text;
+  for (const { pattern, replacement } of PHONETIC_BRAND_DICTIONARY) {
+    result = result.replace(pattern, replacement);
+  }
+  return result;
+}
+
 // ──────────────────────────────────────────────────────────────────────────────
 // redactPii
 // Runs synchronously on the main thread — text payloads are small enough
 // (< 2KB) that a Worker would add overhead without benefit.
+// Also normalizes brand lexicon terms.
 // ──────────────────────────────────────────────────────────────────────────────
 export function redactPii(text: string): RedactionResult {
-  let cleanText = text;
+  // First normalize speech transcription brand homophones
+  let cleanText = normalizeBrandTerms(text || '');
   let redactionCount = 0;
   const typesFound: string[] = [];
 

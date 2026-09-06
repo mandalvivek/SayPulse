@@ -8,9 +8,38 @@ import { SayPulseWidget } from '@saypulse/react';
 export function ClientShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const isAdmin = pathname.startsWith('/admin');
+  const isLanding = pathname === '/';
+  const isDemo = pathname === '/demo';
 
   if (isAdmin) {
-    return <>{children}</>;
+    return (
+      <>
+        {children}
+      </>
+    );
+  }
+
+  const isPublicContentPage =
+    isLanding ||
+    isDemo ||
+    pathname === '/privacy' ||
+    pathname === '/terms' ||
+    pathname === '/security' ||
+    pathname === '/sla' ||
+    pathname === '/about' ||
+    pathname === '/contact' ||
+    pathname === '/compliance' ||
+    pathname === '/docs' ||
+    pathname === '/status' ||
+    pathname === '/login';
+
+  if (isPublicContentPage) {
+    return (
+      <>
+        {children}
+        <SayPulseWidget />
+      </>
+    );
   }
 
   return (

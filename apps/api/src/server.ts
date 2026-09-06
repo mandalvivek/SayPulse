@@ -20,8 +20,8 @@ const PORT = Number(process.env.PORT ?? 8000);
 // ── Security headers ──────────────────────────────────────────────────────────
 app.use(helmet({ contentSecurityPolicy: false, crossOriginResourcePolicy: { policy: 'cross-origin' } }));
 
-// ── SayPulse SDK CORS ─────────────────────────────────────────────────────────
-app.use('/saypulse', saypulseCors);
+// ── SayPulse Global & SDK CORS ────────────────────────────────────────────────
+app.use(saypulseCors);
 
 // ── Rate limiting: 100 feedback requests per minute per IP ───────────────────
 const sdkLimiter = rateLimit({
@@ -60,10 +60,24 @@ app.use('/cdn', cdnRouter);
 // ── SayPulse Business Admin Portal routes ─────────────────────────────────────
 app.use('/saypulse/v1/admin', adminRouter);
 
+import { dispatchApplicationErrorAlert } from './services/emailAlertService';
+
 // ── Global error handler ──────────────────────────────────────────────────────
-app.use((err: Error, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
+app.use((err: Error, req: express.Request, res: express.Response, _next: express.NextFunction) => {
   const ref = `err-${Date.now()}`;
   console.error(`[SayPulse API Error ${ref}]:`, err.message);
+
+  // Automatically dispatch system exception alert to dedicated company email
+  dispatchApplicationErrorAlert({
+    error: err.message,
+    stack: err.stack,
+    component: 'Express Core API Engine',
+    path: req.originalUrl || req.path,
+    method: req.method,
+    statusCode: 500,
+    timestamp: new Date().toISOString(),
+  }).catch((e) => console.error('[Error Alert Dispatch Failed]:', e));
+
   res.status(500).json({ error: 'Internal server error', ref });
 });
 

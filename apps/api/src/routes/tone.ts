@@ -1,5 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import { dispatchApplicationErrorAlert } from '../services/emailAlertService';
 
 const router = Router();
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
@@ -39,8 +40,19 @@ router.post('/', async (req: Request, res: Response): Promise<void> => {
     const rewritten = result.response.text().trim();
 
     res.json({ result: rewritten || summary });
-  } catch (err) {
+  } catch (err: any) {
     console.error('[SayPulse /tone error]:', err);
+
+    dispatchApplicationErrorAlert({
+      error: err.message || 'Gemini AI tone rewrite error',
+      stack: err.stack,
+      component: 'Gemini Tone Synthesis Engine',
+      path: '/saypulse/v1/feedback/tone',
+      method: 'POST',
+      statusCode: 500,
+      timestamp: new Date().toISOString(),
+    }).catch((e) => console.error('[App Error Alert Error]:', e));
+
     // Fallback: return original summary if rewrite fails
     res.json({ result: summary });
   }
