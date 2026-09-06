@@ -3,258 +3,400 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SayPulse — Master Command Center & Tenant Dashboard</title>
+  <title>SayPulse — Enterprise Voice Studio & Master Command Center</title>
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2306b6d4' stroke-width='2'%3E%3Cpath d='M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z'/%3E%3Cpath d='M19 10v2a7 7 0 0 1-14 0v-2'/%3E%3Cline x1='12' x2='12' y1='19' y2='22'/%3E%3C/svg%3E" />
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #040711; color: #f1f5f9; }
-    .glass-card { background: rgba(15, 23, 42, 0.65); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.08); }
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #070c18; color: #f1f5f9; margin: 0; padding: 0; }
+    .glass-card { background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.08); }
     .glow-cyan { box-shadow: 0 0 25px rgba(6, 182, 212, 0.25); }
     .glow-indigo { box-shadow: 0 0 25px rgba(99, 102, 241, 0.25); }
     ::-webkit-scrollbar { width: 6px; height: 6px; }
-    ::-webkit-scrollbar-track { background: #040711; }
+    ::-webkit-scrollbar-track { background: #070c18; }
     ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.15); border-radius: 9999px; }
+    .sidebar-active { background: linear-gradient(135deg, rgba(6,182,212,0.18), rgba(99,102,241,0.18)); border-left: 3px solid #06b6d4; color: #38bdf8 !important; }
+  </style>
+
+  <style>
+    @keyframes sp-eq-1 { 0%, 100% { height: 3px; } 50% { height: 11px; } }
+    @keyframes sp-eq-2 { 0%, 100% { height: 11px; } 50% { height: 4px; } }
+    @keyframes sp-eq-3 { 0%, 100% { height: 5px; } 50% { height: 13px; } }
+    @keyframes sp-eq-4 { 0%, 100% { height: 9px; } 50% { height: 3px; } }
+    @keyframes sp-recblink { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.3; transform: scale(0.85); } }
+    @keyframes sp-pulse-glow { 0%, 100% { transform: scale(1); opacity: 0.85; } 50% { transform: scale(1.06); opacity: 1; } }
+    @keyframes sp-spin-slow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
   </style>
 </head>
-<body class="min-h-screen bg-[#040711] text-slate-100 flex flex-col justify-between selection:bg-cyan-500/20 selection:text-cyan-300">
+<body class="min-h-screen bg-[#070c18] text-slate-100 flex selection:bg-cyan-500/20 selection:text-cyan-300 antialiased overflow-x-hidden">
 
-  <!-- Background Ambience -->
-  <div class="fixed inset-0 pointer-events-none z-0">
-    <div class="absolute top-[-10%] left-[20%] w-[650px] h-[650px] bg-indigo-600/10 rounded-full blur-[150px]"></div>
-    <div class="absolute top-[35%] right-[-5%] w-[550px] h-[550px] bg-cyan-500/10 rounded-full blur-[140px]"></div>
-  </div>
+  <!-- ========================================================================= -->
+  <!-- LEFT SIDEBAR (Matching NextGen Enterprise Web Studio) -->
+  <!-- ========================================================================= -->
+  <aside class="w-64 bg-[#050914] border-r border-white/10 flex flex-col justify-between shrink-0 min-h-screen sticky top-0 h-screen z-30 select-none">
+    <div>
+      <!-- Brand Header -->
+      <div class="p-4 border-b border-white/10 flex items-center space-x-3">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-cyan-500 to-indigo-600 flex items-center justify-center text-lg shadow-[0_0_15px_rgba(6,182,212,0.4)]">
+          🎙️
+        </div>
+        <div>
+          <div class="font-extrabold text-sm tracking-wide text-white flex items-center gap-1.5">
+            SayPulse
+            <span class="text-[9px] px-1.5 py-0.2 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 font-mono">PRO</span>
+          </div>
+          <div class="text-[10px] text-slate-400 font-mono tracking-wider uppercase">
+            ENTERPRISE VOICE STUDIO
+          </div>
+        </div>
+      </div>
 
-  <div class="relative z-10 flex-1 flex flex-col">
-    <!-- Top Header -->
-    <header class="sticky top-0 z-40 w-full backdrop-blur-2xl bg-[#040711]/85 border-b border-white/10 shadow-lg">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex items-center justify-between">
-        <div class="flex items-center space-x-3">
-          <a href="/" class="flex items-center space-x-3 group">
-            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500/25 to-indigo-600/35 border border-cyan-500/50 flex items-center justify-center relative shadow-[0_0_20px_rgba(6,182,212,0.25)]">
-              <span class="text-xl">🎙️</span>
-            </div>
-            <div>
-              <div class="font-extrabold tracking-wider text-sm sm:text-base text-white group-hover:text-cyan-400 transition">
-                SAYPULSE
-              </div>
-              <div class="text-[10px] text-slate-400 font-mono">
-                Command Center & Intelligence
-              </div>
-            </div>
-          </a>
-          <span id="superadminBadge" class="hidden px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40">
-            SUPERADMIN MASTER
+      <!-- Device / Gateway Connection Card -->
+      <div class="p-3.5 m-3 rounded-2xl bg-[#091122] border border-white/10 space-y-2.5">
+        <div class="flex items-center justify-between">
+          <span class="text-[10px] font-mono uppercase text-slate-400 font-semibold tracking-wider">GATEWAY CONNECTION</span>
+          <span class="px-2 py-0.5 rounded-full text-[9px] font-mono font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 animate-pulse">
+            ● ONLINE
           </span>
         </div>
-
-        <div class="flex items-center space-x-3 sm:space-x-4">
-          <div class="hidden sm:flex items-center space-x-2 px-3 py-1.5 rounded-xl bg-black/50 border border-white/10 text-xs font-mono text-slate-300">
-            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-            <span id="userIdentifierDisplay">Superadmin (9013793020)</span>
-          </div>
-
-          <a href="/demo" class="px-3.5 py-2 rounded-xl text-xs font-bold text-slate-300 hover:text-white hover:bg-white/5 border border-white/10 transition">
-            🎓 ExamDesk Demo
-          </a>
-
-          <button onclick="handleSignOut()" class="px-3.5 py-2 rounded-xl text-xs font-bold text-red-400 hover:bg-red-500/10 border border-red-500/20 transition cursor-pointer">
-            Sign Out ➔
+        <div class="flex items-center space-x-2 text-xs font-mono font-bold text-slate-200">
+          <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+          <span>+91 9013793020</span>
+        </div>
+        <div class="grid grid-cols-2 gap-2 pt-1">
+          <button onclick="openEmbedModal()" class="py-1.5 px-2 rounded-lg bg-black/50 hover:bg-black/70 border border-white/10 text-[10px] font-mono text-slate-300 hover:text-cyan-300 transition flex items-center justify-center gap-1 cursor-pointer">
+            <span>📋</span> Embed Tag
+          </button>
+          <button onclick="switchTab('feed')" class="py-1.5 px-2 rounded-lg bg-red-500/20 hover:bg-red-500/30 border border-red-500/30 text-[10px] font-mono text-red-300 transition flex items-center justify-center gap-1 cursor-pointer">
+            <span>🔄</span> Live Feed
           </button>
         </div>
+      </div>
+
+      <!-- Navigation Menu Groups -->
+      <div class="px-3 py-2 space-y-5 overflow-y-auto max-h-[calc(100vh-270px)]">
+        <!-- Group 1: OVERVIEW & STUDIO -->
+        <div class="space-y-1">
+          <div class="px-3 text-[10px] font-mono uppercase font-bold text-slate-500 tracking-wider mb-1">
+            OVERVIEW & STUDIO
+          </div>
+          <a href="javascript:void(0)" onclick="switchTab('overview')" id="nav-overview" class="sidebar-active flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium text-slate-300 hover:text-white hover:bg-white/5 transition">
+            <div class="flex items-center space-x-2.5">
+              <span>🚀</span>
+              <span>Overview & QuickStart</span>
+            </div>
+          </a>
+          <a href="javascript:void(0)" onclick="switchTab('feed')" id="nav-feed" class="flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium text-slate-400 hover:text-white hover:bg-white/5 transition">
+            <div class="flex items-center space-x-2.5">
+              <span>🎙️</span>
+              <span>Voice Feedback Stream</span>
+            </div>
+            <span class="px-1.5 py-0.2 rounded-full bg-cyan-500/20 text-cyan-300 font-mono text-[10px]">LIVE</span>
+          </a>
+          <a href="javascript:void(0)" onclick="switchTab('inbox')" id="nav-inbox" class="flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium text-slate-400 hover:text-white hover:bg-white/5 transition">
+            <div class="flex items-center space-x-2.5">
+              <span>📋</span>
+              <span>Feedback Inbox</span>
+            </div>
+            <span class="px-1.5 py-0.2 rounded-full bg-black/60 text-slate-300 font-mono text-[10px]">12</span>
+          </a>
+          <a href="javascript:void(0)" onclick="openEmbedModal()" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-medium text-slate-400 hover:text-white hover:bg-white/5 transition cursor-pointer">
+            <span>🎨</span>
+            <span>Widget Studio & Tag</span>
+          </a>
+          <a href="javascript:void(0)" onclick="switchTab('multilingual')" id="nav-multilingual" class="flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium text-slate-400 hover:text-white hover:bg-white/5 transition">
+            <div class="flex items-center space-x-2.5">
+              <span>🌐</span>
+              <span>Multilingual Speech AI</span>
+            </div>
+            <span class="px-1.5 py-0.2 rounded-full bg-emerald-500/20 text-emerald-300 font-mono text-[10px]">10+</span>
+          </a>
+          <a href="javascript:void(0)" onclick="switchTab('security')" id="nav-security" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-medium text-slate-400 hover:text-white hover:bg-white/5 transition">
+            <span>🛡️</span>
+            <span>Account & DPDP Privacy</span>
+          </a>
+        </div>
+
+        <!-- Group 2: SUPERADMIN HUB -->
+        <div class="space-y-1">
+          <div class="px-3 text-[10px] font-mono uppercase font-bold text-slate-500 tracking-wider mb-1">
+            SUPERADMIN HUB
+          </div>
+          <a href="javascript:void(0)" onclick="switchTab('tenants')" id="nav-tenants" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-medium text-slate-400 hover:text-white hover:bg-white/5 transition">
+            <span>👑</span>
+            <span>API Keys & Tenants</span>
+          </a>
+          <a href="javascript:void(0)" onclick="openWebhookModal()" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-medium text-slate-400 hover:text-white hover:bg-white/5 transition cursor-pointer">
+            <span>🔌</span>
+            <span>Client Webhooks</span>
+          </a>
+          <a href="javascript:void(0)" onclick="openPromptConfigModal()" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-medium text-slate-400 hover:text-white hover:bg-white/5 transition cursor-pointer">
+            <span>🤖</span>
+            <span>AI Synthesis Rules</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- User Profile Card at Bottom of Sidebar -->
+    <div class="p-3 border-t border-white/10 bg-[#040711]">
+      <div class="flex items-center justify-between p-2 rounded-xl bg-white/[0.03] border border-white/5">
+        <div class="flex items-center space-x-2.5">
+          <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-cyan-500 to-indigo-600 flex items-center justify-center text-xs font-extrabold text-white">
+            V
+          </div>
+          <div>
+            <div class="text-xs font-bold text-white">Vivek Mandal</div>
+            <div class="text-[10px] text-amber-400 font-medium">👑 Master Admin</div>
+          </div>
+        </div>
+        <button onclick="handleSignOut()" title="Sign Out" class="p-1.5 rounded-lg bg-white/5 hover:bg-red-500/20 text-slate-400 hover:text-red-400 transition cursor-pointer">
+          🚪
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ========================================================================= -->
+  <!-- MAIN WORKSPACE CONTENT AREA -->
+  <!-- ========================================================================= -->
+  <div class="flex-1 flex flex-col min-w-0 overflow-y-auto">
+    
+    <!-- Top Breadcrumb & Status Bar -->
+    <header class="sticky top-0 z-20 backdrop-blur-xl bg-[#070c18]/90 border-b border-white/10 px-6 py-3 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <span class="px-2.5 py-1 rounded-lg bg-white/5 border border-white/10 text-xs font-mono text-slate-300">
+          🏠 Home
+        </span>
+        <span class="text-slate-600">/</span>
+        <div>
+          <h2 class="text-sm font-bold text-white tracking-wide" id="topPageTitle">Overview & QuickStart Hub</h2>
+          <p class="text-[11px] text-slate-400" id="topPageSubtitle">Device connection status, onboarding wizard & platform telemetry</p>
+        </div>
+      </div>
+
+      <div class="flex items-center space-x-3">
+        <div class="flex items-center space-x-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-mono">
+          <span>🛡️</span>
+          <span>Zero-Storage (DPDP 🔒)</span>
+        </div>
+        <div class="flex items-center space-x-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-mono">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span>GATEWAY ONLINE</span>
+        </div>
+        <button onclick="openEmbedModal()" class="px-3 py-1.5 rounded-xl bg-gradient-to-r from-cyan-500 to-indigo-600 text-xs font-bold text-white shadow-md hover:opacity-95 transition cursor-pointer">
+          📋 Embed Tag
+        </button>
+        <a href="/demo" target="_blank" class="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-bold text-slate-200 border border-white/10 transition">
+          🎓 Demo
+        </a>
       </div>
     </header>
 
-    <!-- Main Content Body -->
-    <main class="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 space-y-8 flex-1">
-      
-      <!-- Welcome Hero Banner -->
-      <div class="p-6 sm:p-8 rounded-3xl bg-gradient-to-r from-cyan-950/40 via-slate-900/60 to-indigo-950/40 border border-cyan-500/20 shadow-2xl backdrop-blur-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-        <div>
-          <div class="flex items-center space-x-2 text-xs font-mono text-cyan-400 font-bold uppercase mb-1.5">
-            <span>⚡ Global Platform Control</span>
-            <span>•</span>
-            <span class="text-emerald-400">WhatsApp Gateway Active</span>
-          </div>
-          <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
-            SayPulse Master Command Center
-          </h1>
-          <p class="text-xs sm:text-sm text-slate-400 mt-1 max-w-2xl">
-            Real-time AI voice intelligence telemetry, multi-tenant organization provisioning, and customer sentiment analytics.
-          </p>
-        </div>
+    <!-- Main Dynamic Body Container -->
+    <main class="flex-1 p-6 space-y-6 max-w-7xl w-full mx-auto">
 
-        <div class="flex items-center gap-3">
-          <button onclick="openNewWorkspaceModal()" class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-indigo-600 text-xs font-bold text-white shadow-lg shadow-cyan-500/25 hover:opacity-95 transition cursor-pointer">
-            + Provision New Workspace
-          </button>
-          <a href="/#embed-code" class="px-4 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-bold text-slate-200 border border-white/10 transition">
-            Embed Tag
-          </a>
-        </div>
-      </div>
-
-      <!-- KPI Overview Grid -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-        <div class="p-5 rounded-2xl glass-card">
-          <div class="flex items-center justify-between mb-2">
-            <span class="text-xs font-mono text-slate-400 uppercase">Active Workspaces</span>
-            <span class="text-base">🏢</span>
-          </div>
-          <div class="text-2xl sm:text-3xl font-extrabold text-white font-mono" id="statWorkspaces">12</div>
-          <div class="mt-2 text-xs text-emerald-400 font-mono font-bold">+2 added this week</div>
-        </div>
-
-        <div class="p-5 rounded-2xl glass-card">
-          <div class="flex items-center justify-between mb-2">
-            <span class="text-xs font-mono text-slate-400 uppercase">Voice Notes Synthesized</span>
-            <span class="text-base">🎙️</span>
-          </div>
-          <div class="text-2xl sm:text-3xl font-extrabold text-white font-mono" id="statFeedbacks">1,482</div>
-          <div class="mt-2 text-xs text-cyan-400 font-mono font-bold">Gemini 3.6 Flash Active</div>
-        </div>
-
-        <div class="p-5 rounded-2xl glass-card">
-          <div class="flex items-center justify-between mb-2">
-            <span class="text-xs font-mono text-slate-400 uppercase">Platform CSAT Rating</span>
-            <span class="text-base">⭐</span>
-          </div>
-          <div class="text-2xl sm:text-3xl font-extrabold text-white font-mono" id="statCsat">4.85 / 5.0</div>
-          <div class="mt-2 text-xs text-emerald-400 font-mono font-bold">96.4% Positive / Constructive</div>
-        </div>
-
-        <div class="p-5 rounded-2xl glass-card">
-          <div class="flex items-center justify-between mb-2">
-            <span class="text-xs font-mono text-slate-400 uppercase">Gateway SLA & Uptime</span>
-            <span class="text-base">🛡️</span>
-          </div>
-          <div class="text-2xl sm:text-3xl font-extrabold text-white font-mono">99.99%</div>
-          <div class="mt-2 text-xs text-emerald-400 font-mono font-bold">WhatsApp & Email Operational</div>
-        </div>
-      </div>
-
-      <!-- Navigation Tabs -->
-      <div class="flex border-b border-white/10 space-x-6 text-sm font-semibold">
-        <button onclick="switchTab('orgs')" id="tabBtnOrgs" class="pb-3 border-b-2 border-cyan-400 text-cyan-300 transition">
-          🏢 Organizations & Tenants
-        </button>
-        <button onclick="switchTab('feed')" id="tabBtnFeed" class="pb-3 border-b-2 border-transparent text-slate-400 hover:text-white transition">
-          🎙️ Live Voice Feedback Stream
-        </button>
-        <button onclick="switchTab('security')" id="tabBtnSecurity" class="pb-3 border-b-2 border-transparent text-slate-400 hover:text-white transition">
-          🔒 DPDP Act & Privacy Telemetry
-        </button>
-      </div>
-
-      <!-- ── TAB 1: ORGANIZATIONS & TENANTS ── -->
-      <div id="viewOrgs" class="space-y-6">
-        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div class="relative w-full sm:w-80">
-            <input type="text" id="orgSearch" oninput="filterOrgs()" placeholder="Search workspaces, owners, phone..." class="w-full pl-9 pr-4 py-2.5 rounded-xl bg-black/60 border border-white/15 text-xs text-white focus:border-cyan-500 outline-none font-mono" />
-            <span class="absolute left-3 top-3 text-slate-500 text-xs">🔍</span>
+      <!-- ===================================================================== -->
+      <!-- VIEW 1: OVERVIEW & QUICKSTART (Matching media_1788705266018.png) -->
+      <!-- ===================================================================== -->
+      <div id="view-overview" class="space-y-6">
+        
+        <!-- Status Hero Banner (Green/Teal Card) -->
+        <div class="p-6 rounded-3xl bg-gradient-to-r from-emerald-950/40 via-teal-900/30 to-slate-900/60 border border-emerald-500/30 shadow-2xl backdrop-blur-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+          <div class="space-y-2">
+            <div class="flex items-center space-x-2 text-xs font-mono text-emerald-400 font-bold uppercase">
+              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+              <span>GATEWAY ONLINE & CONNECTED</span>
+            </div>
+            <h1 class="text-xl sm:text-2xl font-extrabold text-white tracking-tight">
+              SayPulse Voice Intelligence Gateway is Live & Syncing
+            </h1>
+            <p class="text-xs sm:text-sm text-slate-300 max-w-2xl leading-relaxed">
+              Paired with <strong class="text-emerald-300 font-mono">+919013793020</strong> • Session: <strong>SayPulse Enterprise</strong> • Zero-Storage Privacy (DPDP) Enabled 🔒 • Multilingual Speech Detection Active
+            </p>
+            
+            <div class="flex flex-wrap items-center gap-3 pt-2">
+              <button onclick="openEmbedModal()" class="px-4 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-indigo-600 text-xs font-bold text-white shadow-lg shadow-cyan-500/25 hover:opacity-95 transition cursor-pointer flex items-center gap-1.5">
+                <span>🎙️</span> Open Embed Studio
+              </button>
+              <button onclick="openEmbedModal()" class="px-3.5 py-2 rounded-xl bg-black/60 hover:bg-black/80 text-xs font-bold text-slate-200 border border-white/15 transition flex items-center gap-1.5 cursor-pointer">
+                <span>📋</span> Device Details / Tag
+              </button>
+              <button onclick="switchTab('multilingual')" class="px-3.5 py-2 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 text-xs font-bold text-emerald-300 border border-emerald-500/30 transition flex items-center gap-1.5 cursor-pointer">
+                <span>🌐</span> Multilingual Hub
+              </button>
+            </div>
           </div>
 
-          <div class="text-xs font-mono text-slate-400">
-            Showing <strong id="orgCountDisplay" class="text-white">4</strong> registered workspaces
+          <!-- Top Metric Pills -->
+          <div class="flex items-center gap-4 shrink-0">
+            <div class="p-4 rounded-2xl bg-black/50 border border-emerald-500/20 text-center min-w-[120px]">
+              <div class="text-2xl font-extrabold text-emerald-400 font-mono" id="heroSynthesizedCount">0</div>
+              <div class="text-[10px] text-slate-400 font-mono uppercase mt-1">Notes Synthesized</div>
+            </div>
+            <div class="p-4 rounded-2xl bg-black/50 border border-white/10 text-center min-w-[100px]">
+              <div class="text-2xl font-extrabold text-slate-300 font-mono">0</div>
+              <div class="text-[10px] text-slate-400 font-mono uppercase mt-1">Queued Tasks</div>
+            </div>
           </div>
         </div>
+
+        <!-- ⚡ QuickStart Developer & Admin Hub (4 Cards Grid) -->
+        <div class="space-y-3">
+          <div>
+            <h3 class="text-sm font-bold text-white flex items-center gap-2">
+              <span>⚡</span> QuickStart Developer & Admin Hub
+            </h3>
+            <p class="text-xs text-slate-400">Everything you need to integrate, automate, and synthesize spoken customer feedback.</p>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <!-- Card 1: Embed Voice Widget -->
+            <div class="p-5 rounded-2xl glass-card flex flex-col justify-between space-y-4 hover:border-cyan-500/40 transition">
+              <div class="space-y-2">
+                <div class="w-10 h-10 rounded-xl bg-cyan-500/20 border border-cyan-500/30 flex items-center justify-center text-lg">
+                  📱
+                </div>
+                <h4 class="font-bold text-white text-sm">1. Embed Voice Widget</h4>
+                <p class="text-xs text-slate-400 leading-relaxed">
+                  Embed 1-line script tag into your web apps, React, Next.js, or HTML portals.
+                </p>
+              </div>
+              <button onclick="openEmbedModal()" class="w-full py-2 px-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-mono text-cyan-300 font-bold transition flex items-center justify-center gap-1.5 cursor-pointer">
+                <span>📋</span> Copy Embed Tag
+              </button>
+            </div>
+
+            <!-- Card 2: Generate REST API Key -->
+            <div class="p-5 rounded-2xl glass-card flex flex-col justify-between space-y-4 hover:border-indigo-500/40 transition">
+              <div class="space-y-2">
+                <div class="w-10 h-10 rounded-xl bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center text-lg">
+                  👑
+                </div>
+                <h4 class="font-bold text-white text-sm">2. Generate REST API Key</h4>
+                <p class="text-xs text-slate-400 leading-relaxed">
+                  Create secure Bearer tokens for external apps, CRMs, microservices, and web portals.
+                </p>
+              </div>
+              <button onclick="openNewWorkspaceModal()" class="w-full py-2 px-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-mono text-indigo-300 font-bold transition flex items-center justify-center gap-1.5 cursor-pointer">
+                <span>+</span> Create API Key
+              </button>
+            </div>
+
+            <!-- Card 3: Configure Client Webhooks -->
+            <div class="p-5 rounded-2xl glass-card flex flex-col justify-between space-y-4 hover:border-purple-500/40 transition">
+              <div class="space-y-2">
+                <div class="w-10 h-10 rounded-xl bg-purple-500/20 border border-purple-500/30 flex items-center justify-center text-lg">
+                  🔌
+                </div>
+                <h4 class="font-bold text-white text-sm">3. Configure Webhooks</h4>
+                <p class="text-xs text-slate-400 leading-relaxed">
+                  Stream incoming voice notes, AI summaries, and Jira action items to your HTTPS backend.
+                </p>
+              </div>
+              <button onclick="openWebhookModal()" class="w-full py-2 px-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-mono text-purple-300 font-bold transition flex items-center justify-center gap-1.5 cursor-pointer">
+                <span>🔗</span> Add Webhook
+              </button>
+            </div>
+
+            <!-- Card 4: Automated Smart Rules -->
+            <div class="p-5 rounded-2xl glass-card flex flex-col justify-between space-y-4 hover:border-emerald-500/40 transition">
+              <div class="space-y-2">
+                <div class="w-10 h-10 rounded-xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-lg">
+                  🌐
+                </div>
+                <h4 class="font-bold text-white text-sm">4. Multilingual Speech</h4>
+                <p class="text-xs text-slate-400 leading-relaxed">
+                  Universal speech detection across Hindi, Hinglish, Marathi, Bengali, French, etc.
+                </p>
+              </div>
+              <button onclick="switchTab('multilingual')" class="w-full py-2 px-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-mono text-emerald-300 font-bold transition flex items-center justify-center gap-1.5 cursor-pointer">
+                <span>⚡</span> Test Multilingual
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 📊 Gateway Performance & Metric Snapshot -->
+        <div class="space-y-3">
+          <div class="flex items-center justify-between">
+            <div>
+              <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                <span>📊</span> Gateway Performance & Metric Snapshot
+              </h3>
+              <p class="text-xs text-slate-400">Real-time execution counters across all tenants and connected channels.</p>
+            </div>
+            <button onclick="refreshMetrics()" class="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-mono text-slate-300 border border-white/10 transition cursor-pointer">
+              🔄 Refresh Metrics
+            </button>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="p-5 rounded-2xl glass-card flex items-center space-x-4">
+              <div class="text-3xl">🚀</div>
+              <div>
+                <div class="text-2xl font-extrabold text-white font-mono" id="statDispatched">0</div>
+                <div class="text-xs text-slate-400 font-mono">Messages Dispatched</div>
+              </div>
+            </div>
+
+            <div class="p-5 rounded-2xl glass-card flex items-center space-x-4">
+              <div class="text-3xl">⏰</div>
+              <div>
+                <div class="text-2xl font-extrabold text-white font-mono" id="statQueue">0</div>
+                <div class="text-xs text-slate-400 font-mono">Upcoming Queue Tasks</div>
+              </div>
+            </div>
+
+            <div class="p-5 rounded-2xl glass-card flex items-center space-x-4">
+              <div class="text-3xl">👥</div>
+              <div>
+                <div class="text-2xl font-extrabold text-white font-mono" id="statTenants">0</div>
+                <div class="text-xs text-slate-400 font-mono">Active Workspaces</div>
+              </div>
+            </div>
+
+            <div class="p-5 rounded-2xl glass-card flex items-center space-x-4">
+              <div class="text-3xl">🔌</div>
+              <div>
+                <div class="text-2xl font-extrabold text-emerald-400 font-mono" id="statAvgCsat">5.0 / 5.0</div>
+                <div class="text-xs text-slate-400 font-mono">Average Platform CSAT</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 🏢 Active Tenants & Isolated API Keys Section -->
+        <div id="tenants-section" class="space-y-4 pt-2">
+          <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div>
+              <h3 class="text-base font-bold text-white flex items-center gap-2">
+                <span>🏢</span> Registered Workspaces & API Keys
+              </h3>
+              <p class="text-xs text-slate-400">Manage client tenants, verify domain protection, and launch embed tags.</p>
+            </div>
+            <button onclick="openNewWorkspaceModal()" class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-indigo-600 text-xs font-bold text-white shadow-lg shadow-cyan-500/20 hover:opacity-95 transition cursor-pointer flex items-center gap-2">
+              <span>✨</span> + Provision New Workspace
+            </button>
+          </div>
 
         <div class="glass-card rounded-2xl overflow-hidden shadow-2xl">
           <div class="overflow-x-auto">
             <table class="w-full text-left text-xs text-slate-300">
               <thead class="bg-slate-900/90 text-[11px] uppercase tracking-wider font-mono text-slate-400 border-b border-white/10">
                 <tr>
-                  <th class="py-3.5 px-4 sm:px-6">Workspace / Company</th>
+                  <th class="py-3.5 px-6">Workspace / Company</th>
                   <th class="py-3.5 px-4">Owner & WhatsApp</th>
-                  <th class="py-3.5 px-4">API Key & Integration</th>
+                  <th class="py-3.5 px-4">API Key & Embed Tag</th>
                   <th class="py-3.5 px-4">Voice Notes</th>
                   <th class="py-3.5 px-4">Avg CSAT</th>
-                  <th class="py-3.5 px-4 sm:px-6 text-right">Actions</th>
+                  <th class="py-3.5 px-6 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody id="orgsTableBody" class="divide-y divide-white/5 font-mono">
-                <!-- Pre-loaded Tenant Rows -->
-                <tr class="hover:bg-white/[0.02] transition">
-                  <td class="py-4 px-4 sm:px-6 font-sans">
-                    <div class="font-bold text-white text-sm">SayPulse Global Platform</div>
-                    <div class="text-[11px] text-slate-400 font-mono">saypulse.nextgenmultiverse.com</div>
-                  </td>
-                  <td class="py-4 px-4">
-                    <div class="text-white font-sans font-medium">Vivek Mandal</div>
-                    <div class="text-cyan-400 text-[11px]">+91 9013793020</div>
-                  </td>
-                  <td class="py-4 px-4">
-                    <button onclick="copyKey('sp_live_saypulse_master_key')" class="px-2.5 py-1 rounded bg-black/50 border border-white/10 text-[11px] text-slate-300 hover:text-cyan-300 transition">
-                      sp_live_saypulse... 📋
-                    </button>
-                  </td>
-                  <td class="py-4 px-4 text-white font-bold">1,482</td>
-                  <td class="py-4 px-4 text-emerald-400 font-bold">4.92 / 5.0</td>
-                  <td class="py-4 px-4 sm:px-6 text-right font-sans">
-                    <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[10px] font-bold">Superadmin Master</span>
-                  </td>
-                </tr>
-
-                <tr class="hover:bg-white/[0.02] transition">
-                  <td class="py-4 px-4 sm:px-6 font-sans">
-                    <div class="font-bold text-white text-sm">NextGen ExamDesk</div>
-                    <div class="text-[11px] text-slate-400 font-mono">examdesk.nextgenmultiverse.com</div>
-                  </td>
-                  <td class="py-4 px-4">
-                    <div class="text-white font-sans font-medium">ExamDesk Admin</div>
-                    <div class="text-cyan-400 text-[11px]">+91 9013793020</div>
-                  </td>
-                  <td class="py-4 px-4">
-                    <button onclick="copyKey('sp_live_examdesk_prod_778a')" class="px-2.5 py-1 rounded bg-black/50 border border-white/10 text-[11px] text-slate-300 hover:text-cyan-300 transition">
-                      sp_live_examdesk... 📋
-                    </button>
-                  </td>
-                  <td class="py-4 px-4 text-white font-bold">482</td>
-                  <td class="py-4 px-4 text-emerald-400 font-bold">4.85 / 5.0</td>
-                  <td class="py-4 px-4 sm:px-6 text-right font-sans">
-                    <a href="/demo" class="px-3 py-1.5 rounded-lg bg-cyan-500/20 text-cyan-300 hover:bg-cyan-500/30 border border-cyan-500/40 text-xs font-bold transition">View Demo ➔</a>
-                  </td>
-                </tr>
-
-                <tr class="hover:bg-white/[0.02] transition">
-                  <td class="py-4 px-4 sm:px-6 font-sans">
-                    <div class="font-bold text-white text-sm">Tecton Enterprise</div>
-                    <div class="text-[11px] text-slate-400 font-mono">tecton.enterprise.io</div>
-                  </td>
-                  <td class="py-4 px-4">
-                    <div class="text-white font-sans font-medium">Enterprise Lead</div>
-                    <div class="text-slate-400 text-[11px]">enterprise@tecton.io</div>
-                  </td>
-                  <td class="py-4 px-4">
-                    <button onclick="copyKey('sp_live_tecton_ent_9921')" class="px-2.5 py-1 rounded bg-black/50 border border-white/10 text-[11px] text-slate-300 hover:text-cyan-300 transition">
-                      sp_live_tecton... 📋
-                    </button>
-                  </td>
-                  <td class="py-4 px-4 text-white font-bold">219</td>
-                  <td class="py-4 px-4 text-emerald-400 font-bold">4.78 / 5.0</td>
-                  <td class="py-4 px-4 sm:px-6 text-right font-sans">
-                    <span class="px-2 py-0.5 rounded bg-blue-500/20 text-blue-300 border border-blue-500/30 text-[10px] font-bold">Active Enterprise</span>
-                  </td>
-                </tr>
-
-                <tr class="hover:bg-white/[0.02] transition">
-                  <td class="py-4 px-4 sm:px-6 font-sans">
-                    <div class="font-bold text-white text-sm">Demo Sandbox Workspace</div>
-                    <div class="text-[11px] text-slate-400 font-mono">sandbox.saypulse.io</div>
-                  </td>
-                  <td class="py-4 px-4">
-                    <div class="text-white font-sans font-medium">Demo Visitor</div>
-                    <div class="text-slate-400 text-[11px]">guest@saypulse.io</div>
-                  </td>
-                  <td class="py-4 px-4">
-                    <button onclick="copyKey('sp_dev_local_master')" class="px-2.5 py-1 rounded bg-black/50 border border-white/10 text-[11px] text-slate-300 hover:text-cyan-300 transition">
-                      sp_dev_local... 📋
-                    </button>
-                  </td>
-                  <td class="py-4 px-4 text-white font-bold">95</td>
-                  <td class="py-4 px-4 text-emerald-400 font-bold">4.90 / 5.0</td>
-                  <td class="py-4 px-4 sm:px-6 text-right font-sans">
-                    <span class="px-2 py-0.5 rounded bg-slate-500/20 text-slate-300 border border-slate-500/30 text-[10px] font-bold">Sandbox</span>
+                <tr>
+                  <td colspan="6" class="py-12 text-center font-sans text-slate-400">
+                    <span class="animate-pulse">⏳ Loading live workspace directory from SayPulse database...</span>
                   </td>
                 </tr>
               </tbody>
@@ -263,47 +405,51 @@
         </div>
       </div>
 
-      <!-- ── TAB 2: LIVE VOICE FEEDBACK STREAM ── -->
-      <div id="viewFeed" class="hidden space-y-4">
-        <div class="p-4 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-xs text-cyan-300 flex items-center justify-between">
-          <span>🎙️ <strong>Live Ingestion Stream:</strong> Telemetry from embedded SayPulse widgets across all client web apps.</span>
+      <!-- ===================================================================== -->
+      <!-- VIEW 3: LIVE FEEDBACK STREAM -->
+      <!-- ===================================================================== -->
+      <div id="view-feed" class="hidden space-y-4">
+        <div class="p-4 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 text-xs text-cyan-300 flex items-center justify-between">
+          <span>🎙️ <strong>Live Ingestion Stream:</strong> Real-time voice notes ingested with Gemini 3.6 Flash translation.</span>
           <span class="font-mono text-[11px] text-emerald-400">● 100% Real-time</span>
         </div>
 
         <div class="space-y-4" id="feedbackList">
-          <!-- Voice Note 1 -->
+          <!-- Voice Note 1 (Hinglish/Hindi Multi-lingual Synthesis) -->
           <div class="p-5 rounded-2xl glass-card space-y-3">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
               <div class="flex items-center space-x-2">
                 <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-purple-500/20 text-purple-300 border border-purple-500/30">Feature_Request</span>
                 <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">Positive (5/5 ⭐)</span>
+                <span class="px-2 py-0.5 rounded bg-cyan-500/20 text-cyan-300 text-[10px] font-mono">🌐 Hindi / Hinglish</span>
                 <span class="text-xs font-mono text-slate-400">NextGen ExamDesk</span>
               </div>
               <span class="text-[11px] font-mono text-slate-500">2 minutes ago</span>
             </div>
 
             <div class="p-3.5 rounded-xl bg-black/50 border border-white/5 space-y-1.5">
-              <div class="text-[11px] font-mono text-slate-400 uppercase font-semibold">Spoken Transcript (Original Audio)</div>
+              <div class="text-[11px] font-mono text-slate-400 uppercase font-semibold">Spoken Audio Transcript (Original)</div>
               <p class="text-xs text-slate-200 italic">"Mujhe yah wala design bahut hi Achcha Laga aur Main Chahta Hun Ki Aisa Hi Kuchh Main Apne system per ya Apne application per Dalo kya yah possible hai..."</p>
             </div>
 
             <div class="p-3.5 rounded-xl bg-cyan-500/10 border border-cyan-500/30 space-y-1.5">
               <div class="text-[11px] font-mono text-cyan-300 uppercase font-bold flex items-center space-x-1.5">
-                <span>✨ Gemini AI Executive Summary</span>
+                <span>✨ Gemini AI Executive English Summary</span>
               </div>
-              <p class="text-xs text-white font-medium">User expressed strong appreciation for the voice feedback design and inquired about integration feasibility for their custom web application.</p>
+              <p class="text-xs text-white font-medium">User expressed high appreciation for the voice feedback design and inquired about integration feasibility for their custom web application.</p>
               <div class="pt-2 text-[11px] text-cyan-300 font-mono">
                 <strong>Actionable Item:</strong> Provide SayPulse embed SDK documentation and developer guide for custom platform integration.
               </div>
             </div>
           </div>
 
-          <!-- Voice Note 2 -->
+          <!-- Voice Note 2 (English) -->
           <div class="p-5 rounded-2xl glass-card space-y-3">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
               <div class="flex items-center space-x-2">
                 <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">General_Praise</span>
                 <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">Positive (5/5 ⭐)</span>
+                <span class="px-2 py-0.5 rounded bg-cyan-500/20 text-cyan-300 text-[10px] font-mono">🌐 English</span>
                 <span class="text-xs font-mono text-slate-400">Tecton Enterprise</span>
               </div>
               <span class="text-[11px] font-mono text-slate-500">18 minutes ago</span>
@@ -315,7 +461,7 @@
             </div>
 
             <div class="p-3.5 rounded-xl bg-cyan-500/10 border border-cyan-500/30 space-y-1.5">
-              <div class="text-[11px] font-mono text-cyan-300 uppercase font-bold">✨ Gemini AI Executive Summary</div>
+              <div class="text-[11px] font-mono text-cyan-300 uppercase font-bold">✨ Gemini AI Executive English Summary</div>
               <p class="text-xs text-white font-medium">User praised the voice feedback widget performance and the interactive Siri wave animation.</p>
               <div class="pt-2 text-[11px] text-cyan-300 font-mono">
                 <strong>Actionable Item:</strong> Maintain high UI rendering performance across checkout flow.
@@ -325,8 +471,78 @@
         </div>
       </div>
 
-      <!-- ── TAB 3: DPDP ACT & SECURITY ── -->
-      <div id="viewSecurity" class="hidden space-y-6">
+      <!-- ===================================================================== -->
+      <!-- VIEW 4: MULTILINGUAL SPEECH STUDIO -->
+      <!-- ===================================================================== -->
+      <div id="view-multilingual" class="hidden space-y-6">
+        <div class="p-6 rounded-3xl glass-card space-y-4">
+          <div class="flex items-center space-x-2 text-xs font-mono text-emerald-400 font-bold uppercase">
+            <span>🌐 Universal Multilingual Speech Matrix</span>
+          </div>
+          <h3 class="text-xl font-extrabold text-white">Universal Multilingual Speech Detection & Synthesis</h3>
+          <p class="text-xs text-slate-300 leading-relaxed max-w-3xl">
+            SayPulse uses a hybrid dialect pipeline. Spoken feedback recorded in any language is captured verbatim, while Gemini 3.6 Flash translates and synthesizes the final summary and Jira action items into executive-grade English.
+          </p>
+
+          <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 pt-2">
+            <div class="p-3 rounded-xl bg-black/50 border border-white/10 text-center">
+              <div class="text-base">🇮🇳</div>
+              <div class="font-bold text-xs text-white mt-1">हिन्दी (Hindi)</div>
+              <div class="text-[10px] text-slate-400 font-mono">hi-IN / Hinglish</div>
+            </div>
+            <div class="p-3 rounded-xl bg-black/50 border border-white/10 text-center">
+              <div class="text-base">🇮🇳</div>
+              <div class="font-bold text-xs text-white mt-1">বাংলা (Bengali)</div>
+              <div class="text-[10px] text-slate-400 font-mono">bn-IN</div>
+            </div>
+            <div class="p-3 rounded-xl bg-black/50 border border-white/10 text-center">
+              <div class="text-base">🇮🇳</div>
+              <div class="font-bold text-xs text-white mt-1">मराठी (Marathi)</div>
+              <div class="text-[10px] text-slate-400 font-mono">mr-IN</div>
+            </div>
+            <div class="p-3 rounded-xl bg-black/50 border border-white/10 text-center">
+              <div class="text-base">🇮🇳</div>
+              <div class="font-bold text-xs text-white mt-1">తెలుగు (Telugu)</div>
+              <div class="text-[10px] text-slate-400 font-mono">te-IN</div>
+            </div>
+            <div class="p-3 rounded-xl bg-black/50 border border-white/10 text-center">
+              <div class="text-base">🇮🇳</div>
+              <div class="font-bold text-xs text-white mt-1">தமிழ் (Tamil)</div>
+              <div class="text-[10px] text-slate-400 font-mono">ta-IN</div>
+            </div>
+            <div class="p-3 rounded-xl bg-black/50 border border-white/10 text-center">
+              <div class="text-base">🇫🇷</div>
+              <div class="font-bold text-xs text-white mt-1">Français (French)</div>
+              <div class="text-[10px] text-slate-400 font-mono">fr-FR</div>
+            </div>
+            <div class="p-3 rounded-xl bg-black/50 border border-white/10 text-center">
+              <div class="text-base">🇳🇱</div>
+              <div class="font-bold text-xs text-white mt-1">Nederlands (Dutch)</div>
+              <div class="text-[10px] text-slate-400 font-mono">nl-NL</div>
+            </div>
+            <div class="p-3 rounded-xl bg-black/50 border border-white/10 text-center">
+              <div class="text-base">🇨🇳</div>
+              <div class="font-bold text-xs text-white mt-1">中文 (Chinese)</div>
+              <div class="text-[10px] text-slate-400 font-mono">zh-CN</div>
+            </div>
+            <div class="p-3 rounded-xl bg-black/50 border border-white/10 text-center">
+              <div class="text-base">🇺🇸</div>
+              <div class="font-bold text-xs text-white mt-1">English (US/UK)</div>
+              <div class="text-[10px] text-slate-400 font-mono">en-US / en-IN</div>
+            </div>
+            <div class="p-3 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-center">
+              <div class="text-base">⚡</div>
+              <div class="font-bold text-xs text-cyan-300 mt-1">Auto-Detect</div>
+              <div class="text-[10px] text-cyan-400 font-mono">Dynamic Multi</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===================================================================== -->
+      <!-- VIEW 5: DPDP ACT & SECURITY -->
+      <!-- ===================================================================== -->
+      <div id="view-security" class="hidden space-y-6">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
           <div class="p-5 rounded-2xl glass-card">
             <h4 class="font-bold text-white text-sm mb-2">Zero-Storage Audio Invariant</h4>
@@ -352,122 +568,1362 @@
     </main>
 
     <!-- Footer -->
-    <footer class="border-t border-white/10 bg-[#040711]/90 py-6 text-center text-xs text-slate-500 font-mono">
-      SayPulse AI Voice Intelligence • NextGen Multiverse Enterprise • WhatsApp Gateway v2.0
+    <footer class="border-t border-white/10 bg-[#040711]/90 py-4 px-6 text-center text-xs text-slate-500 font-mono flex items-center justify-between">
+      <span>SayPulse AI Voice Intelligence • NextGen Multiverse Enterprise</span>
+      <span class="text-emerald-400">● WhatsApp Gateway v2.0 Live</span>
     </footer>
   </div>
 
-  <!-- Create Workspace Modal -->
-  <div id="workspaceModal" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-300">
+  <!-- ========================================================================= -->
+  <!-- ⚡ INTERACTIVE EMBED TAG & INTEGRATION STUDIO 2.0 MODAL -->
+  <!-- ========================================================================= -->
+  <div id="embedModal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 opacity-0 pointer-events-none transition-opacity duration-300">
+    <div class="bg-[#0a101f] border border-cyan-500/40 rounded-3xl p-5 sm:p-7 w-full max-w-5xl xl:max-w-6xl shadow-[0_0_60px_rgba(6,182,212,0.25)] relative space-y-5 max-h-[92vh] overflow-y-auto">
+      <button onclick="closeEmbedModal()" class="absolute top-5 right-5 p-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white cursor-pointer transition">✕</button>
+      
+      <!-- Studio Header -->
+      <div class="flex items-center justify-between border-b border-white/10 pb-4">
+        <div>
+          <div class="flex items-center space-x-2 text-xs font-mono text-cyan-400 font-bold uppercase mb-1">
+            <span>⚡ Universal AI Voice Feedback Integration Studio 2.0</span>
+          </div>
+          <h3 class="font-extrabold text-white text-xl sm:text-2xl">Widget Customizer & Live Embed Studio</h3>
+          <p class="text-xs text-slate-400 mt-0.5">Customize layout style (Floating Box vs Full-Width Dock), trigger button, position, animations, and preview live in real time.</p>
+        </div>
+      </div>
+
+      <!-- 2-Column Grid: Left Controls (7 cols), Right Live Preview + Code (5 cols) -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+        
+        <!-- ── Left Column: Customization Controls (7 cols) ── -->
+        <div class="lg:col-span-7 space-y-3.5">
+          
+          <!-- 1. Workspace API Key & Header Title -->
+          <div class="bg-black/40 p-4 rounded-2xl border border-white/10 space-y-3">
+            <div class="text-[11px] font-mono font-bold uppercase text-cyan-400 flex items-center gap-1.5">
+              <span>🏢 1. Tenant Workspace & Title</span>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="block text-[10px] font-mono font-bold uppercase text-slate-400 mb-1">Target Workspace</label>
+                <select id="embedKeySelect" onchange="updateEmbedSnippet()" class="w-full px-3 py-2 rounded-xl bg-[#091122] border border-white/15 text-xs text-white outline-none font-mono focus:border-cyan-400 transition">
+                  <option value="sp_live_master_9013793020">SayPulse Master (Vivek Mandal)</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-[10px] font-mono font-bold uppercase text-slate-400 mb-1">Widget Header Prompt</label>
+                <input id="embedTitleInput" type="text" value="How's your experience? 🎯" oninput="updateEmbedSnippet()" class="w-full px-3 py-2 rounded-xl bg-[#091122] border border-white/15 text-xs text-white outline-none focus:border-cyan-400 transition placeholder-slate-500" placeholder="e.g. How was your checkout?" />
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. Presentation Style & Positioning (Floating vs Fixed, Box vs Full vs Pill) -->
+          <div class="bg-black/40 p-4 rounded-2xl border border-white/10 space-y-3">
+            <div class="text-[11px] font-mono font-bold uppercase text-cyan-400 flex items-center justify-between">
+              <span>📐 2. Design Selection & Positioning</span>
+              <span class="text-[10px] font-normal text-slate-400">Floating vs Fixed Full Bar</span>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="block text-[10px] font-mono font-bold uppercase text-slate-400 mb-1">Layout & Design Style</label>
+                <select id="embedLayoutSelect" onchange="updateEmbedSnippet()" class="w-full px-3 py-2 rounded-xl bg-[#091122] border border-white/15 text-xs text-white outline-none focus:border-cyan-400 transition">
+                  <option value="box">🗂️ Floating Corner Card (Bottom-Right Box)</option>
+                  <option value="full">📏 Full-Width Unboxed Horizon (Dynamic Island Dock - Image 2 Style)</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-[10px] font-mono font-bold uppercase text-slate-400 mb-1">Docking & Position</label>
+                <select id="embedPositionSelect" onchange="updateEmbedSnippet()" class="w-full px-3 py-2 rounded-xl bg-[#091122] border border-white/15 text-xs text-white outline-none focus:border-cyan-400 transition">
+                  <option value="bottom-right">Floating Bottom-Right (Default)</option>
+                  <option value="bottom-left">Floating Bottom-Left</option>
+                  <option value="bottom-center">Floating Bottom-Center</option>
+                  <option value="top-right">Floating Top-Right</option>
+                  <option value="fixed-bottom">Sticky Fixed-Bottom (Dock)</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3. Trigger Button Aesthetic & Animation Engine -->
+          <div class="bg-black/40 p-4 rounded-2xl border border-white/10 space-y-3">
+            <div class="text-[11px] font-mono font-bold uppercase text-cyan-400 flex items-center justify-between">
+              <span>🎙️ 3. Trigger Style & Visualizer</span>
+              <span class="text-[10px] font-normal text-slate-400">Button & Waveform</span>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="block text-[10px] font-mono font-bold uppercase text-slate-400 mb-1">Floating Trigger Style</label>
+                <select id="embedTriggerSelect" onchange="updateEmbedSnippet()" class="w-full px-3 py-2 rounded-xl bg-[#091122] border border-white/15 text-xs text-white outline-none focus:border-cyan-400 transition">
+                  <option value="pill-wave">🎙️ Hybrid Voice + Wave (Pill + Equalizer)</option>
+                  <option value="bubble-orb">🔮 Circular Voice Orb (56px FAB)</option>
+                  <option value="edge-ribbon">📑 Vertical Edge Ribbon (Margin Dock)</option>
+                  <option value="badge-compact">🏷️ Micro Mic Badge (Ultra Compact)</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-[10px] font-mono font-bold uppercase text-slate-400 mb-1">Voice Animation Engine</label>
+                <select id="embedAnimSelect" onchange="updateEmbedSnippet()" class="w-full px-3 py-2 rounded-xl bg-[#091122] border border-white/15 text-xs text-white outline-none focus:border-cyan-400 transition">
+                  <option value="siri-wave">🌊 Siri Wave (Holographic Sine Ribbons)</option>
+                  <option value="neural-sphere">🔮 Neural Sphere (Breathing 3D Particles)</option>
+                  <option value="particle-ring">🪐 Particle Ring (Orbiting Quantum Dust)</option>
+                  <option value="nebula-plasma">🌌 Nebula Plasma (Fluid Color Aurora)</option>
+                  <option value="solar-ribbon">🎗️ Solar Ribbon (Dynamic Energy Wave)</option>
+                  <option value="laser-horizon">⚡ Laser Horizon (Dual Neon Equalizer)</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- 4. Theme Color, Language & Feature Toggles -->
+          <div class="bg-black/40 p-4 rounded-2xl border border-white/10 space-y-3">
+            <div class="text-[11px] font-mono font-bold uppercase text-cyan-400 flex items-center gap-1.5">
+              <span>🎨 4. Theme, Dialect & Toggles</span>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="block text-[10px] font-mono font-bold uppercase text-slate-400 mb-1">Theme Accent Color</label>
+                <select id="embedColorSelect" onchange="updateEmbedSnippet()" class="w-full px-3 py-2 rounded-xl bg-[#091122] border border-white/15 text-xs text-white outline-none font-mono focus:border-cyan-400 transition">
+                  <option value="#06B6D4">Cyan Glow (#06B6D4)</option>
+                  <option value="#6366F1">Indigo Pulse (#6366F1)</option>
+                  <option value="#10B981">Emerald Green (#10B981)</option>
+                  <option value="#F59E0B">Amber Gold (#F59E0B)</option>
+                  <option value="#EC4899">Neon Pink (#EC4899)</option>
+                  <option value="#8B5CF6">Electric Violet (#8B5CF6)</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-[10px] font-mono font-bold uppercase text-slate-400 mb-1">Default Speech Dialect</label>
+                <select id="embedLangSelect" onchange="updateEmbedSnippet()" class="w-full px-3 py-2 rounded-xl bg-[#091122] border border-white/15 text-xs text-white outline-none font-mono focus:border-cyan-400 transition">
+                  <option value="auto">🌐 Auto / Multi-dialect</option>
+                  <option value="hi-IN">हिन्दी (Hindi / Hinglish)</option>
+                  <option value="en-IN">English (India)</option>
+                  <option value="en-US">English (US)</option>
+                  <option value="bn-IN">বাংলা (Bengali)</option>
+                  <option value="mr-IN">मराठी (Marathi)</option>
+                  <option value="fr-FR">Français (French)</option>
+                  <option value="nl-NL">Nederlands (Dutch)</option>
+                  <option value="zh-CN">中文 (Chinese)</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Toggles -->
+            <div class="pt-2 border-t border-white/10 flex flex-col sm:flex-row gap-3 justify-between items-start sm:items-center">
+              <label class="flex items-center gap-2 cursor-pointer text-xs text-slate-300 select-none">
+                <input id="embedStarsToggle" type="checkbox" checked onchange="updateEmbedSnippet()" class="w-4 h-4 rounded accent-cyan-400 cursor-pointer">
+                <span>Enable 5-Star Rating before voice note</span>
+              </label>
+              <label class="flex items-center gap-2 cursor-pointer text-xs text-slate-300 select-none">
+                <input id="embedCollapseToggle" type="checkbox" checked onchange="updateEmbedSnippet()" class="w-4 h-4 rounded accent-cyan-400 cursor-pointer">
+                <span>Scroll auto-collapse</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Right Column: Live Interactive Visual Preview & Code Generator (5 cols) ── -->
+        <div class="lg:col-span-5 space-y-3.5 flex flex-col justify-between">
+          
+          <!-- Live Interactive Sandbox Window -->
+          <div class="bg-black/60 p-4 rounded-2xl border border-cyan-500/30 space-y-2.5 shadow-inner">
+            <div class="flex items-center justify-between flex-wrap gap-2">
+              <div class="flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                <span class="text-[11px] font-mono font-bold uppercase text-white">Live Visual Preview</span>
+              </div>
+              <!-- Dual-State Interactive Switcher Tabs -->
+              <div class="flex items-center bg-[#070d1e] p-1 rounded-xl border border-white/10 text-[10px] font-mono font-bold">
+                <button type="button" id="prevTabCta" onclick="setStudioPreviewState('cta')" class="px-2.5 py-1 rounded-lg text-cyan-300 bg-cyan-500/20 border border-cyan-500/30 transition cursor-pointer">
+                  ⚪ State 1: Initial CTA
+                </button>
+                <button type="button" id="prevTabVoice" onclick="setStudioPreviewState('voice')" class="px-2.5 py-1 rounded-lg text-slate-400 hover:text-white transition cursor-pointer">
+                  🔴 State 2: Active Voice
+                </button>
+              </div>
+            </div>
+            <div class="flex items-center justify-between px-1">
+              <span id="previewStateNotice" class="text-[10px] text-slate-400 font-sans">Click CTA trigger button or switch tab to test recording state</span>
+              <span id="previewBadgeMode" class="text-[9px] font-mono font-bold px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">CTA • BOTTOM-RIGHT</span>
+            </div>
+
+            <!-- Simulated Browser Viewport -->
+            <div id="studioPreviewCanvas" class="w-full h-80 rounded-xl bg-[#040711] border border-white/10 p-3 relative overflow-hidden flex flex-col justify-between select-none">
+              <!-- Mock website content background -->
+              <div class="space-y-2 opacity-25 pointer-events-none">
+                <div class="flex items-center justify-between border-b border-white/10 pb-2">
+                  <div class="flex items-center gap-1.5">
+                    <div class="w-3 h-3 rounded-full bg-cyan-400"></div>
+                    <div class="h-2.5 w-16 bg-white/40 rounded"></div>
+                  </div>
+                  <div class="flex gap-2">
+                    <div class="h-2 w-8 bg-white/20 rounded"></div>
+                    <div class="h-2 w-8 bg-white/20 rounded"></div>
+                  </div>
+                </div>
+                <div class="h-3.5 w-3/4 bg-white/30 rounded mt-2"></div>
+                <div class="h-2 w-1/2 bg-white/15 rounded"></div>
+                <div class="h-12 w-full bg-white/5 rounded-lg border border-white/5"></div>
+              </div>
+
+              <!-- Live Dynamic Simulated Widget DOM -->
+              <div id="studioLiveWidget" class="absolute inset-0 pointer-events-none">
+                <!-- Rendered dynamically by renderStudioPreview() -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Generated Script Tag Snippet -->
+          <div class="space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-mono font-bold text-slate-300">Generated Universal Script:</span>
+              <button onclick="copyEmbedSnippet()" class="px-3 py-1.5 rounded-xl bg-gradient-to-r from-cyan-500 to-indigo-600 text-xs font-bold text-white shadow-md hover:opacity-95 transition cursor-pointer" id="copyEmbedBtn">
+                📋 Copy Script Tag
+              </button>
+            </div>
+
+            <pre id="embedCodeSnippet" class="p-3 rounded-2xl bg-[#050914] border border-cyan-500/30 text-cyan-300 font-mono text-[11px] overflow-x-auto select-all leading-relaxed max-h-36"></pre>
+          </div>
+
+          <!-- Integration Tips -->
+          <div class="p-2.5 rounded-xl bg-white/[0.02] border border-white/10 text-[11px] text-slate-400 space-y-0.5">
+            <span class="font-bold text-slate-200">🚀 Zero-Config Installation:</span>
+            <p>Paste this script right before <code class="text-cyan-300">&lt;/body&gt;</code> in HTML or in your <code class="text-cyan-300">layout.tsx</code>. It automatically checks anti-theft domain headers and records spoken notes directly into your workspace.</p>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- PROVISION NEW WORKSPACE MODAL -->
+  <!-- ========================================================================= -->
+  <div id="workspaceModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-300">
     <div class="bg-[#0b1325] border border-white/15 rounded-3xl p-6 sm:p-8 w-full max-w-md shadow-2xl relative">
-      <button onclick="closeNewWorkspaceModal()" class="absolute top-5 right-5 p-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white">✕</button>
+      <button onclick="closeNewWorkspaceModal()" class="absolute top-5 right-5 p-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white cursor-pointer">✕</button>
       <h3 class="font-extrabold text-white text-lg mb-1">Provision New Workspace</h3>
       <p class="text-xs text-slate-400 mb-5">Create a dedicated tenant workspace with an isolated API key.</p>
 
       <form onsubmit="handleCreateWorkspace(event)" class="space-y-4">
         <div>
           <label class="block text-[11px] font-mono font-semibold uppercase text-slate-400 mb-1">Company / Product Name *</label>
-          <input type="text" id="newOrgName" placeholder="e.g. Acme Corp" class="w-full px-3.5 py-2.5 rounded-xl bg-black/60 border border-white/15 text-xs text-white outline-none focus:border-cyan-500" required />
+          <input type="text" id="newOrgName" placeholder="e.g. Acme Corp, Swiggy, ExamDesk" class="w-full px-3.5 py-2.5 rounded-xl bg-black/60 border border-white/15 text-xs text-white outline-none focus:border-cyan-500" required />
         </div>
         <div>
-          <label class="block text-[11px] font-mono font-semibold uppercase text-slate-400 mb-1">Owner Name *</label>
-          <input type="text" id="newOwnerName" placeholder="e.g. John Doe" class="w-full px-3.5 py-2.5 rounded-xl bg-black/60 border border-white/15 text-xs text-white outline-none focus:border-cyan-500" required />
+          <label class="block text-[11px] font-mono font-semibold uppercase text-slate-400 mb-1">Website URL / Web App Domain *</label>
+          <input type="url" id="newOrgWebsite" placeholder="https://yourwebsite.com" class="w-full px-3.5 py-2.5 rounded-xl bg-black/60 border border-white/15 text-xs text-white outline-none focus:border-cyan-500 font-mono" required />
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-[11px] font-mono font-semibold uppercase text-slate-400 mb-1">Owner Name *</label>
+            <input type="text" id="newOwnerName" placeholder="e.g. John Doe" class="w-full px-3.5 py-2.5 rounded-xl bg-black/60 border border-white/15 text-xs text-white outline-none focus:border-cyan-500" required />
+          </div>
+          <div>
+            <label class="block text-[11px] font-mono font-semibold uppercase text-slate-400 mb-1">WhatsApp Mobile Number</label>
+            <input type="tel" id="newOwnerPhone" placeholder="10-digit mobile" maxlength="10" class="w-full px-3.5 py-2.5 rounded-xl bg-black/60 border border-white/15 text-xs text-white outline-none focus:border-cyan-500 font-mono" />
+          </div>
         </div>
         <div>
-          <label class="block text-[11px] font-mono font-semibold uppercase text-slate-400 mb-1">WhatsApp Mobile Number</label>
-          <input type="tel" id="newOwnerPhone" placeholder="10-digit mobile number" maxlength="10" class="w-full px-3.5 py-2.5 rounded-xl bg-black/60 border border-white/15 text-xs text-white outline-none focus:border-cyan-500 font-mono" />
+          <label class="block text-[11px] font-mono font-semibold uppercase text-slate-400 mb-1">Owner Work Email</label>
+          <input type="email" id="newOwnerEmail" placeholder="admin@yourwebsite.com" class="w-full px-3.5 py-2.5 rounded-xl bg-black/60 border border-white/15 text-xs text-white outline-none focus:border-cyan-500" />
         </div>
         <button type="submit" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-cyan-500 to-indigo-600 text-xs font-bold text-white shadow-lg transition cursor-pointer">
-          🚀 Provision Workspace
+          🚀 Provision Workspace & Key
         </button>
       </form>
     </div>
   </div>
 
   <script>
-    // Verify session
-    const token = localStorage.getItem('saypulse_auth_token');
-    const userStr = localStorage.getItem('saypulse_user');
-    let user = null;
-    if (userStr) {
-      try { user = JSON.parse(userStr); } catch(e) {}
+function escapeHtml(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+function switchTab(tab) {
+  if (tab === 'tenants') {
+    switchTab('overview');
+    const tNav = document.getElementById('nav-tenants');
+    if (tNav) { tNav.classList.add('sidebar-active'); tNav.classList.remove('text-slate-400'); }
+    const oNav = document.getElementById('nav-overview');
+    if (oNav) { oNav.classList.remove('sidebar-active'); oNav.classList.add('text-slate-400'); }
+    const tSec = document.getElementById('tenants-section');
+    if (tSec) tSec.scrollIntoView({ behavior: 'smooth' });
+    return;
+  }
+
+  const views = ['overview', 'tenants', 'feed', 'inbox', 'multilingual', 'security'];
+  views.forEach(function(v) {
+    const el = document.getElementById('view-' + v);
+    if (el) el.classList.add('hidden');
+    const nav = document.getElementById('nav-' + v);
+    if (nav) {
+      nav.classList.remove('sidebar-active');
+      nav.classList.add('text-slate-400');
+    }
+  });
+
+  const activeView = document.getElementById('view-' + tab) || document.getElementById('view-overview');
+  if (activeView) activeView.classList.remove('hidden');
+
+  const activeNav = document.getElementById('nav-' + tab);
+  if (activeNav) {
+    activeNav.classList.add('sidebar-active');
+    activeNav.classList.remove('text-slate-400');
+  }
+
+  const titleMap = {
+    overview: ['Overview & QuickStart Hub', 'Device connection status, onboarding wizard & platform telemetry'],
+    tenants: ['API Keys & Tenants Directory', 'Multi-tenant organization provisioning and key management'],
+    feed: ['Live Voice Feedback Stream', 'Real-time telemetry and Gemini AI multilingual synthesis'],
+    inbox: ['Customer Feedback Inbox', 'Triage, filter, and inspect structured customer voice notes'],
+    multilingual: ['Multilingual Speech Matrix', 'Continuous dialect detection and translation engine'],
+    security: ['Account & DPDP Privacy Telemetry', 'Zero-storage audio invariants and client-side PII sanitization']
+  };
+
+  if (titleMap[tab]) {
+    document.getElementById('topPageTitle').textContent = titleMap[tab][0];
+    document.getElementById('topPageSubtitle').textContent = titleMap[tab][1];
+  }
+
+  if (tab === 'feed' || tab === 'inbox') {
+    loadFeedData();
+  }
+}
+
+// ── Embed Modal Controls & Live Studio ─────────────────────────────────
+function openEmbedModal() {
+  const el = document.getElementById('embedModal');
+  if (!el) return;
+  setStudioPreviewState('cta');
+  el.classList.remove('opacity-0', 'pointer-events-none');
+  el.classList.add('opacity-100');
+}
+
+function openEmbedForTenant(key) {
+  const select = document.getElementById('embedKeySelect');
+  if (select) {
+    let found = false;
+    for (let i = 0; i < select.options.length; i++) {
+      if (select.options[i].value === key) {
+        select.selectedIndex = i;
+        found = true;
+        break;
+      }
+    }
+    if (!found) {
+      const opt = document.createElement('option');
+      opt.value = key;
+      opt.textContent = 'Custom (' + key.substring(0, 16) + '...)';
+      select.appendChild(opt);
+      select.value = key;
+    }
+  }
+  openEmbedModal();
+}
+
+function closeEmbedModal() {
+  const el = document.getElementById('embedModal');
+  if (!el) return;
+  el.classList.remove('opacity-100');
+  el.classList.add('opacity-0', 'pointer-events-none');
+}
+
+function updateEmbedSnippet() {
+  const keySelect = document.getElementById('embedKeySelect');
+  const key = keySelect ? keySelect.value : 'sp_live_master_9013793020';
+  
+  const layoutSelect = document.getElementById('embedLayoutSelect');
+  const layout = layoutSelect ? layoutSelect.value : 'box';
+  
+  const posSelect = document.getElementById('embedPositionSelect');
+  const position = posSelect ? posSelect.value : 'bottom-right';
+  
+  const triggerSelect = document.getElementById('embedTriggerSelect');
+  const trigger = triggerSelect ? triggerSelect.value : 'pill-wave';
+  
+  const animSelect = document.getElementById('embedAnimSelect');
+  const anim = animSelect ? animSelect.value : 'siri-wave';
+  
+  const colorSelect = document.getElementById('embedColorSelect');
+  const color = colorSelect ? colorSelect.value : '#06B6D4';
+  
+  const langSelect = document.getElementById('embedLangSelect');
+  const lang = langSelect ? langSelect.value : 'auto';
+  
+  const titleInput = document.getElementById('embedTitleInput');
+  const title = (titleInput && titleInput.value.trim()) ? titleInput.value.trim() : "How's your experience? 🎯";
+  
+  const starsToggle = document.getElementById('embedStarsToggle');
+  const stars = starsToggle ? starsToggle.checked : true;
+
+  const collapseToggle = document.getElementById('embedCollapseToggle');
+  const collapse = collapseToggle ? collapseToggle.checked : true;
+
+  // Build formatted snippet
+  let snippet = '<!-- SayPulse Universal AI Voice Feedback Widget -->\n' +
+    '<script\n' +
+    '  src="https://saypulse.nextgenmultiverse.com/saypulse.js"\n' +
+    '  data-key="' + key + '"\n' +
+    '  data-layout="' + layout + '"\n' +
+    '  data-position="' + position + '"\n' +
+    '  data-trigger="' + trigger + '"\n' +
+    '  data-color="' + color + '"\n' +
+    '  data-animation="' + anim + '"\n' +
+    '  data-lang="' + lang + '"\n' +
+    '  data-title="' + title.replace(/"/g, '&quot;') + '"\n' +
+    '  data-stars="' + (stars ? 'true' : 'false') + '"\n' +
+    '  data-auto-collapse="' + (collapse ? 'true' : 'false') + '"\n' +
+    '  defer>\n' +
+    '<' + '/script>';
+
+  const snippetEl = document.getElementById('embedCodeSnippet');
+  if (snippetEl) snippetEl.textContent = snippet;
+
+  renderStudioPreview({ layout, position, trigger, anim, color, lang, title, stars, collapse });
+}
+
+let studioPreviewState = 'cta'; // 'cta' (Initial Trigger Button) or 'voice' (Active Voice Recording)
+
+function setStudioPreviewState(state) {
+  studioPreviewState = state;
+  const tabCta = document.getElementById('prevTabCta');
+  const tabVoice = document.getElementById('prevTabVoice');
+  const notice = document.getElementById('previewStateNotice');
+  if (tabCta && tabVoice) {
+    if (state === 'cta') {
+      tabCta.className = 'px-2.5 py-1 rounded-lg text-cyan-300 bg-cyan-500/20 border border-cyan-500/30 transition cursor-pointer';
+      tabVoice.className = 'px-2.5 py-1 rounded-lg text-slate-400 hover:text-white transition cursor-pointer';
+      if (notice) notice.textContent = 'State 1: Initial CTA trigger button as displayed on page load';
+    } else {
+      tabCta.className = 'px-2.5 py-1 rounded-lg text-slate-400 hover:text-white transition cursor-pointer';
+      tabVoice.className = 'px-2.5 py-1 rounded-lg text-red-400 bg-red-500/20 border border-red-500/30 transition cursor-pointer';
+      if (notice) notice.textContent = 'State 2: Active Voice Recording & real-time visualizer';
+    }
+  }
+  updateEmbedSnippet();
+}
+
+let studioAnimFrame = null;
+let studioVizTime = 0;
+let studioAngleY = 0, studioAngleX = 0.25, studioAngleZ = 0.1;
+
+// Pre-seeded structures for admin preview
+const studioStars = [];
+for (let i = 0; i < 45; i++) {
+  studioStars.push({ x: Math.random(), y: Math.random(), s: Math.random() * 1.5 + 0.5, a: Math.random() * 0.5 + 0.2, v: Math.random() * 0.001 + 0.0004 });
+}
+
+const STUDIO_SIRI_RIBBONS = [
+  { color: '#00F0FF', alpha: 0.95, speed: 2.2, phase: 0.0, freq: 2.8, ampMult: 1.00, width: 2.8, glow: 16 },
+  { color: '#6366F1', alpha: 0.85, speed: 2.8, phase: 0.9, freq: 3.4, ampMult: 0.85, width: 2.2, glow: 12 },
+  { color: '#A855F7', alpha: 0.75, speed: 1.9, phase: 1.8, freq: 2.4, ampMult: 0.75, width: 2.0, glow: 12 },
+  { color: '#EC4899', alpha: 0.65, speed: 3.2, phase: 2.7, freq: 4.2, ampMult: 0.60, width: 1.8, glow: 10 },
+  { color: '#38BDF8', alpha: 0.50, speed: 1.5, phase: 3.6, freq: 2.0, ampMult: 0.50, width: 1.5, glow: 8 },
+  { color: '#F43F5E', alpha: 0.40, speed: 2.5, phase: 4.5, freq: 4.8, ampMult: 0.40, width: 1.3, glow: 8 },
+  { color: '#34D399', alpha: 0.35, speed: 3.6, phase: 5.4, freq: 3.2, ampMult: 0.35, width: 1.2, glow: 6 }
+];
+
+const studioSpherePts = [];
+const studioPhi = Math.PI * (3 - Math.sqrt(5));
+for (let i = 0; i < 95; i++) {
+  const y = 1 - (i / (95 - 1)) * 2;
+  const radiusAtY = Math.sqrt(1 - y * y);
+  const theta = studioPhi * i;
+  const jitter = 0.96 + Math.random() * 0.08;
+  studioSpherePts.push({
+    x: Math.cos(theta) * radiusAtY * jitter,
+    y: y * jitter,
+    z: Math.sin(theta) * radiusAtY * jitter,
+    color: (i % 3 === 0 || i % 7 === 0) ? '#F59E0B' : '#00F0FF',
+    size: Math.random() * 1.5 + 1.2
+  });
+}
+
+const studioRingParts = [];
+for (let i = 0; i < 420; i++) {
+  studioRingParts.push({
+    baseAngle: Math.random() * Math.PI * 2,
+    radiusOffset: (Math.random() - 0.5) * 16,
+    baseSize: Math.random() * 1.8 + 0.8,
+    orbitSpeed: (Math.random() * 0.007 + 0.003) * (Math.random() > 0.5 ? 1 : -1),
+    noiseSeed: Math.random() * 100
+  });
+}
+
+const studioPhotons = [];
+const STUDIO_NEBULA_PAL = [
+  { color: '#00F0FF', glow: '#38BDF8' },
+  { color: '#38BDF8', glow: '#60A5FA' },
+  { color: '#818CF8', glow: '#6366F1' },
+  { color: '#C084FC', glow: '#A855F7' },
+  { color: '#F43F5E', glow: '#EC4899' },
+  { color: '#E879F9', glow: '#D946EF' }
+];
+for (let i = 0; i < 260; i++) {
+  const col = STUDIO_NEBULA_PAL[i % STUDIO_NEBULA_PAL.length];
+  studioPhotons.push({
+    orbitRadius: Math.random() * 32 + 4,
+    angle: Math.random() * Math.PI * 2,
+    orbitSpeed: (Math.random() * 0.025 + 0.01) * (Math.random() > 0.4 ? 1 : -1),
+    size: Math.random() * 2.0 + 0.8,
+    color: col.color,
+    glowColor: col.glow,
+    seed: Math.random() * 100
+  });
+}
+
+function startStudioCanvasLoop(anim) {
+  if (studioAnimFrame) cancelAnimationFrame(studioAnimFrame);
+
+  function loop() {
+    const cvs = document.getElementById('studioPreviewAnimCanvas');
+    if (!cvs) return;
+    const ctx = cvs.getContext('2d');
+    if (!ctx) return;
+
+    const W = cvs.width = cvs.offsetWidth || 300;
+    const H = cvs.height = cvs.offsetHeight || 60;
+    ctx.clearRect(0, 0, W, H);
+    studioVizTime += 0.026;
+
+    const amp = 0.70 + Math.sin(studioVizTime * 4) * 0.25;
+    const centerX = W / 2;
+    const centerY = H * 0.50;
+
+    if (anim === 'siri-wave') {
+      ctx.save();
+      studioStars.forEach(st => {
+        st.x += st.v * (1 + amp * 2);
+        if (st.x > 1) st.x = 0;
+        ctx.beginPath();
+        ctx.arc(st.x * W, st.y * H, st.s, 0, Math.PI * 2);
+        ctx.fillStyle = '#38BDF8';
+        ctx.globalAlpha = Math.min(1, Math.max(0, st.a * (0.35 + Math.sin(studioVizTime * 2 + st.y * 10) * 0.3 + amp * 0.5)));
+        ctx.shadowColor = '#00F0FF';
+        ctx.shadowBlur = 4;
+        ctx.fill();
+      });
+
+      ctx.globalCompositeOperation = 'lighter';
+      STUDIO_SIRI_RIBBONS.forEach(({ color, alpha, speed, phase, freq: f, ampMult, width: strokeW, glow }) => {
+        ctx.beginPath();
+        ctx.strokeStyle = color;
+        ctx.lineWidth = strokeW;
+        ctx.globalAlpha = alpha;
+        ctx.shadowColor = color;
+        ctx.shadowBlur = glow + amp * 8;
+
+        const maxH = (H * 0.32) * amp * ampMult;
+        const steps = Math.min(180, Math.floor(W / 5));
+
+        for (let i = 0; i <= steps; i++) {
+          const normX = i / steps;
+          const x = normX * W;
+          const envelope = Math.sin(normX * Math.PI);
+          const y = H * 0.50 +
+            (Math.sin(normX * Math.PI * f + studioVizTime * speed + phase) * 0.70 +
+             Math.sin(normX * Math.PI * (f * 1.5) - studioVizTime * (speed * 0.6) + phase * 1.3) * 0.22 +
+             Math.cos(normX * Math.PI * 2 + studioVizTime * 1.2) * 0.08) * maxH * envelope;
+
+          if (i === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+      });
+      ctx.restore();
+    } else if (anim === 'neural-sphere') {
+      studioAngleY += 0.016 + amp * 0.02;
+      studioAngleX += 0.006 + amp * 0.01;
+      studioAngleZ += 0.003;
+
+      const baseRadius = Math.min(W * 0.22, H * 0.32);
+      const currentRadius = baseRadius * (1 + amp * 0.30);
+
+      ctx.save();
+      const bgGlow = ctx.createRadialGradient(centerX, centerY, currentRadius * 0.2, centerX, centerY, currentRadius * 1.5);
+      bgGlow.addColorStop(0, `rgba(6, 182, 212, ${0.15 + amp * 0.2})`);
+      bgGlow.addColorStop(0.5, `rgba(30, 58, 138, ${0.08 + amp * 0.1})`);
+      bgGlow.addColorStop(1, 'rgba(15, 23, 42, 0)');
+      ctx.fillStyle = bgGlow;
+      ctx.fillRect(0, 0, W, H);
+
+      const cosY = Math.cos(studioAngleY), sinY = Math.sin(studioAngleY);
+      const cosX = Math.cos(studioAngleX), sinX = Math.sin(studioAngleX);
+      const cosZ = Math.cos(studioAngleZ), sinZ = Math.sin(studioAngleZ);
+
+      const projected = studioSpherePts.map(pt => {
+        let x1 = pt.x * cosY - pt.z * sinY;
+        let z1 = pt.x * sinY + pt.z * cosY;
+        let y1 = pt.y;
+
+        let y2 = y1 * cosX - z1 * sinX;
+        let z2 = y1 * sinX + z1 * cosX;
+        let x2 = x1;
+
+        let x3 = x2 * cosZ - y2 * sinZ;
+        let y3 = x2 * sinZ + y2 * cosZ;
+        let z3 = z2;
+
+        const depth = 2.4;
+        const scale = depth / (depth - z3 * 0.55);
+        const px = centerX + x3 * currentRadius * scale;
+        const py = centerY + y3 * currentRadius * scale;
+        const alpha = Math.max(0.12, (z3 + 1.2) / 2.2);
+
+        return { px, py, z: z3, alpha, color: pt.color, size: pt.size };
+      });
+
+      projected.sort((a, b) => a.z - b.z);
+
+      ctx.globalCompositeOperation = 'lighter';
+      const maxDist = currentRadius * 0.62;
+      const maxDistSq = maxDist * maxDist;
+
+      for (let i = 0; i < projected.length; i++) {
+        for (let j = i + 1; j < projected.length; j++) {
+          const p1 = projected[i];
+          const p2 = projected[j];
+          const dx = p1.px - p2.px;
+          const dy = p1.py - p2.py;
+          const distSq = dx * dx + dy * dy;
+
+          if (distSq < maxDistSq) {
+            const dist = Math.sqrt(distSq);
+            const lineAlpha = (1 - dist / maxDist) * Math.min(p1.alpha, p2.alpha) * (0.35 + amp * 0.5);
+            ctx.beginPath();
+            const isGoldLine = p1.color === '#F59E0B' || p2.color === '#F59E0B';
+            ctx.strokeStyle = isGoldLine ? '#FBBF24' : '#00F0FF';
+            ctx.globalAlpha = lineAlpha;
+            ctx.lineWidth = isGoldLine ? 1.0 : 0.8;
+            ctx.moveTo(p1.px, p1.py);
+            ctx.lineTo(p2.px, p2.py);
+            ctx.stroke();
+          }
+        }
+      }
+
+      projected.forEach(p => {
+        const radius = (p.size * (p.z + 1.4) * 0.85) * (1 + amp * 0.4);
+        ctx.beginPath();
+        ctx.arc(p.px, p.py, radius * 2.2, 0, Math.PI * 2);
+        ctx.fillStyle = p.color;
+        ctx.globalAlpha = p.alpha * (0.28 + amp * 0.35);
+        ctx.shadowColor = p.color;
+        ctx.shadowBlur = 10 + amp * 12;
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.arc(p.px, p.py, radius, 0, Math.PI * 2);
+        ctx.fillStyle = p.color === '#F59E0B' ? '#FDE68A' : '#E0F2FE';
+        ctx.globalAlpha = Math.min(1, p.alpha * 1.3);
+        ctx.fill();
+      });
+
+      ctx.restore();
+    } else if (anim === 'particle-ring') {
+      const baseRadius = Math.min(W * 0.20, H * 0.30);
+      ctx.save();
+      const haloGrad = ctx.createRadialGradient(centerX, centerY, baseRadius * 0.25, centerX, centerY, baseRadius * 1.5);
+      haloGrad.addColorStop(0, 'rgba(11, 17, 32, 0)');
+      haloGrad.addColorStop(0.5, `rgba(6, 182, 212, ${0.08 + amp * 0.14})`);
+      haloGrad.addColorStop(0.85, `rgba(244, 63, 94, ${0.05 + amp * 0.09})`);
+      haloGrad.addColorStop(1, 'rgba(15, 23, 42, 0)');
+      ctx.fillStyle = haloGrad;
+      ctx.fillRect(0, 0, W, H);
+
+      ctx.globalCompositeOperation = 'lighter';
+      studioRingParts.forEach(p => {
+        p.baseAngle += p.orbitSpeed * (1 + amp * 2.5);
+        const wave1 = Math.sin(p.baseAngle * 6 + studioVizTime * 2.2 + p.noiseSeed);
+        const wave2 = Math.cos(p.baseAngle * 10 - studioVizTime * 1.6);
+        const turbulentOffset = (wave1 * 5 + wave2 * 3) * (0.6 + amp * 1.2);
+        const currentR = baseRadius + p.radiusOffset + turbulentOffset;
+        const x = centerX + Math.cos(p.baseAngle) * currentR;
+        const y = centerY + Math.sin(p.baseAngle) * currentR * 0.65;
+
+        let a = p.baseAngle % (Math.PI * 2);
+        if (a < 0) a += Math.PI * 2;
+        const sinA = Math.sin(a);
+        const hex = sinA < -0.35 ? '#00F0FF' : sinA < 0.1 ? '#818CF8' : sinA < 0.6 ? '#F43F5E' : '#F97316';
+
+        ctx.beginPath();
+        ctx.arc(x, y, p.baseSize * (1 + amp * 0.75), 0, Math.PI * 2);
+        ctx.fillStyle = hex;
+        ctx.globalAlpha = Math.min(1, Math.max(0.2, 0.5 + Math.sin(studioVizTime * 3 + p.noiseSeed) * 0.35 + amp * 0.25));
+        ctx.shadowColor = hex;
+        ctx.shadowBlur = 6 + amp * 6;
+        ctx.fill();
+      });
+      ctx.restore();
+    } else if (anim === 'nebula-plasma') {
+      ctx.save();
+      ctx.globalCompositeOperation = 'lighter';
+      const coreR = 14 + amp * 20;
+      const plasmaGrad = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, coreR * 2.2);
+      plasmaGrad.addColorStop(0, `rgba(0, 240, 255, ${0.58 + amp * 0.42})`);
+      plasmaGrad.addColorStop(0.35, `rgba(192, 132, 252, ${0.40 + amp * 0.4})`);
+      plasmaGrad.addColorStop(0.7, `rgba(244, 63, 94, ${0.20 + amp * 0.22})`);
+      plasmaGrad.addColorStop(1, 'rgba(15, 23, 42, 0)');
+      ctx.fillStyle = plasmaGrad;
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, coreR * 2.2, 0, Math.PI * 2);
+      ctx.fill();
+
+      studioPhotons.forEach(p => {
+        p.angle += p.orbitSpeed * (1 + amp * 3.0);
+        const rDrift = Math.sin(studioVizTime * 1.8 + p.seed) * 6;
+        const currentR = (p.orbitRadius + rDrift) * (1 + amp * 0.65);
+        const x = centerX + Math.cos(p.angle) * currentR * 1.4;
+        const y = centerY + Math.sin(p.angle) * currentR * 0.95;
+
+        ctx.beginPath();
+        ctx.arc(x, y, p.size * (1 + amp * 0.7), 0, Math.PI * 2);
+        ctx.fillStyle = p.color;
+        ctx.globalAlpha = Math.min(1, Math.max(0.2, 0.5 + Math.sin(studioVizTime * 4 + p.seed) * 0.4 + amp * 0.3));
+        ctx.shadowColor = p.glowColor;
+        ctx.shadowBlur = 6 + amp * 8;
+        ctx.fill();
+      });
+      ctx.restore();
+    } else if (anim === 'solar-ribbon') {
+      const coreRadius = 18;
+      ctx.save();
+      ctx.globalCompositeOperation = 'lighter';
+
+      const sets = [
+        { color: '#00F0FF', alpha: 0.90, freq: 2.6, speed: 2.2, phase: 0.0, w: 2.4 },
+        { color: '#38BDF8', alpha: 0.60, freq: 3.6, speed: 2.6, phase: 0.8, w: 1.6 },
+        { color: '#818CF8', alpha: 0.45, freq: 4.8, speed: 1.8, phase: 1.6, w: 1.2 },
+        { color: '#EC4899', alpha: 0.90, freq: 2.6, speed: 2.2, phase: 2.4, w: 2.4 },
+        { color: '#F43F5E', alpha: 0.60, freq: 3.6, speed: 2.6, phase: 3.2, w: 1.6 },
+        { color: '#C084FC', alpha: 0.45, freq: 4.8, speed: 1.8, phase: 4.0, w: 1.2 }
+      ];
+
+      sets.forEach(({ color, alpha, freq: f, speed, phase, w }) => {
+        ctx.beginPath();
+        ctx.strokeStyle = color;
+        ctx.lineWidth = w;
+        ctx.globalAlpha = alpha;
+        ctx.shadowColor = color;
+        ctx.shadowBlur = 8;
+
+        const maxH = (H * 0.32) * amp;
+        const steps = Math.min(160, Math.floor(W / 6));
+
+        for (let i = 0; i <= steps; i++) {
+          const normX = i / steps;
+          const x = normX * W;
+          const side = normX < 0.5 ? -1 : 1;
+          const distFromCenter = Math.abs(normX - 0.5) * 2;
+          const taper = Math.sin(normX * Math.PI);
+          const y = centerY + Math.sin(normX * Math.PI * f + studioVizTime * speed * side + phase) * maxH * taper * (0.35 + distFromCenter * 0.65);
+
+          if (i === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+      });
+
+      // Spikes
+      for (let i = 0; i < 48; i++) {
+        const theta = (i / 48) * Math.PI * 2;
+        const spikeLen = 8 + Math.sin(studioVizTime * 3 + i) * 5 * (1 + amp);
+        const x1 = centerX + Math.cos(theta) * (coreRadius - 2);
+        const y1 = centerY + Math.sin(theta) * (coreRadius - 2);
+        const x2 = centerX + Math.cos(theta) * (coreRadius + spikeLen);
+        const y2 = centerY + Math.sin(theta) * (coreRadius + spikeLen);
+        const isLeft = Math.cos(theta) < 0;
+        const spikeColor = isLeft ? '#00F0FF' : '#EC4899';
+
+        ctx.beginPath();
+        ctx.strokeStyle = spikeColor;
+        ctx.lineWidth = 1.2;
+        ctx.globalAlpha = 0.75;
+        ctx.moveTo(x1, y1);
+        ctx.lineTo(x2, y2);
+        ctx.stroke();
+      }
+
+      ctx.globalCompositeOperation = 'source-over';
+      const orbGrad = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, coreRadius);
+      orbGrad.addColorStop(0, '#1E293B');
+      orbGrad.addColorStop(0.7, '#0B1120');
+      orbGrad.addColorStop(1, '#00F0FF');
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, coreRadius, 0, Math.PI * 2);
+      ctx.fillStyle = orbGrad;
+      ctx.shadowColor = '#00F0FF';
+      ctx.shadowBlur = 14;
+      ctx.fill();
+      ctx.lineWidth = 1.5;
+      ctx.strokeStyle = '#38BDF8';
+      ctx.stroke();
+      ctx.restore();
+    } else if (anim === 'laser-horizon') {
+      const horizonY = H * 0.54;
+      ctx.save();
+
+      // Radar rings
+      const ringCenterY = H * 0.22;
+      const maxRadarR = H * 0.16;
+      for (let r = 0; r < 4; r++) {
+        const progress = ((studioVizTime * 0.75 + r / 4) % 1);
+        const radius = 6 + progress * maxRadarR * (1 + amp * 0.35);
+        ctx.beginPath();
+        ctx.arc(centerX, ringCenterY, radius, 0, Math.PI * 2);
+        ctx.strokeStyle = '#00F0FF';
+        ctx.globalAlpha = Math.max(0, Math.pow(1 - progress, 1.4) * 0.7);
+        ctx.lineWidth = 1.2;
+        ctx.stroke();
+      }
+
+      ctx.beginPath();
+      ctx.arc(centerX, ringCenterY, 4, 0, Math.PI * 2);
+      ctx.fillStyle = '#38BDF8';
+      ctx.globalAlpha = 1;
+      ctx.shadowColor = '#00F0FF';
+      ctx.shadowBlur = 10;
+      ctx.fill();
+
+      // Horizon Laser Harmonics
+      ctx.globalCompositeOperation = 'lighter';
+      const harms = [
+        { color: '#00F0FF', alpha: 0.95, phase: 0.0, w: 2.2, f: 5.0, hMult: 1.00 },
+        { color: '#818CF8', alpha: 0.75, phase: 0.9, w: 1.6, f: 7.0, hMult: 0.75 },
+        { color: '#F43F5E', alpha: 0.60, phase: 1.8, w: 1.3, f: 9.0, hMult: 0.55 },
+        { color: '#EC4899', alpha: 0.45, phase: 2.7, w: 1.0, f: 11.0, hMult: 0.35 }
+      ];
+
+      harms.forEach(({ color, alpha, phase, w, f, hMult }) => {
+        ctx.beginPath();
+        ctx.strokeStyle = color;
+        ctx.lineWidth = w;
+        ctx.globalAlpha = alpha;
+        ctx.shadowColor = color;
+        ctx.shadowBlur = 8;
+
+        const maxSwell = (H * 0.22) * amp * hMult;
+        const steps = Math.min(180, Math.floor(W / 5));
+
+        for (let i = 0; i <= steps; i++) {
+          const normX = i / steps;
+          const x = normX * W;
+          const dist = (normX - 0.5) * 4.2;
+          const gaussian = Math.exp(-(dist * dist));
+          const wave = Math.sin(normX * Math.PI * f + studioVizTime * 3.2 + phase);
+          const y = horizonY - wave * maxSwell * gaussian;
+
+          if (i === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+      });
+
+      // Equalizer bars
+      const barCount = 20;
+      const barW = 3;
+      const barGap = 3.5;
+      const totalBarW = barCount * barW + (barCount - 1) * barGap;
+      const startX = (W - totalBarW) / 2;
+      const baseY = H - 8;
+
+      for (let i = 0; i < barCount; i++) {
+        const barH = Math.max(3, Math.abs(Math.sin(studioVizTime * 4 + i * 0.6)) * 18 * (1 + amp * 0.6));
+        const bx = startX + i * (barW + barGap);
+        const by = baseY - barH;
+        const norm = i / barCount;
+        const color = norm < 0.4 ? '#00F0FF' : norm < 0.7 ? '#818CF8' : '#EC4899';
+
+        ctx.beginPath();
+        ctx.fillStyle = color;
+        ctx.globalAlpha = 0.8;
+        ctx.shadowColor = color;
+        ctx.shadowBlur = 5;
+        if (ctx.roundRect) ctx.roundRect(bx, by, barW, barH, 1.5);
+        else ctx.rect(bx, by, barW, barH);
+        ctx.fill();
+      }
+
+      ctx.restore();
     }
 
-    if (user && (user.role === 'superadmin' || (user.phone && user.phone.includes('9013793020')))) {
-      document.getElementById('superadminBadge').classList.remove('hidden');
-      document.getElementById('userIdentifierDisplay').textContent = `${user.name || 'Superadmin'} (${user.phone || '9013793020'})`;
+    studioAnimFrame = requestAnimationFrame(loop);
+  }
+
+  studioAnimFrame = requestAnimationFrame(loop);
+}
+
+function renderStudioPreview(cfg) {
+  const container = document.getElementById('studioLiveWidget');
+  const badge = document.getElementById('previewBadgeMode');
+  if (!container) return;
+
+  const color = cfg.color || '#06B6D4';
+  const title = cfg.title || "How's your experience? 🎯";
+  const stars = cfg.stars;
+
+  // Build trigger button HTML according to trigger style
+  let triggerBtnHtml = '';
+  if (cfg.trigger === 'bubble-orb') {
+    triggerBtnHtml = 
+      '<div onclick="setStudioPreviewState(\'voice\')" title="Click to test active recording state" style="cursor:pointer; width:44px; height:44px; border-radius:50%; background:' + color + '; box-shadow:0 6px 20px ' + color + '77; border:2px solid rgba(255,255,255,0.35); display:flex; align-items:center; justify-content:center; font-size:20px; color:#fff; animation:sp-pulse-glow 2.5s infinite; transition:transform 0.15s ease;" onmouseover="this.style.transform=\'scale(1.08)\'" onmouseout="this.style.transform=\'scale(1)\'">' +
+        '🎙️' +
+      '</div>';
+  } else if (cfg.trigger === 'edge-ribbon') {
+    triggerBtnHtml = 
+      '<div onclick="setStudioPreviewState(\'voice\')" title="Click to test active recording state" style="cursor:pointer; background:#0B1325; border:1.5px solid ' + color + '; border-radius:8px 0 0 8px; padding:8px 5px; display:flex; flex-direction:column; align-items:center; gap:5px; box-shadow:0 6px 18px rgba(0,0,0,0.6); transition:transform 0.15s ease;" onmouseover="this.style.transform=\'translateX(-3px)\'" onmouseout="this.style.transform=\'translateX(0)\'">' +
+        '<span style="font-size:13px;">🎙️</span>' +
+        '<span style="writing-mode:vertical-rl; font-size:9px; font-weight:800; letter-spacing:0.12em; color:' + color + '; font-family:monospace;">FEEDBACK</span>' +
+      '</div>';
+  } else if (cfg.trigger === 'badge-compact') {
+    triggerBtnHtml = 
+      '<div onclick="setStudioPreviewState(\'voice\')" title="Click to test active recording state" style="cursor:pointer; height:28px; padding:0 10px; border-radius:14px; background:#0B1325; border:1px solid ' + color + '; color:#fff; display:inline-flex; align-items:center; gap:5px; font-size:11px; font-weight:700; box-shadow:0 4px 14px rgba(0,0,0,0.5); transition:transform 0.15s ease;" onmouseover="this.style.transform=\'scale(1.05)\'" onmouseout="this.style.transform=\'scale(1)\'">' +
+        '<span>🎙️</span><span style="color:' + color + ';">Voice</span>' +
+      '</div>';
+  } else {
+    // Default 'pill-wave'
+    triggerBtnHtml = 
+      '<div onclick="setStudioPreviewState(\'voice\')" title="Click to test active recording state" style="cursor:pointer; height:34px; padding:0 13px; border-radius:17px; background:' + color + '; box-shadow:0 6px 20px ' + color + '66; border:1px solid rgba(255,255,255,0.25); display:inline-flex; align-items:center; gap:6px; font-size:11px; font-weight:700; color:#fff; transition:transform 0.15s ease;" onmouseover="this.style.transform=\'scale(1.05)\'" onmouseout="this.style.transform=\'scale(1)\'">' +
+        '<span>🎙️</span>' +
+        '<span style="display:inline-flex; align-items:center; gap:2px; height:10px;">' +
+          '<span style="width:2px; height:5px; background:#fff; border-radius:1px; animation:sp-eq-1 0.9s infinite;"></span>' +
+          '<span style="width:2px; height:10px; background:#fff; border-radius:1px; animation:sp-eq-2 0.7s infinite;"></span>' +
+          '<span style="width:2px; height:6px; background:#fff; border-radius:1px; animation:sp-eq-3 1.1s infinite;"></span>' +
+          '<span style="width:2px; height:8px; background:#fff; border-radius:1px; animation:sp-eq-4 0.8s infinite;"></span>' +
+        '</span>' +
+        '<span>Feedback</span>' +
+      '</div>';
+  }
+
+  // Positioning style
+  let posStyle = '';
+  let alignItems = 'flex-end';
+  if (cfg.position.includes('top')) {
+    posStyle += 'top:12px;';
+  } else {
+    posStyle += 'bottom:12px;';
+  }
+  if (cfg.position.includes('left')) {
+    posStyle += 'left:12px;';
+    alignItems = 'flex-start';
+  } else if (cfg.position.includes('center')) {
+    posStyle += 'left:50%; transform:translateX(-50%);';
+    alignItems = 'center';
+  } else {
+    posStyle += 'right:12px;';
+    alignItems = 'flex-end';
+  }
+
+  // Update mode badge
+  if (badge) {
+    if (studioPreviewState === 'cta') {
+      badge.textContent = 'STATE 1: INITIAL CTA • ' + cfg.position.toUpperCase();
+      badge.className = 'text-[9px] font-mono font-bold px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/30';
+    } else {
+      badge.textContent = 'STATE 2: ' + cfg.layout.toUpperCase() + ' (' + cfg.anim.toUpperCase() + ')';
+      badge.className = 'text-[9px] font-mono font-bold px-2 py-0.5 rounded-full bg-red-500/20 text-red-300 border border-red-500/30';
     }
+  }
 
-    function switchTab(tab) {
-      document.getElementById('viewOrgs').classList.toggle('hidden', tab !== 'orgs');
-      document.getElementById('viewFeed').classList.toggle('hidden', tab !== 'feed');
-      document.getElementById('viewSecurity').classList.toggle('hidden', tab !== 'security');
+  // ── Render STATE 1: Initial CTA Button on Page Load ──────────────────
+  if (studioPreviewState === 'cta') {
+    if (studioAnimFrame) cancelAnimationFrame(studioAnimFrame);
+    container.innerHTML = 
+      '<div style="position:absolute; ' + posStyle + ' display:flex; flex-direction:column; align-items:' + alignItems + '; gap:6px; pointer-events:auto;">' +
+        '<div style="font-size:9px; color:#94A3B8; font-family:sans-serif; background:rgba(4,7,17,0.75); border:1px solid rgba(255,255,255,0.12); border-radius:6px; padding:2px 7px; pointer-events:none; white-space:nowrap; margin-bottom:2px;">' +
+          '👆 Click button to test voice recording' +
+        '</div>' +
+        triggerBtnHtml +
+      '</div>';
+    return;
+  }
 
-      document.getElementById('tabBtnOrgs').className = tab === 'orgs' ? 'pb-3 border-b-2 border-cyan-400 text-cyan-300 transition' : 'pb-3 border-b-2 border-transparent text-slate-400 hover:text-white transition';
-      document.getElementById('tabBtnFeed').className = tab === 'feed' ? 'pb-3 border-b-2 border-cyan-400 text-cyan-300 transition' : 'pb-3 border-b-2 border-transparent text-slate-400 hover:text-white transition';
-      document.getElementById('tabBtnSecurity').className = tab === 'security' ? 'pb-3 border-b-2 border-cyan-400 text-cyan-300 transition' : 'pb-3 border-b-2 border-transparent text-slate-400 hover:text-white transition';
+  // ── Render STATE 2: Active Voice Recording ────────────────────────────
+  if (cfg.layout === 'full') {
+    // Full-Width Horizon Wave + Centered Clean Dynamic Island Dock
+    container.innerHTML = 
+      '<!-- 1. Full-Width Unboxed Horizon Live Canvas -->' +
+      '<div style="position:absolute; bottom:20px; left:0; right:0; width:100%; height:110px; pointer-events:none; overflow:hidden;">' +
+        '<canvas id="studioPreviewAnimCanvas" width="500" height="110" style="width:100%; height:110px; display:block;"></canvas>' +
+      '</div>' +
+      '<!-- 2. Centered Dynamic Island Floating Control Dock -->' +
+      '<div style="position:absolute; bottom:12px; left:50%; transform:translateX(-50%); background:#0F172A; border:1px solid #334155; border-radius:50px; padding:6px 14px; display:flex; align-items:center; gap:10px; box-shadow:0 16px 36px rgba(0,0,0,0.85), 0 0 22px ' + color + '33; white-space:nowrap; z-index:20; pointer-events:auto;">' +
+        '<div style="display:flex; align-items:center; gap:5px;">' +
+          '<span style="width:7px; height:7px; border-radius:50%; background:#EF4444; animation:sp-recblink 1s infinite;"></span>' +
+          '<span style="font-family:monospace; font-size:11px; font-weight:700; color:#F8FAFC;">00:15</span>' +
+        '</div>' +
+        '<div style="width:1px; height:12px; background:#334155;"></div>' +
+        '<div style="display:flex; align-items:center; gap:4px; font-size:11px; color:#38BDF8; font-weight:600;">' +
+          '<span>🎙️</span><span>Listening…</span>' +
+        '</div>' +
+        '<div style="width:1px; height:12px; background:#334155;"></div>' +
+        '<button type="button" onclick="setStudioPreviewState(\'cta\')" title="Finish and submit voice note" style="display:flex; align-items:center; gap:4px; padding:3px 10px; border-radius:14px; background:linear-gradient(135deg, ' + color + ', #6366F1); color:#fff; font-size:10px; font-weight:700; box-shadow:0 2px 8px ' + color + '55; border:none; cursor:pointer;">' +
+          '<span>⏹</span><span>Finish & Submit</span>' +
+        '</button>' +
+        '<button type="button" onclick="setStudioPreviewState(\'cta\')" title="Close and return to CTA button" style="background:none; border:none; color:#94A3B8; font-size:12px; cursor:pointer; padding:0 3px;">✕</button>' +
+      '</div>';
+    startStudioCanvasLoop(cfg.anim);
+  } else {
+    // Layout === 'box': Floating Corner Card Popover + Trigger Button
+    container.innerHTML = 
+      '<div style="position:absolute; ' + posStyle + ' display:flex; flex-direction:column; align-items:' + alignItems + '; gap:8px; pointer-events:auto;">' +
+        '<!-- Floating Dialog Card -->' +
+        '<div style="width:220px; background:#0B1325; border:1px solid rgba(255,255,255,0.18); border-radius:16px; padding:12px; box-shadow:0 16px 36px rgba(0,0,0,0.8); display:flex; flex-direction:column; gap:7px;">' +
+          '<div style="display:flex; justify-content:space-between; align-items:center;">' +
+            '<span style="font-size:10px; font-weight:700; color:#F8FAFC; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:160px;">' + escapeHtml(title) + '</span>' +
+            '<button type="button" onclick="setStudioPreviewState(\'cta\')" title="Close card" style="background:none; border:none; color:#94A3B8; font-size:11px; cursor:pointer;">✕</button>' +
+          '</div>' +
+          (stars ? '<div style="display:flex; justify-content:center; gap:3px; color:#FBBF24; font-size:12px;"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>' : '') +
+          '<!-- Active Wave Visualizer Viewport Live Canvas -->' +
+          '<div style="height:48px; background:#040711; border:1px solid #1E293B; border-radius:10px; display:flex; align-items:center; justify-content:center; overflow:hidden; position:relative;">' +
+            '<canvas id="studioPreviewAnimCanvas" width="220" height="48" style="width:100%; height:48px; display:block;"></canvas>' +
+            '<div style="position:absolute; bottom:2px; display:flex; align-items:center; gap:3px; background:rgba(0,0,0,0.7); padding:1px 6px; border-radius:6px; border:1px solid rgba(255,255,255,0.1);">' +
+              '<span style="width:5px; height:5px; border-radius:50%; background:#EF4444; animation:sp-recblink 1s infinite;"></span>' +
+              '<span style="font-size:8px; font-family:monospace; color:#E2E8F0; font-weight:700;">00:15 Listening…</span>' +
+            '</div>' +
+          '</div>' +
+          '<button type="button" onclick="setStudioPreviewState(\'cta\')" style="padding:6px; border-radius:9px; background:linear-gradient(135deg, ' + color + ', #6366F1); color:#fff; font-size:10px; font-weight:700; text-align:center; box-shadow:0 2px 8px ' + color + '44; border:none; cursor:pointer;">' +
+            '⏹ Finish & Submit Feedback' +
+          '</button>' +
+        '</div>' +
+        '<!-- Trigger Button -->' +
+        '<div>' +
+          triggerBtnHtml +
+        '</div>' +
+      '</div>';
+    startStudioCanvasLoop(cfg.anim);
+  }
+}
+
+function copyEmbedSnippet() {
+  const snippetEl = document.getElementById('embedCodeSnippet');
+  const snippet = snippetEl ? snippetEl.textContent : '';
+  navigator.clipboard.writeText(snippet);
+  const btn = document.getElementById('copyEmbedBtn');
+  if (btn) {
+    btn.textContent = '✓ Copied to Clipboard!';
+    setTimeout(function() { btn.textContent = '📋 Copy Script Tag'; }, 2000);
+  }
+}
+
+function copyKey(key) {
+  navigator.clipboard.writeText(key);
+  alert('✓ API Key copied to clipboard:\n\n' + key);
+}
+
+function openNewWorkspaceModal() {
+  const el = document.getElementById('workspaceModal');
+  if (!el) return;
+  el.classList.remove('opacity-0', 'pointer-events-none');
+  el.classList.add('opacity-100');
+}
+
+function closeNewWorkspaceModal() {
+  const el = document.getElementById('workspaceModal');
+  if (!el) return;
+  el.classList.remove('opacity-100');
+  el.classList.add('opacity-0', 'pointer-events-none');
+}
+
+// ── Live Master Data Integration ──────────────────────────────────────
+let currentOrganizations = [];
+
+async function loadMasterData() {
+  try {
+    const ovRes = await fetch('/saypulse/v1/admin/master/overview');
+    if (ovRes.ok) {
+      const ov = await ovRes.json();
+      if (document.getElementById('heroSynthesizedCount')) {
+        document.getElementById('heroSynthesizedCount').textContent = ov.totalVoiceFeedbacks || 0;
+      }
+      if (document.getElementById('statDispatched')) {
+        document.getElementById('statDispatched').textContent = ov.totalVoiceFeedbacks || 0;
+      }
+      if (document.getElementById('statTenants')) {
+        document.getElementById('statTenants').textContent = ov.totalOrganizations || 0;
+      }
+      if (document.getElementById('statAvgCsat')) {
+        document.getElementById('statAvgCsat').textContent = (ov.platformAverageCsat ? Number(ov.platformAverageCsat).toFixed(1) : '5.0') + ' / 5.0';
+      }
     }
+  } catch (e) {
+    console.warn('Overview load note:', e);
+  }
 
-    function copyKey(key) {
-      navigator.clipboard.writeText(key);
-      alert('✓ API Key copied to clipboard: ' + key);
+  try {
+    const orgRes = await fetch('/saypulse/v1/admin/master/organizations');
+    if (orgRes.ok) {
+      const orgs = await orgRes.json();
+      if (Array.isArray(orgs)) {
+        currentOrganizations = orgs;
+        localStorage.setItem('saypulse_cached_orgs', JSON.stringify(orgs));
+        renderOrganizations(orgs);
+        updateEmbedKeyOptions(orgs);
+        return;
+      }
     }
+  } catch (e) {
+    console.warn('Organizations fetch error, checking cache:', e);
+  }
 
-    function handleSignOut() {
-      localStorage.removeItem('saypulse_auth_token');
-      localStorage.removeItem('saypulse_user');
-      window.location.href = '/';
+  try {
+    const cached = localStorage.getItem('saypulse_cached_orgs');
+    if (cached) {
+      const parsed = JSON.parse(cached);
+      if (Array.isArray(parsed)) {
+        currentOrganizations = parsed;
+        renderOrganizations(parsed);
+        updateEmbedKeyOptions(parsed);
+        return;
+      }
     }
+  } catch (e) {}
 
-    function openNewWorkspaceModal() {
-      const el = document.getElementById('workspaceModal');
-      el.classList.remove('opacity-0', 'pointer-events-none');
-      el.classList.add('opacity-100');
-    }
+  renderOrganizations([]);
+}
 
-    function closeNewWorkspaceModal() {
-      const el = document.getElementById('workspaceModal');
-      el.classList.remove('opacity-100');
-      el.classList.add('opacity-0', 'pointer-events-none');
-    }
+function renderOrganizations(orgs) {
+  const tbody = document.getElementById('orgsTableBody');
+  if (!tbody) return;
 
-    function handleCreateWorkspace(e) {
-      e.preventDefault();
-      const name = document.getElementById('newOrgName').value.trim();
-      const owner = document.getElementById('newOwnerName').value.trim();
-      const phone = document.getElementById('newOwnerPhone').value.trim();
-      if (!name) return;
+  if (!orgs || orgs.length === 0) {
+    tbody.innerHTML = 
+      '<tr>' +
+        '<td colspan="6" class="py-14 text-center font-sans">' +
+          '<div class="max-w-md mx-auto space-y-3">' +
+            '<div class="w-12 h-12 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 flex items-center justify-center text-2xl mx-auto">🏢</div>' +
+            '<div class="text-white font-bold text-base">No Client Workspaces Provisioned Yet</div>' +
+            '<p class="text-xs text-slate-400 leading-relaxed">' +
+              'You have not provisioned any tenant workspaces yet. Provision your first client workspace to generate a unique API key and domain-protected embed tag.' +
+            '</p>' +
+            '<button onclick="openNewWorkspaceModal()" class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-indigo-600 text-xs font-bold text-white shadow-lg transition cursor-pointer">' +
+              '+ Provision First Workspace' +
+            '</button>' +
+          '</div>' +
+        '</td>' +
+      '</tr>';
+    return;
+  }
 
-      const slug = name.toLowerCase().replace(/[^a-z0-9]/g, '-');
-      const apiKey = `sp_live_${slug}_${Math.random().toString(36).substring(2, 8)}`;
+  tbody.innerHTML = '';
+  orgs.forEach(function(org) {
+    const key = org.primary_api_key || org.apiKey || 'sp_live_pending';
+    const web = org.website_url || '';
+    const cleanWeb = web.replace(/^https?:\/\//, '');
+    const tr = document.createElement('tr');
+    tr.className = 'hover:bg-white/[0.02] transition';
 
-      const tbody = document.getElementById('orgsTableBody');
-      const tr = document.createElement('tr');
-      tr.className = 'hover:bg-white/[0.02] transition';
-      tr.innerHTML = `
-        <td class="py-4 px-4 sm:px-6 font-sans">
-          <div class="font-bold text-white text-sm">${name}</div>
-          <div class="text-[11px] text-slate-400 font-mono">${slug}.saypulse.io</div>
-        </td>
-        <td class="py-4 px-4">
-          <div class="text-white font-sans font-medium">${owner}</div>
-          <div class="text-cyan-400 text-[11px]">${phone ? '+91 ' + phone : 'Owner'}</div>
-        </td>
-        <td class="py-4 px-4">
-          <button onclick="copyKey('${apiKey}')" class="px-2.5 py-1 rounded bg-black/50 border border-white/10 text-[11px] text-slate-300 hover:text-cyan-300 transition">
-            ${apiKey.substring(0, 16)}... 📋
-          </button>
-        </td>
-        <td class="py-4 px-4 text-white font-bold">0</td>
-        <td class="py-4 px-4 text-emerald-400 font-bold">5.0 / 5.0</td>
-        <td class="py-4 px-4 sm:px-6 text-right font-sans">
-          <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[10px] font-bold">Newly Active</span>
-        </td>
-      `;
-      tbody.prepend(tr);
+    const safeName = escapeHtml(org.name);
+    const safeDomain = escapeHtml(cleanWeb);
+    const safeOwner = escapeHtml(org.owner_name || 'Owner');
+    const safeContact = org.owner_phone ? '+91 ' + escapeHtml(org.owner_phone) : (org.owner_email ? escapeHtml(org.owner_email) : 'Direct');
+    const safeId = escapeHtml(org.id);
+
+    tr.innerHTML = 
+      '<td class="py-4 px-6 font-sans">' +
+        '<div class="font-bold text-white text-sm">' + safeName + '</div>' +
+        '<div class="text-[11px] text-cyan-400 font-mono flex items-center gap-1 mt-0.5">' +
+          (web 
+            ? '<a href="' + (web.startsWith('http') ? web : 'https://' + web) + '" target="_blank" class="hover:underline flex items-center gap-1">🌐 ' + safeDomain + ' ↗</a>' 
+            : '<span class="text-slate-500">No domain registered</span>') +
+        '</div>' +
+      '</td>' +
+      '<td class="py-4 px-4 font-sans">' +
+        '<div class="text-white font-medium">' + safeOwner + '</div>' +
+        '<div class="text-slate-400 text-[11px] font-mono">' + safeContact + '</div>' +
+      '</td>' +
+      '<td class="py-4 px-4 font-mono">' +
+        '<button onclick="copyKey(\'' + key + '\')" class="px-2.5 py-1 rounded bg-black/50 border border-white/10 text-[11px] text-slate-300 hover:text-cyan-300 transition cursor-pointer" title="Click to copy full API Key">' +
+          key.substring(0, 16) + '... 📋' +
+        '</button>' +
+      '</td>' +
+      '<td class="py-4 px-4 text-white font-bold font-mono">' + (org.feedback_count || 0) + '</td>' +
+      '<td class="py-4 px-4 text-emerald-400 font-bold font-mono">' + (org.avg_rating ? Number(org.avg_rating).toFixed(1) : '5.0') + ' / 5.0</td>' +
+      '<td class="py-4 px-6 text-right font-sans">' +
+        '<div class="flex items-center justify-end gap-2">' +
+          '<button onclick="openEmbedForTenant(\'' + key + '\')" class="px-3 py-1.5 rounded-lg bg-cyan-500/20 text-cyan-300 hover:bg-cyan-500/30 border border-cyan-500/40 text-xs font-bold transition cursor-pointer">' +
+            'Embed Tag ➔' +
+          '</button>' +
+          '<button onclick="deleteWorkspace(\'' + safeId + '\', \'' + safeName.replace(/'/g, "\\'") + '\')" class="p-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 text-xs transition cursor-pointer" title="Delete Workspace">' +
+            '🗑️' +
+          '</button>' +
+        '</div>' +
+      '</td>';
+    tbody.appendChild(tr);
+  });
+}
+
+function updateEmbedKeyOptions(orgs) {
+  const select = document.getElementById('embedKeySelect');
+  if (!select) return;
+  const currentVal = select.value;
+  select.innerHTML = '<option value="sp_live_master_9013793020">SayPulse Master (Vivek Mandal)</option>';
+  if (Array.isArray(orgs)) {
+    orgs.forEach(function(o) {
+      const k = o.primary_api_key || o.apiKey;
+      if (k) {
+        const opt = document.createElement('option');
+        opt.value = k;
+        opt.textContent = o.name + ' (' + k.substring(0, 16) + '...)';
+        select.appendChild(opt);
+      }
+    });
+  }
+  if (currentVal) select.value = currentVal;
+  updateEmbedSnippet();
+}
+
+async function handleCreateWorkspace(e) {
+  e.preventDefault();
+  const name = document.getElementById('newOrgName').value.trim();
+  const website = document.getElementById('newOrgWebsite').value.trim();
+  const owner = document.getElementById('newOwnerName').value.trim();
+  const phone = document.getElementById('newOwnerPhone').value.trim();
+  const email = document.getElementById('newOwnerEmail').value.trim();
+  if (!name || !website) {
+    alert('Please provide Company Name and Website URL.');
+    return;
+  }
+
+  const submitBtn = e.target.querySelector('button[type="submit"]');
+  const originalText = submitBtn.innerHTML;
+  submitBtn.disabled = true;
+  submitBtn.innerHTML = '⏳ Provisioning Workspace in Database...';
+
+  try {
+    const res = await fetch('/saypulse/v1/auth/register-org', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        companyName: name,
+        websiteUrl: website,
+        ownerName: owner || name,
+        phone: phone,
+        email: email
+      })
+    });
+
+    const data = await res.json();
+    if (res.ok && data.success) {
       closeNewWorkspaceModal();
-      alert(`🎉 Workspace "${name}" provisioned successfully!\nGenerated API Key: ${apiKey}`);
+      document.getElementById('newOrgName').value = '';
+      document.getElementById('newOrgWebsite').value = '';
+      document.getElementById('newOwnerName').value = '';
+      document.getElementById('newOwnerPhone').value = '';
+      document.getElementById('newOwnerEmail').value = '';
+
+      // Reload live data from database
+      await loadMasterData();
+
+      // Open Embed Studio pre-selected with the new tenant's key!
+      const newKey = data.organization.apiKey;
+      openEmbedForTenant(newKey);
+      alert('✓ Workspace provisioned successfully!\n\nTenant: ' + name + '\nDomain: ' + data.organization.website_url + '\nAPI Key: ' + newKey + '\n\nYour Embed Tag is ready in the studio.');
+    } else {
+      alert('Failed to provision workspace: ' + (data.error || 'Server error'));
     }
-  </script>
+  } catch (err) {
+    alert('Network error while provisioning workspace: ' + err.message);
+  } finally {
+    submitBtn.disabled = false;
+    submitBtn.innerHTML = originalText;
+  }
+}
+
+async function deleteWorkspace(id, name) {
+  if (!confirm('Are you sure you want to delete workspace "' + name + '"?\n\nThis will revoke its API key and disable voice feedback for this domain.')) {
+    return;
+  }
+  try {
+    const res = await fetch('/saypulse/v1/admin/master/organizations/' + id, { method: 'DELETE' });
+    const data = await res.json();
+    if (res.ok && data.success) {
+      await loadMasterData();
+      alert('✓ Workspace "' + name + '" deleted.');
+    } else {
+      alert(data.error || 'Failed to delete workspace.');
+    }
+  } catch (e) {
+    alert('Error deleting workspace: ' + e.message);
+  }
+}
+
+async function loadFeedData() {
+  const feedList = document.getElementById('feedbackList');
+  if (!feedList) return;
+
+  try {
+    const res = await fetch('/saypulse/v1/admin/feedback');
+    if (res.ok) {
+      const data = await res.json();
+      if (data.items && data.items.length > 0) {
+        feedList.innerHTML = '';
+        data.items.forEach(function(item) {
+          const div = document.createElement('div');
+          div.className = 'p-5 rounded-2xl glass-card space-y-3';
+          div.innerHTML = 
+            '<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">' +
+              '<div class="flex items-center space-x-2">' +
+                '<span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-purple-500/20 text-purple-300 border border-purple-500/30">' + escapeHtml(item.category || 'Feedback') + '</span>' +
+                '<span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">' + escapeHtml(item.sentiment || 'Positive') + ' (' + (item.rating || 5) + '/5 ⭐)</span>' +
+              '</div>' +
+              '<span class="text-[11px] font-mono text-slate-500">' + escapeHtml(item.created_at || 'Just now') + '</span>' +
+            '</div>' +
+            '<div class="p-3.5 rounded-xl bg-black/50 border border-white/5 space-y-1.5">' +
+              '<div class="text-[11px] font-mono text-slate-400 uppercase font-semibold">Spoken Transcript</div>' +
+              '<p class="text-xs text-slate-200 italic">"' + escapeHtml(item.raw_transcript || '') + '"</p>' +
+            '</div>' +
+            '<div class="p-3.5 rounded-xl bg-cyan-500/10 border border-cyan-500/30 space-y-1.5">' +
+              '<div class="text-[11px] font-mono text-cyan-300 uppercase font-bold">✨ Gemini AI Executive English Summary</div>' +
+              '<p class="text-xs text-white font-medium">' + escapeHtml(item.summary || '') + '</p>' +
+              (item.actionable_item ? '<div class="pt-2 text-[11px] text-cyan-300 font-mono"><strong>Actionable Item:</strong> ' + escapeHtml(item.actionable_item) + '</div>' : '') +
+            '</div>';
+          feedList.appendChild(div);
+        });
+        return;
+      }
+    }
+  } catch (e) {}
+
+  feedList.innerHTML = 
+    '<div class="p-12 text-center rounded-2xl glass-card text-slate-400 space-y-2">' +
+      '<div class="text-2xl">🎙️</div>' +
+      '<div class="text-white font-bold text-sm">No Voice Feedback Records Yet</div>' +
+      '<p class="text-xs text-slate-400">Spoken customer feedback submitted via the embed widget will stream in here in real-time.</p>' +
+    '</div>';
+}
+
+function openWebhookModal() {
+  alert('🔌 Webhook Configurator:\n\nSayPulse Webhook events are automatically dispatched on every synthesized voice note.\nEndpoint: https://wa.nextgenmultiverse.com/api/v1/webhook');
+}
+
+function openPromptConfigModal() {
+  alert('🤖 AI Synthesis Configuration:\n\nEngine: Gemini 3.6 Flash\nLatency Target: <1200ms\nMultilingual Mode: Active (Translating regional dialects to English summaries)');
+}
+
+async function refreshMetrics() {
+  await loadMasterData();
+  alert('✓ Real telemetry metrics synchronized with SayPulse database!');
+}
+
+function handleSignOut() {
+  localStorage.removeItem('saypulse_auth_token');
+  localStorage.removeItem('saypulse_user');
+  window.location.href = '/';
+}
+
+// ── Initial Boot ──────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', function() {
+  updateEmbedSnippet();
+  loadMasterData();
+});
+
+</script>
 </body>
 </html>

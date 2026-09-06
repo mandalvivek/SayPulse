@@ -15,6 +15,13 @@
     RewriteCond %{REQUEST_FILENAME} -d
     RewriteRule ^ - [L]
 
+    # Protect data directory and SQLite database files from direct browser access
+    RewriteRule ^data(/.*)?$ - [F,L]
+    RewriteRule \.(db|sqlite|sqlite3|json)$ - [F,L]
+
+    # Map /saypulse/v1 API routes to production api.php
+    RewriteRule ^saypulse/v1/(.*)$ api.php?route=$1 [QSA,L]
+
     # Map /admin routes to admin.html
     RewriteRule ^admin(/.*)?$ admin.html [L,QSA]
 
@@ -27,8 +34,8 @@
 
 <IfModule mod_headers.c>
     Header set Access-Control-Allow-Origin "*"
-    Header set Access-Control-Allow-Methods "GET, POST, OPTIONS"
-    Header set Access-Control-Allow-Headers "Content-Type, X-SayPulse-Key, Authorization"
+    Header set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
+    Header set Access-Control-Allow-Headers "Content-Type, X-SayPulse-Key, Authorization, X-Requested-With"
 </IfModule>
 
 <IfModule mod_mime.c>

@@ -12,7 +12,7 @@ const FEEDBACK_SCHEMA = {
   properties: {
     summary: {
       type: SchemaType.STRING,
-      description: 'Crisp 1-2 sentence summary of the user feedback',
+      description: 'Crisp 1-2 sentence executive summary of the feedback in professional English',
     },
     category: {
       type: SchemaType.STRING,
@@ -24,7 +24,11 @@ const FEEDBACK_SCHEMA = {
     },
     actionable_item: {
       type: SchemaType.STRING,
-      description: 'One concrete action the product team should take',
+      description: 'One concrete action the product team should take in English',
+    },
+    detected_language: {
+      type: SchemaType.STRING,
+      description: 'The spoken language detected e.g. Hindi, Hinglish, Bengali, Bhojpuri, Marathi, Telugu, Tamil, French, Dutch, Chinese, English',
     },
     tone_variations: {
       type: SchemaType.OBJECT,
@@ -36,7 +40,7 @@ const FEEDBACK_SCHEMA = {
       required: ['short', 'formal', 'elaborated'],
     },
   },
-  required: ['summary', 'category', 'sentiment', 'actionable_item', 'tone_variations'],
+  required: ['summary', 'category', 'sentiment', 'actionable_item', 'detected_language', 'tone_variations'],
 };
 
 // ── Phonetic & Brand Lexicon Normalizer ─────────────────────────────────────────
@@ -66,6 +70,75 @@ function normalizeBrandTerms(text: string): string {
     result = result.replace(pattern, replacement);
   }
   return result;
+}
+
+// ── Multilingual Semantic Fallback Engine ──────────────────────────────────────
+function generateSmartFallback(transcript: string, rating?: any, tags?: string) {
+  const text = transcript.toLowerCase();
+  const numRating = Number(rating) || 3;
+
+  // Sentiment and intent heuristics (supports English & Indian multilingual/Hinglish)
+  const isPositive =
+    numRating >= 4 ||
+    /\b(achcha|acha|mast|badhiya|pasand|sundar|great|awesome|love|good|fast|smooth|amazing|best|excellent|helpful|nice|shandaar|khoob)\b/i.test(text);
+  const isBugOrIssue =
+    numRating <= 2 ||
+    /\b(bug|error|slow|crash|broken|fail|issue|problem|kharab|bekar|ruk|atak|phasa|not working|glitch|freeze|chalta nahi)\b/i.test(text);
+  const isIntegrationOrFeature =
+    /\b(integrate|integration|dalo|lagao|add|feature|system|application|api|sdk|export|download|kya possible hai|kaise karein|help)\b/i.test(text);
+
+  let category = 'UX_Friction';
+  let sentiment = 'Neutral';
+  let summary = 'The user provided product feedback regarding system usability.';
+  let actionableItem = 'Review user workflow telemetry and optimize UX touchpoints.';
+
+  if (isIntegrationOrFeature) {
+    category = 'Feature_Request';
+    sentiment = isPositive ? 'Positive' : 'Neutral';
+    summary = 'User expressed interest in integrating the voice feedback system into their own web application or requested feature enhancements.';
+    actionableItem = 'Provide developer SDK documentation and custom platform integration guides.';
+  } else if (isPositive) {
+    category = 'General_Praise';
+    sentiment = 'Positive';
+    summary = 'User recorded positive feedback commending the fast, seamless experience and interface design.';
+    actionableItem = 'Maintain high system responsiveness and share user praise with the product team.';
+  } else if (isBugOrIssue) {
+    category = 'Bug';
+    sentiment = 'Frustrated';
+    summary = 'User encountered operational friction or performance slowdown during workflow execution.';
+    actionableItem = 'Investigate client-side performance logs and resolve runtime friction points.';
+  }
+
+  // Language heuristic
+  let detected_language = 'English';
+  if (/[\u0900-\u097F]/.test(transcript) || /\b(hai|aur|kya|bahut|acha|accha|mujhe|hum|aap|kaise|karo|nahi|sahi|mera)\b/i.test(text)) {
+    detected_language = /[\u0900-\u097F]/.test(transcript) ? 'Hindi' : 'Hinglish';
+  } else if (/[\u0980-\u09FF]/.test(transcript) || /\b(aami|bhalo|kemon|shob|korbo|eta)\b/i.test(text)) {
+    detected_language = 'Bengali';
+  } else if (/[\u0B80-\u0BFF]/.test(transcript) || /\b(vanakkam|nalla|eppadi|solunga)\b/i.test(text)) {
+    detected_language = 'Tamil';
+  } else if (/[\u0C00-\u0C7F]/.test(transcript) || /\b(bagundi|cheyandi|ela|unna)\b/i.test(text)) {
+    detected_language = 'Telugu';
+  } else if (/[\u4E00-\u9FFF]/.test(transcript)) {
+    detected_language = 'Chinese';
+  } else if (/\b(bonjour|merci|tres|bien|probleme)\b/i.test(text)) {
+    detected_language = 'French';
+  } else if (/\b(hallo|goed|bedankt|alstublieft)\b/i.test(text)) {
+    detected_language = 'Dutch';
+  }
+
+  return {
+    summary,
+    category,
+    sentiment,
+    actionable_item: actionableItem,
+    detected_language,
+    tone_variations: {
+      short: summary,
+      formal: `Executive review: ${summary}`,
+      elaborated: `${summary} (Language: ${detected_language} | Captured via SayPulse Telemetry with rating: ${rating ?? 'N/A'}, tags: [${tags || 'general'}])`,
+    },
+  };
 }
 
 // POST /saypulse/v1/feedback/summarize
@@ -100,8 +173,8 @@ router.post('/', async (req: Request, res: Response): Promise<void> => {
       generationConfig: {
         responseMimeType: 'application/json',
         responseSchema: FEEDBACK_SCHEMA as any,
-        temperature: 0.2,
-        maxOutputTokens: 1024,
+        temperature: 0.15,
+        maxOutputTokens: 512,
       },
     });
 
@@ -109,27 +182,41 @@ router.post('/', async (req: Request, res: Response): Promise<void> => {
       ? `Page: ${context.url ?? 'unknown'} | Route: ${context.pathname ?? '/'} | Rating: ${rating ?? 'N/A'} | Tags: [${tags}]`
       : 'No additional context';
 
-    const prompt = `You are a product feedback analyst for SayPulse AI. Analyze this user feedback and return structured JSON.
+    const prompt = `You are the executive product intelligence engine for SayPulse AI.
+Analyze this user feedback and output clean structured JSON.
 
 User feedback: "${effectiveTranscript}"
 Context: ${contextSummary}
 
 Domain Glossary & Brand Invariants:
 - The product platform is "SayPulse" (AI voice intelligence and telemetry platform).
-- Common speech recognition errors include "sepals", "say pulse", "safe pulse", "say pause", "staples", "sepal", "sayplus". Always correct and normalize these to "SayPulse".
-- Never generate recommendations or summaries referencing "sepals" or misheard terms.
-- Associated brand names: "NextGen Multiverse", "ExamDesk", "Tecton Enterprise".
+- Normalize speech errors (e.g. "sepals", "say pulse", "safe pulse", "staples", "sepal", "sayplus") to "SayPulse".
+- Associated brands: "NextGen Multiverse", "ExamDesk", "Tecton Enterprise".
+
+Multilingual & Translation Invariant:
+- The feedback may be in English, Hindi, Hinglish (Hindi written in Roman/English alphabet), Bengali, Bhojpuri, Marathi, Telugu, Tamil, French, Dutch, Chinese, or mixed languages.
+- You MUST understand the underlying intent, tone, and nuances in any language, and synthesize the "summary", "actionable_item", and "tone_variations" into CRISP, HIGH-IMPACT, EXECUTIVE-GRADE ENGLISH.
+- NEVER repeat or echo raw non-English/Hinglish sentences verbatim in the summary.
 
 Instructions:
-1. Write a crisp 1-2 sentence summary that captures the core issue/praise.
-2. Choose the most fitting category: Bug, UX_Friction, Feature_Request, Performance, Billing, General_Praise.
-3. Detect the emotional sentiment: Positive, Neutral, Frustrated, Critical.
-4. Suggest one concrete, actionable improvement for the product team.
-5. Provide three tone variations: short (1 sentence), formal (professional), elaborated (detailed).
+1. Write a crisp 1-2 sentence English summary capturing the user's intent.
+2. Select category: Bug, UX_Friction, Feature_Request, Performance, Billing, General_Praise.
+3. Detect sentiment: Positive, Neutral, Frustrated, Critical.
+4. Suggest one concrete, actionable engineering/product task.
+5. Provide three tone variations in clean English (short, formal, elaborated).
 
 Return ONLY valid JSON matching the schema.`;
 
-    const result = await model.generateContent(prompt);
+    // 3.5s Circuit Breaker to prevent long UI hang
+    const aiTimeoutPromise = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error('AI Synthesis Timeout (>3500ms)')), 3500)
+    );
+
+    const result: any = await Promise.race([
+      model.generateContent(prompt),
+      aiTimeoutPromise,
+    ]);
+
     let text = result.response.text().trim();
     text = text.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/i, '').trim();
 
@@ -146,9 +233,9 @@ Return ONLY valid JSON matching the schema.`;
 
     res.json(parsed);
   } catch (err: any) {
-    console.error('[SayPulse /summarize error]:', err);
+    console.warn('[SayPulse /summarize warning - using smart fallback]:', err.message || err);
 
-    // Notify company engineering inbox of AI synthesis failure
+    // Notify company engineering inbox of AI synthesis failure in background
     dispatchApplicationErrorAlert({
       error: err.message || 'Gemini AI summarization error',
       stack: err.stack,
@@ -157,27 +244,11 @@ Return ONLY valid JSON matching the schema.`;
       method: 'POST',
       statusCode: 500,
       timestamp: new Date().toISOString(),
-    }).catch((e) => console.error('[App Error Alert Error]:', e));
+    }).catch(() => {});
 
-    // Fallback response so frontend never gets broken
-    const fallbackCategory = (Number(rating) || 3) >= 4 ? 'General_Praise' : 'UX_Friction';
-    const fallbackSentiment = (Number(rating) || 3) >= 4 ? 'Positive' : 'Neutral';
-    const baseSummary =
-      effectiveTranscript.length > 5
-        ? effectiveTranscript
-        : `User rated ${rating ?? 3} stars with tags: ${tags || 'General'}`;
-
-    res.json({
-      summary: baseSummary,
-      category: fallbackCategory,
-      sentiment: fallbackSentiment,
-      actionable_item: 'Review submitted feedback notes.',
-      tone_variations: {
-        short: baseSummary,
-        formal: `The user recorded feedback regarding ${tags || 'general user experience'}.`,
-        elaborated: `The user submitted feedback indicating a ${rating ? `${rating}-star` : ''} experience and specified tags: ${tags || 'none'}.`,
-      },
-    });
+    // Intelligent local semantic synthesis (never echo verbatim)
+    const fallbackResponse = generateSmartFallback(effectiveTranscript, rating, tags);
+    res.json(fallbackResponse);
   }
 });
 

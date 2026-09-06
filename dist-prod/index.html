@@ -298,10 +298,7 @@
           <span>04. DPDP & Audio Privacy</span>
           <span class="font-mono text-xs text-cyan-400">04 →</span>
         </a>
-        <a href="#pricing" class="drawer-link flex items-center justify-between px-4 py-3 rounded-xl text-slate-200 hover:text-cyanAccent hover:bg-white/5 transition-all">
-          <span>05. Commercial Plans & ROI</span>
-          <span class="font-mono text-xs text-cyan-400">05 →</span>
-        </a>
+
         <button onclick="openInfoModal('about'); closeDrawer();" class="w-full drawer-link flex items-center justify-between px-4 py-3 rounded-xl text-slate-200 hover:text-cyanAccent hover:bg-white/5 transition-all text-left">
           <span>06. About NextGen Multiverse</span>
           <span class="font-mono text-xs text-cyan-400">06 →</span>
@@ -622,85 +619,7 @@
       </div>
     </section>
 
-    <!-- 5. PRICING & ROI -->
-    <section id="pricing" class="py-16 border-t border-white/5 relative">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
-        <div class="text-center max-w-3xl mx-auto mb-12">
-          <h2 class="text-2xl sm:text-4xl font-extrabold text-white tracking-tight">
-            Simple, High-Impact Pricing
-          </h2>
-          <p class="mt-3 text-slate-400 text-sm sm:text-base">
-            Transparent pricing designed to scale effortlessly with your monthly feedback volume.
-          </p>
-        </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-          
-          <!-- Starter Plan -->
-          <div class="glass-card p-8 rounded-3xl border border-white/10 flex flex-col justify-between">
-            <div>
-              <div class="text-xs font-mono font-bold text-slate-400 mb-2">STARTER</div>
-              <div class="text-4xl font-extrabold text-white mb-4">$49 <span class="text-sm font-normal text-slate-400">/ mo</span></div>
-              <p class="text-xs text-slate-400 mb-6">Ideal for early-stage startups and high-growth apps.</p>
-              <ul class="space-y-3 text-xs text-slate-300">
-                <li class="flex items-center gap-2">✓ Up to 500 Voice Notes / mo</li>
-                <li class="flex items-center gap-2">✓ Gemini 3.6 Flash AI Summaries</li>
-                <li class="flex items-center gap-2">✓ 1 Dedicated Workspace Slug</li>
-                <li class="flex items-center gap-2">✓ Standard Email Bug Alerts</li>
-                <li class="flex items-center gap-2">✓ All 6 Wave Visualizers</li>
-              </ul>
-            </div>
-            <button onclick="openAuthModal('register')" class="mt-8 w-full py-3 rounded-xl bg-white/10 hover:bg-white/15 text-xs font-bold text-white transition">
-              Get Started →
-            </button>
-          </div>
-
-          <!-- Growth Plan (Popular) -->
-          <div class="glass-card p-8 rounded-3xl border-2 border-cyanAccent shadow-[0_0_40px_rgba(6,182,212,0.2)] flex flex-col justify-between relative">
-            <div class="absolute -top-3 right-8 px-3 py-1 rounded-full bg-cyanAccent text-deep-950 text-[10px] font-extrabold font-mono uppercase tracking-wider">
-              RECOMMENDED
-            </div>
-            <div>
-              <div class="text-xs font-mono font-bold text-cyan-400 mb-2">GROWTH (POPULAR)</div>
-              <div class="text-4xl font-extrabold text-white mb-4">$149 <span class="text-sm font-normal text-slate-400">/ mo</span></div>
-              <p class="text-xs text-slate-400 mb-6">For scaling SaaS platforms and eCommerce brands.</p>
-              <ul class="space-y-3 text-xs text-slate-300">
-                <li class="flex items-center gap-2">✓ Up to 3,000 Voice Notes / mo</li>
-                <li class="flex items-center gap-2">✓ Route Journey & Console Logs</li>
-                <li class="flex items-center gap-2">✓ WhatsApp Login OTP Gateway</li>
-                <li class="flex items-center gap-2">✓ Unlimited Admin Seats</li>
-                <li class="flex items-center gap-2">✓ Priority Email & Webhook Sync</li>
-              </ul>
-            </div>
-            <button onclick="openAuthModal('register')" class="shimmer-btn mt-8 w-full py-3 rounded-xl bg-gradient-to-r from-cyan-500 to-indigo-600 text-xs font-bold text-white transition">
-              Start Free Trial →
-            </button>
-          </div>
-
-          <!-- Enterprise Plan -->
-          <div class="glass-card p-8 rounded-3xl border border-white/10 flex flex-col justify-between">
-            <div>
-              <div class="text-xs font-mono font-bold text-indigo-400 mb-2">ENTERPRISE</div>
-              <div class="text-4xl font-extrabold text-white mb-4">Custom <span class="text-sm font-normal text-slate-400">/ yr</span></div>
-              <p class="text-xs text-slate-400 mb-6">For enterprise operations with custom SLAs and data residency.</p>
-              <ul class="space-y-3 text-xs text-slate-300">
-                <li class="flex items-center gap-2">✓ Unlimited Voice Notes</li>
-                <li class="flex items-center gap-2">✓ Custom LLM Fine-Tuning</li>
-                <li class="flex items-center gap-2">✓ Jira, Slack & Linear Direct Sync</li>
-                <li class="flex items-center gap-2">✓ 99.99% Uptime SLA</li>
-                <li class="flex items-center gap-2">✓ Dedicated Technical Account Manager</li>
-              </ul>
-            </div>
-            <button onclick="openInfoModal('contact')" class="mt-8 w-full py-3 rounded-xl bg-white/10 hover:bg-white/15 text-xs font-bold text-white transition">
-              Contact Enterprise Sales →
-            </button>
-          </div>
-
-        </div>
-
-      </div>
-    </section>
 
   </main>
 
@@ -1301,22 +1220,20 @@
       try {
         let dispatched = false;
 
-        // Try local backend if connected
-        if (getApiBase()) {
-          try {
-            const res = await fetch(`${getApiBase()}/saypulse/v1/auth/send-otp`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ method, target })
-            });
-            const ct = res.headers.get('content-type') || '';
-            if (ct.includes('application/json')) {
-              const data = await res.json();
-              if (res.ok) dispatched = true;
-            }
-          } catch (e) {
-            console.warn('Local API failed, proceeding to direct gateway:', e);
+        // Try backend API (production api.php or local Node)
+        try {
+          const res = await fetch(`${getApiBase()}/saypulse/v1/auth/send-otp`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ method, target })
+          });
+          const ct = res.headers.get('content-type') || '';
+          if (ct.includes('application/json')) {
+            const data = await res.json();
+            if (res.ok) dispatched = true;
           }
+        } catch (e) {
+          console.warn('API send-otp note, proceeding to direct gateway:', e);
         }
 
         // Direct WhatsApp Gateway Dispatch on production
@@ -1399,20 +1316,18 @@
         const cachedOtp = sessionStorage.getItem(`saypulse_otp_${activeAuthTarget}`);
         let isValid = (cachedOtp && cachedOtp === otp) || (otp === '123456' || otp === '901379');
 
-        if (getApiBase()) {
-          try {
-            const res = await fetch(`${getApiBase()}/saypulse/v1/auth/verify-otp`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ target: activeAuthTarget, otp: otp })
-            });
-            const ct = res.headers.get('content-type') || '';
-            if (ct.includes('application/json')) {
-              const data = await res.json();
-              if (res.ok && data.success) isValid = true;
-            }
-          } catch(e) {}
-        }
+        try {
+          const res = await fetch(`${getApiBase()}/saypulse/v1/auth/verify-otp`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ target: activeAuthTarget, otp: otp })
+          });
+          const ct = res.headers.get('content-type') || '';
+          if (ct.includes('application/json')) {
+            const data = await res.json();
+            if (res.ok && data.success) isValid = true;
+          }
+        } catch(e) {}
 
         if (!isValid && cachedOtp && cachedOtp !== otp) {
           throw new Error('Invalid or expired OTP code. Please check and try again.');

@@ -494,11 +494,16 @@ export function createOrganization(data: {
     'owner'
   );
 
-  // 3. Create Dedicated Production API Key
+  // 3. Create Dedicated Production API Key with Domain Whitelist
+  const domain = data.websiteUrl 
+    ? data.websiteUrl.replace(/^https?:\/\//, '').replace(/\/.*$/, '').toLowerCase()
+    : '*';
+  const allowedOrigins = domain === '*' ? '["*"]' : JSON.stringify([domain, 'localhost']);
+
   db.prepare(`
     INSERT INTO api_keys (id, organization_id, api_key, name, environment, allowed_origins)
     VALUES (?, ?, ?, ?, ?, ?)
-  `).run(apiKeyId, orgId, apiKeySecret, 'Production API Key', 'production', '["*"]');
+  `).run(apiKeyId, orgId, apiKeySecret, 'Production API Key', 'production', allowedOrigins);
 
   // 4. Create Default Widget Configuration
   db.prepare(`

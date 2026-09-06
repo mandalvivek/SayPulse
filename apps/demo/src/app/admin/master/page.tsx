@@ -349,9 +349,10 @@ export default function SuperadminMasterPage() {
               </div>
 
               <div style={styles.inputGroup}>
-                <label style={styles.label}>Website Domain URL (optional)</label>
+                <label style={styles.label}>Website URL / Web App Domain *</label>
                 <input
                   type="url"
+                  required
                   value={newOrgWebsite}
                   onChange={(e) => setNewOrgWebsite(e.target.value)}
                   placeholder="https://company.com"
